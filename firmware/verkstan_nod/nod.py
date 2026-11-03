@@ -1,5 +1,4 @@
-# Grunden som alla lådor delar: wifi, MQTT, statuslampa och "Hitta".
-# OTESTAT UTKAST.
+# Det alla lådor delar: wifi, MQTT, statuslampa och "Hitta".
 import json
 import time
 import network
@@ -17,7 +16,6 @@ class Nod:
         self.hitta_till = 0
         self.mqtt = None
 
-    # ---- statuslampan ----
     def blinka(self, ggr=1, ms=120):
         for _ in range(ggr):
             self.lampa.on(); time.sleep_ms(ms)
@@ -26,11 +24,10 @@ class Nod:
     def _lampa_varv(self):
         nu = time.ticks_ms()
         if time.ticks_diff(self.hitta_till, nu) > 0:
-            self.lampa.value((nu // 250) % 2)      # blinkar i tre sekunder efter "Hitta"
+            self.lampa.value((nu // 250) % 2)
         else:
-            self.lampa.on()                        # lyser stilla när allt är uppkopplat
+            self.lampa.on()
 
-    # ---- nät ----
     def _wifi(self):
         wlan = network.WLAN(network.STA_IF)
         wlan.active(True)
@@ -51,7 +48,7 @@ class Nod:
         m.set_callback(self._ta_emot)
         m.connect()
         m.publish(self.bas + "status", "uppe", retain=True)
-        m.publish(self.bas + "hej", json.dumps({"har": self.har, "fw": "0.1"}), retain=True)
+        m.publish(self.bas + "hej", json.dumps({"har": self.har, "fw": "0.2"}), retain=True)
         m.subscribe(self.bas + "ut/#")
         self.mqtt = m
 
@@ -66,9 +63,8 @@ class Nod:
         elif sak in self.lyssnare:
             self.lyssnare[sak](innehall)
 
-    # ---- det lådorna använder ----
     def lyssna(self, sak, funktion):
-        """Kör funktion(innehall) när rumsservern skickar till ut/<sak>."""
+        """funktion(innehall) körs när rumsservern skickar till ut/<sak>."""
         self.lyssnare["ut/" + sak] = funktion
 
     def skicka(self, sak, innehall):
@@ -87,7 +83,6 @@ class Nod:
                     self._lampa_varv()
                     time.sleep_ms(10)
             except OSError:
-                # nätet försvann: blinka tre gånger och försök igen
                 self.mqtt = None
                 self.blinka(3)
                 time.sleep(2)

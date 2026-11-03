@@ -1,8 +1,7 @@
-# Logikgrindar (nod-02): två arkadknappar och en lampa.
-# Grinden väljs i appen. Lådan räknar själv ut lampan, så den fungerar även om nätet hackar.
-# OTESTAT UTKAST. Stift enligt docs/07-modulplaner.md.
-import time
+# Logikgrindar (nod-02): två knappar och tre lampor.
+# Lådan räknar själv ut lampan, så den fungerar även om nätet hackar.
 from machine import Pin
+from delar import Knapp
 
 GRINDAR = {
     "and": lambda a, b: a and b,
@@ -12,25 +11,21 @@ GRINDAR = {
     "not": lambda a, b: not a,
 }
 
-knapp_a = Pin(14, Pin.IN, Pin.PULL_UP)
-knapp_b = Pin(13, Pin.IN, Pin.PULL_UP)
-lampa_ut = Pin(16, Pin.OUT)
-lampa_a = Pin(17, Pin.OUT)
-lampa_b = Pin(18, Pin.OUT)
-
-lage = {"grind": "and", "a": False, "b": False, "senast": 0}
-
-
-def byt_grind(innehall):
-    if innehall.get("typ") in GRINDAR:
-        lage["grind"] = innehall["typ"]
-        visa()
+knapp_a, knapp_b = Knapp(14), Knapp(13)
+lampa_ut, lampa_a, lampa_b = Pin(16, Pin.OUT), Pin(17, Pin.OUT), Pin(18, Pin.OUT)
+s = {"grind": "and", "a": False, "b": False}
 
 
 def visa():
-    lampa_a.value(lage["a"])
-    lampa_b.value(lage["b"])
-    lampa_ut.value(GRINDAR[lage["grind"]](lage["a"], lage["b"]))
+    lampa_a.value(s["a"])
+    lampa_b.value(s["b"])
+    lampa_ut.value(GRINDAR[s["grind"]](s["a"], s["b"]))
+
+
+def byt_grind(d):
+    if d.get("typ") in GRINDAR:
+        s["grind"] = d["typ"]
+        visa()
 
 
 def starta(nod):
@@ -40,13 +35,12 @@ def starta(nod):
 
 
 def varv(nod):
-    # knapparna drar stiftet till jord när de trycks ner
-    a, b = not knapp_a.value(), not knapp_b.value()
-    if (a, b) == (lage["a"], lage["b"]):
-        return
-    nu = time.ticks_ms()
-    if time.ticks_diff(nu, lage["senast"]) < 20:   # avstudsning
-        return
-    lage.update(a=a, b=b, senast=nu)
-    visa()
-    nod.skicka("in/knapp", {"a": a, "b": b})
+    andrad = False
+    for namn, k in (("a", knapp_a), ("b", knapp_b)):
+        k.tryckt()
+        if k.nere != s[namn]:
+            s[namn] = k.nere
+            andrad = True
+    if andrad:
+        visa()
+        nod.skicka("in/knapp", {"a": s["a"], "b": s["b"]})

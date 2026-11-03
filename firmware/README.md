@@ -1,37 +1,32 @@
-# Firmware för Verkstan-noden (utkast)
+# Firmware
 
-> **Otestat utkast.** Koden är skriven utan att ha körts på en Pico W. Den visar upplägget,
-> inte en färdig lösning. Räkna med att behöva rätta saker vid första provkörningen.
+Ingenting här har körts på en riktig Pico W. Lådfilerna är provkörda mot låtsade stift på en
+dator och ljudlådan kompilerar mot stubbar. Räkna med att rätta saker vid första provet.
 
-Varje låda kör samma grundprogram och en liten fil med lådans beteende.
-
+```text
+verkstan_nod/          MicroPython, alla lådor utom nod-03
+  main.py              startar noden
+  nod.py               wifi, MQTT, statuslampa, "Hitta"
+  delar.py             knapp, servo, vred, stegmotor, TM1637, HX711, INA219, TCS34725, MPU6050
+  config_exempel.py    kopiera till config.py
+  lador/               en fil per låda: el, logik, ai, natverk, robot, matte, binart, pixlar, tarning
+nod03_ljud/            C++ för Arduino-Pico, ljudlådan
 ```
-verkstan_nod/
-  main.py              startar allt, ändras inte per låda
-  nod.py               wifi, MQTT, statuslampa, "Hitta", återanslutning
-  config_exempel.py    kopiera till config.py och fyll i nät, server och lådans id
-  lador/
-    logik.py           Logikgrindar (nod-02): två knappar och en lampa
-```
 
-## Kom igång
+## MicroPython
 
-1. Installera MicroPython för Pico W (UF2-fil från micropython.org).
-2. Installera MQTT-klienten på Picon, till exempel med `mpremote mip install umqtt.simple`.
-3. Kopiera `config_exempel.py` till `config.py` och fyll i värdena.
-4. Kopiera hela `verkstan_nod/` till Picon: `mpremote cp -r verkstan_nod/* :`
-5. Starta en MQTT-förmedlare på datorn (`mosquitto -v`) och lyssna:
-   `mosquitto_sub -v -t 'verkstan/#'`
+1. Flasha MicroPython för Pico W.
+2. `mpremote mip install umqtt.simple`
+3. Kopiera `config_exempel.py` till `config.py` och fyll i.
+4. `mpremote cp -r verkstan_nod/* :`
+5. Lyssna på datorn: `mosquitto_sub -v -t 'verkstan/#'`
 
-Ämnen och meddelanden beskrivs i `docs/05-fysiska-enheter.md`, och delar och kopplingar per låda
-i `docs/07-modulplaner.md`.
+En ny låda är en fil i `lador/` med `starta(nod)` och `varv(nod)`. `nod.lyssna("sak", f)` tar emot
+`ut/sak`, `nod.skicka("in/sak", {...})` skickar.
 
-## En ny låda
+## Ljudlådan
 
-Skriv en ny fil i `lador/` med två funktioner:
+Arduino IDE med kortet Raspberry Pi Pico W (earlephilhower) och biblioteken PubSubClient,
+ArduinoJson 7 och Adafruit NeoPixel. Kopiera `config_exempel.h` till `config.h`.
 
-- `starta(nod)` körs en gång. Ställ in stift och prenumerera på `ut/`-ämnen med `nod.lyssna(...)`.
-- `varv(nod)` körs om och om igen, ungefär 100 gånger per sekund. Läs knappar och sensorer och
-  skicka med `nod.skicka("in/...", {...})`.
-
-Sätt `LADA = "namnet"` i `config.py`.
+Stift och meddelanden för varje låda står i `docs/07-modulplaner.md`.
