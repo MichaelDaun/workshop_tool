@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paketresan – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  #net { user-select: none; touch-action: manipulation; }
+  .link { stroke: var(--line); stroke-width: 8; stroke-linecap: round; transition: stroke .3s; }
+  .link.route { stroke: color-mix(in srgb, var(--domain) 45%, var(--line)); }
+  .link.cut { stroke: var(--bad); stroke-dasharray: 4 14; stroke-width: 6; }
+  .link-hit { stroke: transparent; stroke-width: 34; cursor: pointer; }
+  .link-hit:hover + .scissor { opacity: 1; }
+  .scissor { opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .scissor.show { opacity: 1; }
+  .node { cursor: pointer; }
+  .node circle.base { fill: var(--surface); stroke: var(--ink); stroke-width: 3; transition: fill .3s, stroke .3s; }
+  .node.from circle.base { fill: var(--domain); stroke: var(--domain); }
+  .node.to circle.base { fill: var(--c-kod); stroke: var(--c-kod); }
+  .node .house { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; }
+  .node.from .house, .node.to .house { stroke: #fff; }
+  .node text { font-family: var(--font-display); font-weight: 700; font-size: 19px; fill: var(--ink); }
+  .node .tag { font-family: var(--font-data); font-size: 13px; font-weight: 600; fill: var(--ink-soft); letter-spacing: .06em; }
+  .node:hover circle.base { stroke-width: 5; }
+  .pkt rect { fill: var(--domain); }
+  .pkt text { font-family: var(--font-data); font-weight: 600; font-size: 18px; fill: #fff; }
+  .pkt.lost rect { fill: var(--bad); }
+  .msg-box { display: flex; gap: 6px; align-items: center; min-height: 52px; flex-wrap: wrap; }
+  .msg-box .slot { width: 42px; height: 48px; border-radius: 10px; border: 2px dashed var(--line); display: grid; place-items: center; font-family: var(--font-data); font-size: 1.4rem; font-weight: 600; transition: all .4s var(--ease); }
+  .msg-box .slot.in { border: 2px solid var(--domain); background: var(--domain); color: #fff; transform: translateY(-3px); }
+  .msg-box .slot.lost { border-color: var(--bad); color: var(--bad); }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-top: 12px; }
+  .legend-n { display: flex; gap: 14px; flex-wrap: wrap; font-size: var(--fs-s); color: var(--ink-soft); }
+  .legend-n span { display: inline-flex; gap: 6px; align-items: center; }
+  .legend-n i { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+  #msg { height: 46px; width: 9ch; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); padding: 0 14px; font-family: var(--font-data); font-size: 1.1rem; text-transform: uppercase; }
+</style>
+</head>
+<body data-domain="nat">
+<header class="topbar" data-title-sv="Paketresan" data-title-en="The packet journey"></header>
+
+<main class="module">
+  <section class="stage">
+    <svg id="net" viewBox="0 0 800 470" role="img" aria-label="Ett nätverk av hus som är sammankopplade med kablar" data-aria-en="A network of houses connected by cables">
+      <g id="links"></g>
+      <g id="nodes"></g>
+      <g id="pkts"></g>
+    </svg>
+
+    <div class="row">
+      <div class="legend-n">
+        <span><i style="background:var(--domain)"></i><span data-en="Sender">Avsändare</span></span>
+        <span><i style="background:var(--c-kod)"></i><span data-en="Receiver">Mottagare</span></span>
+        <span><i style="background:var(--bad)"></i><span data-en="Cut cable">Klippt kabel</span></span>
+      </div>
+      <span class="eyebrow" data-en="Tap a house · tap a cable to cut it">Tryck på ett hus · tryck på en kabel för att klippa</span>
+    </div>
+
+    <div class="row">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+        <label for="msg" class="eyebrow" data-en="Message">Meddelande</label>
+        <input id="msg" maxlength="6" value="HEJ!" autocomplete="off">
+        <button class="btn" id="send" type="button" data-en="Send">Skicka</button>
+        <button class="btn ghost" id="fix" type="button" data-en="Repair all cables">Laga alla kablar</button>
+      </div>
+      <div class="msg-box" id="inbox" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="card mission" id="mission">
+      <div class="eyebrow" data-en="Networks · ~10 min">Nätverk · ~10 min</div>
+      <h2 data-en="How does a message travel?">Hur reser ett meddelande?</h2>
+      <p class="lead" data-en="The internet chops every message into small packets. Each one finds its own way.">Internet hackar varje meddelande i små paket. Varje paket hittar sin egen väg.</p>
+    </div>
+    <div class="card">
+      <div class="readouts">
+        <div class="readout"><span class="v" id="r-hops">–</span><span class="k" data-en="hops (shortest way)">hopp (kortaste vägen)</span></div>
+        <div class="readout"><span class="v" id="r-arr">0/0</span><span class="k" data-en="packets arrived">paket framme</span></div>
+      </div>
+    </div>
+    <details class="card why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="<strong>Packets:</strong> a message, a photo or a video call is cut into thousands of small pieces with an address on each.">
+          <strong>Paket:</strong> ett meddelande, en bild eller ett videosamtal delas upp i tusentals små bitar med en adress på varje.</p>
+        <p data-en="<strong>Routers</strong> (here: the houses) look at the address and pass the packet one step closer.">
+          <strong>Routrar</strong> (här: husen) läser adressen och skickar paketet ett steg närmare.</p>
+        <p data-en="<strong>Many ways = strong network.</strong> If a cable breaks, the packets go around. That is why the internet rarely stops.">
+          <strong>Många vägar = starkt nät.</strong> Om en kabel går sönder tar paketen en omväg. Därför stannar internet nästan aldrig.</p>
+      </div>
+    </details>
+    <p class="mock-note" data-en="Mock-up. Whole-room version: each participant is a router on their phone and passes packets on by tapping. The room becomes the network.">Mockup. Helrumsversion: varje deltagare är en router i mobilen och skickar paket vidare med ett tryck. Rummet blir nätverket.</p>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const N = [
+    { id: "A", name: "Ali",  x: 90,  y: 120 }, { id: "B", name: "Bea",  x: 270, y: 70 },
+    { id: "C", name: "Cleo", x: 230, y: 300 }, { id: "D", name: "Dani", x: 430, y: 190 },
+    { id: "E", name: "Eli",  x: 420, y: 400 }, { id: "F", name: "Fia",  x: 600, y: 110 },
+    { id: "G", name: "Gus",  x: 710, y: 330 }
+  ];
+  const E = [["A","B"],["A","C"],["B","D"],["C","D"],["C","E"],["D","F"],["D","E"],["E","G"],["F","G"],["B","F"]].map(([a, b]) => ({ a, b, cut: false }));
+  const s = { from: "A", to: "G", pickNext: "from", pkts: [], sending: false, cutDuringFlight: false, baseRoute: null };
+  const node = id => N.find(n => n.id === id);
+
+  const tasks = K.tasks($("mission"), "natverk", [
+    { id: "skicka", text: { sv: "Skicka ett meddelande", en: "Send a message" } },
+    { id: "omvag",  text: { sv: "Klipp en kabel på vägen och skicka igen", en: "Cut a cable on the way and send again" } },
+    { id: "flygande", text: { sv: "Klipp en kabel medan paketen reser", en: "Cut a cable while packets are travelling" }, hint: { sv: "Var snabb!", en: "Be quick!" } },
+    { id: "isolera",  text: { sv: "Gör så att inget kan komma fram", en: "Make it impossible to get through" }, hint: { sv: "Hur många kablar måste du klippa?", en: "How many cables must you cut?" } }
+  ]);
+
+  /* --- graf --- */
+  const neighbours = id => E.filter(e => !e.cut && (e.a === id || e.b === id)).map(e => e.a === id ? e.b : e.a);
+  function route(from, to) {
+    const prev = { [from]: null }, q = [from];
+    while (q.length) {
+      const c = q.shift(); if (c === to) break;
+      neighbours(c).forEach(n => { if (!(n in prev)) { prev[n] = c; q.push(n); } });
+    }
+    if (!(to in prev)) return null;
+    const path = []; for (let c = to; c; c = prev[c]) path.unshift(c);
+    return path;
+  }
+  const edgeOf = (a, b) => E.find(e => (e.a === a && e.b === b) || (e.a === b && e.b === a));
+
+  /* --- ritning --- */
+  function drawLinks() {
+    const g = $("links"); g.innerHTML = "";
+    const r = route(s.from, s.to) || [];
+    const onRoute = new Set(r.slice(1).map((n, i) => edgeOf(r[i], n)));
+    E.forEach(e => {
+      const A = node(e.a), B = node(e.b);
+      const l = document.createElementNS(NS, "line");
+      l.setAttribute("x1", A.x); l.setAttribute("y1", A.y); l.setAttribute("x2", B.x); l.setAttribute("y2", B.y);
+      l.setAttribute("class", "link" + (e.cut ? " cut" : onRoute.has(e) ? " route" : ""));
+      const hit = l.cloneNode(); hit.setAttribute("class", "link-hit");
+      hit.setAttribute("tabindex", "0"); hit.setAttribute("role", "button");
+      hit.setAttribute("aria-label", (e.cut ? K.t("Laga kabeln ", "Repair the cable ") : K.t("Klipp kabeln ", "Cut the cable ")) + A.name + "–" + B.name);
+      const sc = document.createElementNS(NS, "g"); sc.setAttribute("class", "scissor" + (e.cut ? " show" : ""));
+      const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+      sc.innerHTML = `<circle cx="${mx}" cy="${my}" r="16" fill="var(--surface)" stroke="${e.cut ? "var(--bad)" : "var(--ink)"}" stroke-width="2.5"/>
+        <path d="M${mx - 6} ${my - 6} l12 12 M${mx + 6} ${my - 6} l-12 12" stroke="${e.cut ? "var(--bad)" : "var(--ink)"}" stroke-width="2.5" stroke-linecap="round"/>`;
+      const toggle = () => {
+        e.cut = !e.cut;
+        if (e.cut && s.pkts.some(p => !p.done)) s.cutDuringFlight = true;
+        drawLinks(); readouts();
+      };
+      hit.addEventListener("click", toggle);
+      hit.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggle(); } });
+      g.append(l, hit, sc);
+    });
+  }
+  function drawNodes() {
+    const g = $("nodes"); g.innerHTML = "";
+    N.forEach(n => {
+      const el = document.createElementNS(NS, "g");
+      el.setAttribute("class", "node" + (n.id === s.from ? " from" : n.id === s.to ? " to" : ""));
+      el.setAttribute("tabindex", "0"); el.setAttribute("role", "button"); el.setAttribute("aria-label", n.name);
+      el.innerHTML = `<circle class="base" cx="${n.x}" cy="${n.y}" r="32"/>
+        <path class="house" d="M${n.x - 13} ${n.y + 12} V${n.y - 2} L${n.x} ${n.y - 14} L${n.x + 13} ${n.y - 2} V${n.y + 12} Z M${n.x - 4} ${n.y + 12} V${n.y + 3} H${n.x + 4} V${n.y + 12}"/>
+        <text x="${n.x}" y="${n.y + 58}" text-anchor="middle">${n.name}</text>
+        ${n.id === s.from ? `<text class="tag" x="${n.x}" y="${n.y - 44}" text-anchor="middle">${K.t("FRÅN", "FROM")}</text>` : ""}
+        ${n.id === s.to ? `<text class="tag" x="${n.x}" y="${n.y - 44}" text-anchor="middle">${K.t("TILL", "TO")}</text>` : ""}`;
+      const pick = () => {
+        if (s.pkts.some(p => !p.done)) return;
+        if (s.pickNext === "from") { if (n.id === s.to) s.to = s.from; s.from = n.id; s.pickNext = "to"; }
+        else { if (n.id === s.from) return; s.to = n.id; s.pickNext = "from"; }
+        drawNodes(); drawLinks(); readouts();
+      };
+      el.addEventListener("click", pick);
+      el.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); pick(); } });
+      g.append(el);
+    });
+  }
+  function readouts() {
+    const r = route(s.from, s.to);
+    $("r-hops").textContent = r ? r.length - 1 : "✕";
+    const total = s.pkts.length, arr = s.pkts.filter(p => p.arrived).length;
+    $("r-arr").textContent = arr + "/" + total;
+  }
+
+  /* --- paket --- */
+  function inbox(text) {
+    const box = $("inbox"); box.innerHTML = "";
+    [...text].forEach(() => { const d = document.createElement("div"); d.className = "slot"; box.append(d); });
+  }
+  function send() {
+    if (s.pkts.some(p => !p.done)) return;
+    const text = ($("msg").value || "HEJ!").toUpperCase().slice(0, 6);
+    inbox(text);
+    s.cutDuringFlight = false;
+    const r = route(s.from, s.to);
+    const saved = E.map(e => e.cut); E.forEach(e => e.cut = false);
+    const free = route(s.from, s.to);
+    E.forEach((e, i) => e.cut = saved[i]);
+    s.usedDetour = !!r && r.join() !== free.join();
+    s.noRoute = !r;
+    s.pkts = [...text].map((ch, i) => ({ ch, i, at: s.from, next: null, t: 0, wait: i * 0.45, done: false, arrived: false, stuck: 0, el: null }));
+    const g = $("pkts"); g.innerHTML = "";
+    s.pkts.forEach(p => {
+      p.el = document.createElementNS(NS, "g"); p.el.setAttribute("class", "pkt");
+      p.el.innerHTML = `<rect x="-17" y="-15" width="34" height="30" rx="7"/><text text-anchor="middle" y="7">${p.ch.replace(/[<>&]/g, "")}</text>`;
+      g.append(p.el);
+    });
+    readouts();
+  }
+
+  let last = performance.now();
+  function step(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    let changed = false;
+    s.pkts.forEach(p => {
+      if (p.done) return;
+      if (p.wait > 0) { p.wait -= dt; place(p); return; }
+      if (!p.next) {
+        if (p.at === s.to) { arrive(p); changed = true; return; }
+        const r = route(p.at, s.to);
+        if (!r) { p.stuck += dt; if (p.stuck > 1.6) { lose(p); changed = true; } place(p); return; }
+        p.stuck = 0; p.from = p.at; p.next = r[1]; p.t = 0; p.back = false;
+      }
+      const e = edgeOf(p.from, p.next);
+      if (e.cut && !p.back) { p.back = true; }       // kabeln klipptes: studsa tillbaka
+      p.t += dt * (p.back ? -1.6 : 1.1);
+      if (p.back && p.t <= 0) { p.t = 0; p.next = null; p.at = p.from; }
+      else if (!p.back && p.t >= 1) { p.at = p.next; p.next = null; p.t = 0; }
+      place(p);
+    });
+    if (changed) { readouts(); checkDone(); }
+    requestAnimationFrame(step);
+  }
+  function place(p) {
+    let x, y;
+    if (p.next) { const A = node(p.from), B = node(p.next); x = A.x + (B.x - A.x) * p.t; y = A.y + (B.y - A.y) * p.t; }
+    else { const A = node(p.at); x = A.x; y = A.y; }
+    const off = p.next ? 0 : (p.i - 2) * 6;
+    p.el.setAttribute("transform", `translate(${x + off},${y - (p.next ? 0 : 40)})`);
+    p.el.style.opacity = p.wait > 0 ? 0 : 1;
+  }
+  function arrive(p) {
+    p.done = p.arrived = true; p.el.style.display = "none";
+    const slot = $("inbox").children[p.i]; slot.textContent = p.ch; slot.classList.add("in");
+  }
+  function lose(p) {
+    p.done = true; p.el.classList.add("lost");
+    setTimeout(() => { p.el.style.display = "none"; }, 600);
+    const slot = $("inbox").children[p.i]; slot.textContent = "?"; slot.classList.add("lost");
+  }
+  function checkDone() {
+    if (!s.pkts.length || s.pkts.some(p => !p.done)) return;
+    const all = s.pkts.every(p => p.arrived), none = s.pkts.every(p => !p.arrived);
+    if (all) {
+      tasks.complete("skicka");
+      if (s.usedDetour) tasks.complete("omvag");
+      if (s.cutDuringFlight) tasks.complete("flygande");
+    } else if (none && s.noRoute) {
+      tasks.complete("isolera");
+      K.toast(K.t("Ingen väg fram. Så sårbart blir ett nät med för få kablar.", "No way through. That is how fragile a network with too few cables is."), "!");
+    }
+  }
+
+  $("send").addEventListener("click", send);
+  $("msg").addEventListener("keydown", e => { if (e.key === "Enter") send(); });
+  $("fix").addEventListener("click", () => { E.forEach(e => e.cut = false); drawLinks(); readouts(); });
+  K.onLang(() => { drawNodes(); drawLinks(); });
+
+  drawLinks(); drawNodes(); inbox("HEJ!"); readouts();
+  requestAnimationFrame(step);
+})();
+</script>
+</body>
+</html>
