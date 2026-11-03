@@ -27,6 +27,7 @@ och gå till <http://localhost:8000>.
 | [Robotens väg](mockups/moduler/robot-kod.html) | Mjukvara | Blockprogrammering, buggar, upprepning |
 | [Funktionsmaskinen](mockups/moduler/matte-maskin.html) | Matematik | Hitta den hemliga regeln, se linjen i grafen |
 | [Rumsläge](mockups/rum.html) | – | Storskärm för ledaren + deltagarmobil (simulerad) |
+| [Designmanual](mockups/designmanual.html) | – | Den nya visuella riktningen med levande komponenter (utkast) |
 
 Alla mockupar är ren HTML/CSS/JS utan byggsteg. De delar `mockups/shared/theme.css`
 (färger, typsnitt, komponenter) och `mockups/shared/kit.js` (språk, smeknamn, uppdrag, firande).
@@ -37,6 +38,8 @@ Alla mockupar är ren HTML/CSS/JS utan byggsteg. De delar `mockups/shared/theme.
 2. [Övningsbank](docs/02-ovningsbank.md): ~45 övningsidéer per område och samarbetsmönster för 5–75 personer
 3. [Samarbete och arkitektur](docs/03-samarbete-och-arkitektur.md): egen server eller GitHub Pages, offline på plats, GDPR, protokoll
 4. [Moduler skrivna av AI](docs/04-ai-forfattade-moduler.md): byggsats, modulformat, kvalitetskontroller, arbetsflöde
+5. [Fysiska enheter](docs/05-fysiska-enheter.md): mikrokontroller per modul, Verkstan-noden, hur den pratar med appen
+6. [Designmanual](docs/06-designmanual.md): granskning av AI-drag i mockuparna, färg, typografi, komponenter och språk
 
 ## GitHub Pages
 

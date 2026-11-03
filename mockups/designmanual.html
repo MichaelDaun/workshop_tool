@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verkstans designmanual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<style>
+/* Layout: ett dokument på papper, varje avsnitt är en "bänk" med rutnät där exemplen ligger. */
+:root {
+  --papper: #f3f4f1; --ark: #ffffff; --rutnat: #e4e7e3; --linje: #cdd2cd;
+  --blyerts: #5b6360; --grafit: #1c2120; --pa-grafit: #ffffff;
+  --el: #d99a00; --logik: #16899b; --signal: #6a4fd8; --ai: #c8417a; --nat: #2d6bd2; --kod: #3f8a3a; --matte: #d9631c;
+  --tejp: #f2c200;
+  --aktiv: var(--el);
+  --text: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --siffror: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, monospace;
+  --kort: 150ms; --lugn: 220ms; --broms: cubic-bezier(.2, .7, .2, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papper: #121514; --ark: #1a1e1d; --rutnat: #242a28; --linje: #343b38;
+    --blyerts: #9aa39f; --grafit: #e8ece9; --pa-grafit: #121514;
+    --el: #f2b630; --logik: #3cc0d0; --signal: #9b86ff; --ai: #f06aa2; --nat: #6a9cff; --kod: #6cc466; --matte: #ff8f4a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papper: #121514; --ark: #1a1e1d; --rutnat: #242a28; --linje: #343b38;
+  --blyerts: #9aa39f; --grafit: #e8ece9; --pa-grafit: #121514;
+  --el: #f2b630; --logik: #3cc0d0; --signal: #9b86ff; --ai: #f06aa2; --nat: #6a9cff; --kod: #6cc466; --matte: #ff8f4a;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--papper); color: var(--grafit);
+  font-family: var(--text); font-size: 17px; line-height: 1.55;
+}
+.sida {
+  max-width: 1080px; margin: 0 auto;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; font-weight: 800; }
+h1 { font-size: clamp(2rem, 1.4rem + 2.4vw, 3rem); letter-spacing: -.015em; }
+h2 { font-size: 1.75rem; letter-spacing: -.01em; }
+h3 { font-size: 1.15rem; font-weight: 700; }
+p { margin: 0; max-width: 62ch; }
+.liten { font-size: 14px; color: var(--blyerts); }
+.siffra { font-family: var(--siffror); font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 3px solid var(--grafit); outline-offset: 2px; }
+a { color: inherit; }
+
+/* toppfält */
+.topp { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--linje); }
+.topp a { text-decoration: none; display: inline-flex; gap: 8px; align-items: center; font-weight: 700; }
+.verktyg { display: flex; gap: 8px; }
+
+/* avsnitt */
+section { display: grid; gap: 18px; padding-block: 40px; border-bottom: 1px solid var(--linje); }
+.ingress { display: grid; gap: 8px; }
+
+/* bänken: rutnät som på en skärmatta */
+.bank {
+  background-color: var(--ark);
+  background-image:
+    linear-gradient(var(--rutnat) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rutnat) 1px, transparent 1px);
+  background-size: 20px 20px;
+  border: 1px solid var(--linje); border-radius: 10px;
+  padding: 20px; min-width: 0;
+}
+.bank.slat { background-image: none; }
+.rad { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; }
+.galler { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.galler > * { min-width: 0; }
+
+/* ---------- komponenter ---------- */
+.knapp {
+  display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 18px;
+  border-radius: 6px; border: 1px solid var(--grafit); background: var(--grafit); color: var(--pa-grafit);
+  font: inherit; font-weight: 700; cursor: pointer; transition: transform var(--kort) var(--broms);
+}
+.knapp:active { transform: translateY(1px); }
+.knapp.sekundar { background: transparent; color: var(--grafit); }
+.knapp svg { width: 18px; height: 18px; }
+
+/* fader */
+.fader { display: grid; gap: 4px; min-width: 240px; flex: 1; }
+.fader .etikett { display: flex; justify-content: space-between; font-size: 14px; color: var(--blyerts); }
+.fader .etikett output { font-family: var(--siffror); color: var(--grafit); font-size: 16px; }
+.fader input { -webkit-appearance: none; appearance: none; width: 100%; height: 36px; background: transparent; cursor: pointer; margin: 0; }
+.fader input::-webkit-slider-runnable-track { height: 4px; background: var(--grafit); border-radius: 2px; }
+.fader input::-moz-range-track { height: 4px; background: var(--grafit); border-radius: 2px; }
+.fader input::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 30px; margin-top: -13px; border-radius: 4px; background: var(--ark); border: 2px solid var(--grafit); box-shadow: inset 0 -6px 0 var(--aktiv); }
+.fader input::-moz-range-thumb { width: 14px; height: 26px; border-radius: 4px; background: var(--ark); border: 2px solid var(--grafit); box-shadow: inset 0 -6px 0 var(--aktiv); }
+.skala { display: flex; justify-content: space-between; padding: 0 8px; }
+.skala i { width: 1px; height: 7px; background: var(--blyerts); }
+.skala i:nth-child(5n+1) { height: 11px; }
+.skalsiffror { display: flex; justify-content: space-between; font-family: var(--siffror); font-size: 12px; color: var(--blyerts); padding: 0 4px; }
+
+/* vippbrytare */
+.vippa { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; background: none; border: 0; font: inherit; color: inherit; padding: 0; }
+.vippa svg { width: 64px; height: 40px; }
+.vippa .hus { fill: var(--ark); stroke: var(--grafit); stroke-width: 2; }
+.vippa .arm { fill: var(--grafit); transition: transform var(--lugn) var(--broms); transform-origin: 32px 20px; transform: rotate(-12deg); }
+.vippa[aria-checked="true"] .arm { transform: rotate(12deg); fill: var(--aktiv); }
+.vippa text { font-family: var(--siffror); font-size: 10px; fill: var(--blyerts); }
+
+/* stegare */
+.stegare { display: inline-flex; align-items: stretch; border: 1px solid var(--grafit); border-radius: 6px; overflow: hidden; height: 48px; }
+.stegare button { width: 48px; border: 0; background: var(--ark); color: var(--grafit); font-size: 22px; cursor: pointer; font-family: var(--siffror); }
+.stegare button:active { background: var(--rutnat); }
+.stegare output { min-width: 64px; display: grid; place-items: center; border-inline: 1px solid var(--grafit); font-family: var(--siffror); font-size: 18px; }
+
+/* mätare */
+.matare { display: grid; gap: 2px; padding: 10px 14px; border: 1px solid var(--grafit); border-radius: 6px; background: var(--ark); min-width: 120px; }
+.matare .v { font-family: var(--siffror); font-size: 28px; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.matare .v small { font-size: 18px; color: var(--blyerts); margin-left: 4px; }
+.matare .n { font-size: 14px; color: var(--blyerts); }
+
+/* protokoll */
+.protokoll { list-style: none; margin: 0; padding: 0; display: grid; }
+.protokoll li { display: grid; grid-template-columns: 28px 1fr 24px; gap: 10px; align-items: center; padding: 10px 0 10px 12px; border-top: 1px solid var(--rutnat); position: relative; }
+.protokoll li:last-child { border-bottom: 1px solid var(--rutnat); }
+.protokoll .nr { font-family: var(--siffror); color: var(--blyerts); }
+.protokoll li.nasta::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 2px; background: var(--grafit); }
+.protokoll li.nasta { font-weight: 700; }
+.protokoll li.klar { color: var(--blyerts); }
+.protokoll .bock { width: 24px; height: 24px; }
+.protokoll .bock path { fill: none; stroke: var(--aktiv); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; stroke-dashoffset: 0; }
+.protokoll li.ritas .bock path { animation: rita .4s var(--broms) both; }
+@keyframes rita { from { stroke-dashoffset: 24; } }
+
+/* varningstejp */
+.tejp {
+  display: flex; gap: 12px; align-items: center; padding: 10px 14px 10px 0; border-radius: 6px; background: var(--ark); border: 1px solid var(--grafit); overflow: hidden;
+}
+.tejp::before { content: ""; align-self: stretch; width: 28px; margin: -10px 0; background: repeating-linear-gradient(-45deg, #1c2120 0 7px, var(--tejp) 7px 14px); }
+
+/* färgprover */
+.prov { display: grid; gap: 6px; }
+.prov .yta { height: 64px; border-radius: 6px; border: 1px solid var(--linje); }
+.prov b { font-size: 15px; }
+.prov span { font-family: var(--siffror); font-size: 13px; color: var(--blyerts); }
+.amnen { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+.amne { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--rutnat); }
+.amne svg { width: 26px; height: 26px; }
+.amne svg * { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* typografi */
+.typrad { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 14px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--rutnat); }
+.typrad .liten { font-family: var(--siffror); font-size: 13px; }
+@media (max-width: 560px) { .typrad { grid-template-columns: minmax(0, 1fr); gap: 2px; } }
+
+/* ikoner */
+.ikoner { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+.ikon { display: grid; justify-items: center; gap: 6px; padding: 12px 4px; font-size: 13px; color: var(--blyerts); }
+.ikon svg { width: 40px; height: 40px; }
+.ikon svg * { fill: none; stroke: var(--grafit); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* före/efter */
+.jamfor { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 700px) { .jamfor { grid-template-columns: minmax(0, 1fr); } }
+.jamfor .rubrik { font-size: 14px; color: var(--blyerts); margin-bottom: 8px; display: flex; gap: 8px; align-items: center; }
+.jamfor .rubrik svg { width: 18px; height: 18px; }
+.sprak { width: 100%; border-collapse: collapse; }
+.sprak td { padding: 12px 10px; border-top: 1px solid var(--rutnat); vertical-align: top; width: 50%; }
+.sprak td:first-child { color: var(--blyerts); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--blyerts) 60%, transparent); }
+.sprak-wrap { overflow-x: auto; }
+
+/* gamla stilen (för jämförelse) */
+.gammal { font-family: system-ui, sans-serif; background: #eef3f6; border-radius: 22px; padding: 16px; color: #142231; }
+.gammal .eb { font: 12px ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: #4e6072; }
+.gammal .kortet { background: #fff; border-radius: 14px; padding: 14px; box-shadow: 0 1px 2px rgb(20 34 49 / .06), 0 8px 24px rgb(20 34 49 / .08); display: grid; gap: 8px; }
+.gammal .uppg { display: flex; gap: 8px; align-items: center; background: #fdf3dc; border-radius: 8px; padding: 8px 10px; font-size: 14px; }
+.gammal .uppg i { width: 22px; height: 22px; border-radius: 50%; background: #e89a00; color: #fff; display: grid; place-items: center; font-style: normal; font-size: 12px; }
+.gammal .piller { display: flex; gap: 6px; }
+.gammal .piller span { border-radius: 999px; background: #e3eaef; font-size: 12px; padding: 3px 9px; }
+.gammal .toast { background: #142231; color: #fff; border-radius: 14px; padding: 10px 14px; font-weight: 600; font-size: 14px; }
+.gammal-tema { color: #142231; }
+
+/* scenexempel */
+#krets { width: 100%; height: auto; display: block; max-width: 560px; }
+#krets .tråd { fill: none; stroke: var(--grafit); stroke-width: 3; stroke-linejoin: round; }
+#krets .del { fill: var(--ark); stroke: var(--grafit); stroke-width: 3; stroke-linejoin: round; }
+#krets .e { fill: var(--aktiv); }
+#krets text { font-family: var(--siffror); font-size: 14px; fill: var(--blyerts); }
+#krets .lbl { font-family: var(--text); font-size: 15px; font-weight: 700; fill: var(--grafit); }
+
+/* noden */
+#nod { width: 100%; max-width: 360px; height: auto; display: block; }
+#nod .lada { fill: var(--kod); }
+#nod .lock { fill: var(--grafit); }
+#nod .led { fill: var(--linje); transition: fill var(--lugn); }
+#nod .led.pa { fill: var(--kod); }
+#nod text { font-family: var(--text); font-weight: 700; fill: var(--pa-grafit); }
+#nod .knapp-n { fill: var(--pa-grafit); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<div class="sida">
+  <header class="topp">
+    <a href="index.html">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3.5 5.5 9l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Verkstan
+    </a>
+    <div class="verktyg">
+      <button class="knapp sekundar" id="tema" type="button" style="height:40px">Ljust / mörkt</button>
+    </div>
+  </header>
+
+  <section>
+    <div class="ingress">
+      <p class="liten">Designmanual, utkast 1</p>
+      <h1>Verkstan ser ut som en arbetsbänk</h1>
+      <p>Det man arbetar med ligger på en yta med rutnät. Kontrollerna ser ut som instrument. Färg används bara för det som är aktivt just nu. Dra i reglaget nedanför.</p>
+    </div>
+    <div class="bank">
+      <svg id="krets" viewBox="0 0 560 230" role="img" aria-label="En krets med batteri, motstånd och lampa ritad som ett kopplingsschema">
+        <path id="slinga" class="tråd" d="M80,115 V40 H480 V190 H80 Z"/>
+        <g id="elektroner"></g>
+        <rect class="del" x="60" y="85" width="40" height="60" rx="4"/>
+        <path d="M70 100 h20 M75 112 h10 M70 124 h20 M75 136 h10" stroke="var(--grafit)" stroke-width="3"/>
+        <text class="lbl" x="20" y="72">Batteri</text>
+        <rect class="del" x="230" y="28" width="100" height="24" rx="4"/>
+        <text class="lbl" x="280" y="18" text-anchor="middle">Motstånd</text>
+        <text x="280" y="76" text-anchor="middle" id="r-text">10 Ω</text>
+        <circle id="sken" cx="480" cy="115" r="70" fill="var(--aktiv)" opacity=".2"/>
+        <circle class="del" cx="480" cy="115" r="26"/>
+        <path d="M470 115 l5 -8 l5 8 l5 -8" fill="none" stroke="var(--grafit)" stroke-width="2.5"/>
+        <text class="lbl" x="480" y="168" text-anchor="middle">Lampa</text>
+      </svg>
+      <div class="rad" style="margin-top:14px">
+        <div class="matare"><span class="v siffra" id="m-i">0,46<small>A</small></span><span class="n">Ström</span></div>
+        <div class="fader">
+          <div class="etikett"><label for="f-r">Motstånd</label><output id="o-r">10 Ω</output></div>
+          <input type="range" id="f-r" min="1" max="20" step="1" value="10">
+          <div class="skala" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="skalsiffror" aria-hidden="true"><span>1</span><span>5</span><span>10</span><span>15</span><span>20</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="liten">Rutnätet, schemat och mätaren kommer från elektronikverkstaden. Bara strömmen och lampans sken har färg, och elektronernas fart följer strömmen.</p>
+  </section>
+
+  <section>
+    <div class="ingress">
+      <h2>Principer</h2>
+    </div>
+    <div class="galler">
+      <div><h3>Scenen är bänken</h3><p class="liten" style="margin-top:6px">Scenen tar minst 60 % av bredden. Toppfält och panel är tysta verktyg runt omkring.</p></div>
+      <div><h3>Kontroller är instrument</h3><p class="liten" style="margin-top:6px">Reglage har skala och enhet. Brytare är vippor. Värden står som på en multimeter.</p></div>
+      <div><h3>Färg är signal</h3><p class="liten" style="margin-top:6px">Modulens färg sitter på det som är aktivt. Allt annat är grafit och papper.</p></div>
+      <div><h3>Belöningen sker i scenen</h3><p class="liten" style="margin-top:6px">Lampan blinkar till, roboten snurrar. Ingen konfetti och inga notiser över innehållet.</p></div>
+      <div><h3>Beskriv världen</h3><p class="liten" style="margin-top:6px">Texten säger vad som hände, inte hur duktig deltagaren är.</p></div>
+      <div><h3>En familj typsnitt</h3><p class="liten" style="margin-top:6px">Atkinson Hyperlegible är gjord för att vara lätt att läsa. Den räcker till allt.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="ingress">
+      <h2>Färg</h2>
+      <p>Neutralerna har en svag grön ton, som en skärmatta. Ämnesfärgerna används för att hitta rätt och för att visa vad som är aktivt. Inne i en modul syns bara modulens egen färg.</p>
+    </div>
+    <div class="galler" id="neutraler"></div>
+    <div class="bank slat">
+      <h3 style="margin-bottom:6px">Ämnesfärger</h3>
+      <div class="amnen" id="amnen"></div>
+    </div>
+    <div class="galler">
+      <div class="bank slat" style="display:grid; gap:10px">
+        <h3>Klart</h3>
+        <div class="rad" style="gap:10px"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7" fill="none" stroke="var(--aktiv)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Bock i modulens färg</span></div>
+        <p class="liten">Följs alltid av en reaktion i scenen.</p>
+      </div>
+      <div class="bank slat" style="display:grid; gap:10px">
+        <h3>Fara</h3>
+        <div class="tejp"><span>Lampan tål högst 1,6 A.</span></div>
+        <p class="liten">Varningstejp, inte rött. Fungerar för färgblinda och krockar inte med ämnesfärgerna.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="ingress">
+      <h2>Typografi</h2>
+      <p>Atkinson Hyperlegible Next för all text och Atkinson Hyperlegible Mono för värden och enheter. Familjen är framtagen av Braille Institute för att bokstäver som l, I och 1 aldrig ska förväxlas.</p>
+    </div>
+    <div class="bank slat">
+      <div class="typrad"><span class="liten">Rubrik 1 · 44/800</span><span style="font-size:44px; font-weight:800; line-height:1.1">Lagom ljus</span></div>
+      <div class="typrad"><span class="liten">Rubrik 2 · 28/800</span><span style="font-size:28px; font-weight:800">Strömkretsen</span></div>
+      <div class="typrad"><span class="liten">Rubrik 3 · 20/700</span><span style="font-size:20px; font-weight:700">Vad hände?</span></div>
+      <div class="typrad"><span class="liten">Brödtext · 17/400</span><span>Batterierna knuffar strömmen runt. Fler batterier ger mer knuff, det som kallas <b>spänning</b>.</span></div>
+      <div class="typrad"><span class="liten">Liten · 14/400</span><span class="liten" style="color:var(--blyerts)">Nu får du ändra motståndet.</span></div>
+      <div class="typrad"><span class="liten">Värde · Mono 28/600</span><span class="siffra" style="font-size:28px; font-weight:600">3,0 V &nbsp; 0,46 A &nbsp; 440 Hz &nbsp; Il1 O0</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="ingress">
+      <h2>Komponenter</h2>
+      <p>Alla kontroller är 48 px höga, har liten rundning och ingen skugga. Primärknappen är grafit. Modulens färg sitter på det man styr.</p>
+    </div>
+    <div class="galler">
+      <div class="bank slat" style="display:grid; gap:14px; align-content:start">
+        <h3>Knappar</h3>
+        <div class="rad">
+          <button class="knapp" type="button"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4 2.5v13l11-6.5z" fill="currentColor"/></svg>Kör</button>
+          <button class="knapp sekundar" type="button">Rensa</button>
+        </div>
+      </div>
+      <div class="bank slat" style="display:grid; gap:14px; align-content:start">
+        <h3>Vippbrytare och stegare</h3>
+        <div class="rad">
+          <button class="vippa" id="vippa" type="button" role="switch" aria-checked="false">
+            <svg viewBox="0 0 64 40" aria-hidden="true"><rect class="hus" x="1" y="4" width="62" height="32" rx="6"/><rect class="arm" x="14" y="14" width="36" height="12" rx="3"/><text x="6" y="34">0</text><text x="52" y="34">1</text></svg>
+            <span id="vippa-text">Av</span>
+          </button>
+          <div class="stegare"><button type="button" id="s-minus" aria-label="Färre batterier">−</button><output id="s-v">2</output><button type="button" id="s-plus" aria-label="Fler batterier">+</button></div>
+        </div>
+      </div>
+      <div class="bank slat" style="display:grid; gap:10px; align-content:start">
+        <h3>Mätare</h3>
+        <div class="rad">
+          <div class="matare"><span class="v">3,0<small>V</small></span><span class="n">Spänning</span></div>
+          <div class="matare"><span class="v">10<small>Ω</small></span><span class="n">Motstånd</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="galler">
+      <div class="bank slat">
+        <h3 style="margin-bottom:8px">Protokoll</h3>
+        <ol class="protokoll" id="protokoll">
+          <li class="klar"><span class="nr">1</span><span>Tänd lampan</span><svg class="bock" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></li>
+          <li class="nasta"><span class="nr">2</span><span>Gör lampan stark</span><span></span></li>
+          <li><span class="nr">3</span><span>Lagom ljus med 4 batterier</span><span></span></li>
+          <li><span class="nr">4</span><span>Se kretsen som vatten</span><span></span></li>
+        </ol>
+        <button class="knapp sekundar" id="nasta-steg" type="button" style="margin-top:12px; height:40px">Klara nästa steg</button>
+      </div>
+      <div class="bank slat" style="display:grid; gap:10px; align-content:start">
+        <h3>Återkoppling</h3>
+        <p>Lampan lyser. 0,9 A går genom tråden.</p>
+        <p>Det var ett äpple. Maskinen har inga gröna äpplen bland sina exempel.</p>
+        <div class="tejp"><span>Poff. Lampan tålde inte strömmen. Byt lampa.</span></div>
+        <p class="liten">Återkoppling står i scenen, nära det den gäller. Inte som notis i skärmens nederkant.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="ingress">
+      <h2>Ikoner</h2>
+      <p>Rutnät på 24 px, linjer på 2 px med runda ändar. Samma stil i appen, på kartan och på lådornas lock.</p>
+    </div>
+    <div class="bank slat ikoner" id="ikoner"></div>
+  </section>
+
+  <section>
+    <div class="ingress">
+      <h2>Före och efter</h2>
+      <p>Samma uppdragsruta i de första mockuparna och enligt manualen.</p>
+    </div>
+    <div class="jamfor">
+      <div>
+        <div class="rubrik"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4 4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Före</div>
+        <div class="gammal">
+          <div class="kortet">
+            <div class="eb">Grundläggande ellära · ~10 min</div>
+            <b style="font-size:20px">Få det att lysa</b>
+            <div class="uppg"><i>✓</i>Tänd lampan</div>
+            <div class="piller"><span>10 min</span><span>Solo · Lag</span><span>Mobil &amp; dator</span></div>
+            <div class="toast">✓ Tänd lampan</div>
+          </div>
+        </div>
+        <p class="liten" style="margin-top:8px">Versal etikett, skuggat kort, tonad yta, piller och en notis som upprepar det som redan syns.</p>
+      </div>
+      <div>
+        <div class="rubrik"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3.5 9.5 7.5 13.5 14.5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Efter</div>
+        <div class="bank slat" style="display:grid; gap:10px">
+          <p class="liten">Ellära, ungefär 10 minuter</p>
+          <h3 style="font-size:20px; font-weight:800">Få det att lysa</h3>
+          <ol class="protokoll">
+            <li class="klar"><span class="nr">1</span><span>Tänd lampan</span><svg class="bock" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg></li>
+            <li class="nasta"><span class="nr">2</span><span>Gör lampan stark</span><span></span></li>
+          </ol>
+          <p class="liten">Fungerar på mobil och dator. Ensam eller i lag.</p>
+        </div>
+        <p class="liten" style="margin-top:8px">Vanlig text, en linje markerar nästa steg, metadata som en mening.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="ingress">
+      <h2>Språk</h2>
+      <p>Vi skriver som en bra slöjdlärare pratar: kort, konkret och vänligt. Deltagarna är vuxna. Här är texter ur de första mockuparna och hur de skrivs enligt manualen.</p>
+    </div>
+    <div class="bank slat sprak-wrap">
+      <table class="sprak">
+        <tbody>
+          <tr><td>Prova. Se. Förstå.</td><td>Sju verkstäder om tekniken omkring dig</td></tr>
+          <tr><td>Jag tror: Citron (67 %)</td><td>Maskinens gissning: citron, 67 %</td></tr>
+          <tr><td>Rätt! Det var ett äpple.</td><td>Det var ett äpple. Gissningen stämde.</td></tr>
+          <tr><td>Aj! Där var en bugg. Ändra programmet och prova igen.</td><td>Roboten körde in i ett träd. Ändra programmet och kör igen.</td></tr>
+          <tr><td>Du tänker redan som en datorkonstruktör.</td><td>Alla gåtor lösta.</td></tr>
+          <tr><td>Var snabb!</td><td>Medan paketen fortfarande är på väg.</td></tr>
+          <tr><td>ALLT HÄNGER IHOP · TRYCK PÅ EN BUBBLA</td><td>Tryck på ett område för att öppna det.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="galler">
+      <div><h3>Undvik</h3><p class="liten" style="margin-top:6px">magisk, resa (om lärande), utforska och upptäck som utfyllnad, dyk ner, låt oss, kraftfull, sömlös, superenkelt, värt att notera, fantastiskt.</p></div>
+      <div><h3>Gör så här</h3><p class="liten" style="margin-top:6px">Verb först i instruktioner. Vardagsord först, fackord sedan. Inga utropstecken. Maskiner talar inte i jag-form.</p></div>
+      <div><h3>Svensk typografi</h3><p class="liten" style="margin-top:6px">”Citattecken”, decimalkomma, mellanslag före enhet (3,0 V), tankstreck i intervall (10–15 min).</p></div>
+    </div>
+  </section>
+
+  <section style="border-bottom:0">
+    <div class="ingress">
+      <h2>Fysiska enheter</h2>
+      <p>Lådorna på bordet följer samma manual. Lådan har modulens färg, locket är grafit och numret på locket är samma som i appens rumsvy. Tryck på knapparna.</p>
+    </div>
+    <div class="bank" style="display:grid; place-items:center">
+      <svg id="nod" viewBox="0 0 360 220" role="img" aria-label="En Verkstan-nod: en grön låda med LED-ring och två knappar">
+        <rect class="lada" x="30" y="40" width="300" height="160" rx="14"/>
+        <rect class="lock" x="42" y="30" width="276" height="150" rx="10"/>
+        <g id="ring"></g>
+        <circle class="knapp-n" id="nod-a" cx="230" cy="92" r="18" style="cursor:pointer"/>
+        <circle class="knapp-n" id="nod-b" cx="276" cy="92" r="18" style="cursor:pointer"/>
+        <text x="230" y="134" text-anchor="middle" font-size="14">A</text>
+        <text x="276" y="134" text-anchor="middle" font-size="14">B</text>
+        <text x="62" y="166" font-size="13">Robotens väg</text>
+        <text x="298" y="166" text-anchor="end" font-size="13" style="font-family:var(--siffror)">07</text>
+      </svg>
+    </div>
+    <p class="liten">LED-ringen betyder samma sak som skärmen: modulens färg för aktivt, ett kort vitt blink för klart och gult–svart för fara.</p>
+  </section>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const fmt = (v, d) => v.toFixed(d).replace(".", ",");
+  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+
+  /* tema */
+  const saved = store.get("verkstan.theme");
+  if (saved) document.documentElement.setAttribute("data-theme", JSON.parse(saved));
+  $("tema").addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const next = cur === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next); store.set("verkstan.theme", JSON.stringify(next));
+  });
+
+  /* kretsen */
+  const loop = $("slinga"), L = loop.getTotalLength();
+  const dots = Array.from({ length: 22 }, () => { const c = document.createElementNS(NS, "circle"); c.setAttribute("r", 4.5); c.setAttribute("class", "e"); $("elektroner").append(c); return c; });
+  let R = 10, off = 0, last = performance.now();
+  const current = () => 6 / (R + 3);
+  function paint() {
+    $("o-r").textContent = R + " Ω"; $("r-text").textContent = R + " Ω";
+    $("m-i").innerHTML = fmt(current(), 2) + "<small>A</small>";
+    $("sken").setAttribute("opacity", Math.min(.55, current() * .35).toFixed(2));
+  }
+  $("f-r").addEventListener("input", e => { R = +e.target.value; paint(); });
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function frame(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (!still) off = (off + current() * 120 * dt) % L;
+    dots.forEach((d, i) => { const p = loop.getPointAtLength((off + i * L / dots.length) % L); d.setAttribute("cx", p.x); d.setAttribute("cy", p.y); });
+    requestAnimationFrame(frame);
+  }
+  paint(); requestAnimationFrame(frame);
+
+  /* färger */
+  const cs = () => getComputedStyle(document.documentElement);
+  const NEUTRAL = [["--papper", "Papper", "Sidans bakgrund"], ["--ark", "Ark", "Scen och paneler"], ["--rutnat", "Rutnät", "Rutnät, avdelare"], ["--linje", "Linje", "Kanter, inaktivt"], ["--blyerts", "Blyerts", "Sekundär text"], ["--grafit", "Grafit", "Text, linjer, knappar"]];
+  const ICON = {
+    el: '<path d="M13 3 5 13h6l-1 8 8-11h-6z"/>',
+    logik: '<path d="M5 5h7a7 7 0 0 1 0 14H5z"/><path d="M2 9h3M2 15h3M19 12h3"/>',
+    signal: '<path d="M2 12c2.5-7 5-7 7.5 0s5 7 7.5 0 3.5-5 5-3"/>',
+    ai: '<circle cx="6" cy="7" r="2.5"/><circle cx="18" cy="7" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.5 7h7M7.2 9.2l3.6 6.6M16.8 9.2l-3.6 6.6"/>',
+    nat: '<rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="3" width="6" height="6" rx="1.5"/><rect x="9" y="15" width="6" height="6" rx="1.5"/><path d="M9 6h6M6 9l4.5 6M18 9l-4.5 6"/>',
+    kod: '<rect x="4" y="6" width="16" height="13" rx="3"/><path d="M12 6V3M9 12h.01M15 12h.01M9 16h6"/>',
+    matte: '<path d="M3 3v18h18"/><path d="M6 17 18 6"/><circle cx="9" cy="14.2" r="1.2"/><circle cx="14" cy="9.6" r="1.2"/>'
+  };
+  const AMNEN = [["el", "Ellära"], ["logik", "Digital logik"], ["signal", "Signalteknik"], ["ai", "AI & ML"], ["nat", "Nätverk"], ["kod", "Mjukvara"], ["matte", "Matematik"]];
+  function renderColors() {
+    const c = cs();
+    $("neutraler").innerHTML = NEUTRAL.map(([t, n, u]) => `<div class="prov"><div class="yta" style="background:var(${t})"></div><b>${n}</b><span>${t} ${c.getPropertyValue(t).trim()}</span><span style="font-family:var(--text)">${u}</span></div>`).join("");
+    $("amnen").innerHTML = AMNEN.map(([k, n]) => `<div class="amne"><svg viewBox="0 0 24 24" aria-hidden="true" style="stroke:var(--${k})">${ICON[k]}</svg><div><b style="font-size:15px">${n}</b><div class="liten siffra">--${k} ${c.getPropertyValue("--" + k).trim()}</div></div></div>`).join("");
+  }
+  renderColors();
+  new MutationObserver(renderColors).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderColors);
+
+  /* ikoner */
+  const MORE = {
+    "Lampa": '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
+    "Batteri": '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10v4M7 12h4M9 10v4"/>',
+    "Bock": '<path d="M5 12.5 10 17 19 7"/>',
+    "Kryss": '<path d="M6 6l12 12M18 6 6 18"/>',
+    "Spela": '<path d="M7 4.5v15l12-7.5z"/>',
+    "Tillbaka": '<path d="M14 5 7 12l7 7"/>'
+  };
+  $("ikoner").innerHTML = [...AMNEN.map(([k, n]) => [n, ICON[k]]), ...Object.entries(MORE)].map(([n, d]) => `<div class="ikon"><svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>${n}</div>`).join("");
+
+  /* vippa och stegare */
+  $("vippa").addEventListener("click", e => { const b = e.currentTarget, on = b.getAttribute("aria-checked") !== "true"; b.setAttribute("aria-checked", on); $("vippa-text").textContent = on ? "På" : "Av"; });
+  let n = 2;
+  $("s-minus").addEventListener("click", () => { n = Math.max(1, n - 1); $("s-v").textContent = n; });
+  $("s-plus").addEventListener("click", () => { n = Math.min(6, n + 1); $("s-v").textContent = n; });
+
+  /* protokoll */
+  $("nasta-steg").addEventListener("click", () => {
+    const items = [...$("protokoll").children];
+    const i = items.findIndex(li => li.classList.contains("nasta"));
+    if (i < 0) { items.forEach((li, j) => { li.className = j === 0 ? "nasta" : ""; li.lastElementChild.outerHTML = "<span></span>"; }); return; }
+    const li = items[i];
+    li.className = "klar ritas";
+    li.lastElementChild.outerHTML = '<svg class="bock" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg>';
+    if (items[i + 1]) items[i + 1].className = "nasta";
+  });
+
+  /* noden */
+  const ring = $("ring"), leds = [];
+  for (let i = 0; i < 12; i++) {
+    const a = i / 12 * Math.PI * 2 - Math.PI / 2;
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", 120 + Math.cos(a) * 46); c.setAttribute("cy", 100 + Math.sin(a) * 46); c.setAttribute("r", 7); c.setAttribute("class", "led");
+    ring.append(c); leds.push(c);
+  }
+  let lit = 4; const show = () => leds.forEach((l, i) => l.classList.toggle("pa", i < lit));
+  show();
+  $("nod-a").addEventListener("click", () => { lit = Math.max(0, lit - 1); show(); });
+  $("nod-b").addEventListener("click", () => { lit = Math.min(12, lit + 1); show(); });
+})();
+</script>
+</body>
+</html>
