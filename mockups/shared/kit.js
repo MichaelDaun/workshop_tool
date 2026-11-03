@@ -153,7 +153,7 @@
         // har sidan just skrivit en egen mening behålls den, och steget läggs till efter
         const steg = t(`Steg ${i + 1} av ${list.length} klart.`, `Step ${i + 1} of ${list.length} done.`);
         const nyss = performance.now() - senast.tid < 60 && senast.msg && !/^(Steg|Step) \d/.test(senast.msg);
-        status(nyss ? senast.msg + " " + steg : steg, nyss && senast.kind === "fara" ? "fara" : "klar");
+        status(nyss ? senast.msg.replace(/([^.?])$/, "$1.") + " " + steg : steg, nyss && senast.kind === "fara" ? "fara" : "klar");
         if (opts.onComplete) opts.onComplete(id);
         if (done.size === list.length && opts.onAllDone) setTimeout(opts.onAllDone, 600);
         return true;
@@ -171,17 +171,15 @@
       <h3>${t("På bordet", "On the table")}</h3>
       <p class="lada-status"><i aria-hidden="true"></i><span></span></p>
       <div class="ritning">${o.svg}</div>
-      <p class="delar"></p>
       <button class="btn ghost" type="button"></button>`;
     const st = container.querySelector(".lada-status span"), btn = container.querySelector(".btn");
     let on = false;
     function paint() {
       container.classList.toggle("ansluten", on);
       st.textContent = on
-        ? t(`${nod} ansluten via wifi (simulerat)`, `${nod} connected over wifi (simulated)`)
-        : t("Ingen låda ansluten. Ritningen visar hur den skulle reagera.", "No box connected. The drawing shows how it would react.");
+        ? t(`${nod} ansluten (simulerat)`, `${nod} connected (simulated)`)
+        : t("Ingen låda ansluten", "No box connected");
       btn.textContent = on ? t("Koppla från", "Disconnect") : t("Anslut låda", "Connect box");
-      container.querySelector(".delar").textContent = t(o.delar);
       container.querySelector("h3").textContent = t("På bordet", "On the table");
     }
     btn.addEventListener("click", () => { on = !on; paint(); if (o.onConnect) o.onConnect(on); });

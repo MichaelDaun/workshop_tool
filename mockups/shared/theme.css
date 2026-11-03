@@ -249,7 +249,7 @@ input[type="range"]::-moz-range-thumb {
 .lada.ansluten .lada-status i { background: var(--aktiv); border-color: var(--aktiv); }
 .lada .ritning { border: 1px solid var(--rutnat); border-radius: 6px; background: var(--ark); }
 .lada .ritning svg { display: block; width: 100%; height: auto; }
-.lada .delar { font-size: var(--fs-liten); color: var(--blyerts); margin: 10px 0; }
+.lada .ritning + .btn { margin-top: 10px; }
 .lada .btn { min-height: 40px; font-size: var(--fs-liten); }
 /* gemensamma ritelement för hårdvara */
 .hw-platta { fill: var(--ark); stroke: var(--linje); stroke-width: 1.5; }
@@ -266,3 +266,12 @@ input[type="range"]::-moz-range-thumb {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* ---------- Små hjälpare ---------- */
+.rad { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.rad.mellan { justify-content: space-between; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: var(--fs-liten); color: var(--blyerts); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.chip .bock { width: 16px; height: 16px; }
+.chip .bock path { fill: none; stroke: var(--aktiv); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.fritt { touch-action: manipulation; user-select: none; }

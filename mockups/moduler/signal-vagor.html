@@ -76,26 +76,20 @@
 
   <aside class="panel">
     <div class="mission" id="mission">
-      <p class="meta" data-en="Signals, about 12 minutes">Signalteknik, ungefär 12 minuter</p>
+      <p class="meta" data-en="Signals · 12 min">Signalteknik · 12 min</p>
       <h2 data-en="See what you hear">Se det du hör</h2>
-      <p class="lead" data-en="Press Play and move the sliders. Sound is air moving back and forth, and the line shows that movement.">Tryck på Spela och dra i reglagen. Ljud är luft som rör sig fram och tillbaka, och linjen visar rörelsen.</p>
+      <p class="lead" data-en="Press Play and move the sliders.">Tryck på Spela och dra i reglagen.</p>
     </div>
 
     <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="<b>Frequency</b> is how many times per second the air moves back and forth. More times per second gives a higher note. 440 Hz is the note A.">Hur många gånger per sekund luften rör sig fram och tillbaka kallas <b>frekvens</b>. Fler gånger per sekund ger en ljusare ton. 440 Hz är tonen A.</p>
-        <p data-en="<b>Amplitude</b> is how far it moves. Further means louder.">Hur långt den rör sig kallas <b>amplitud</b>. Längre betyder starkare ljud.</p>
-        <p data-en="Two waves add up. When one goes up exactly as the other goes down, they cancel out. Noise-cancelling headphones work this way.">Två vågor läggs ihop. När den ena går upp precis när den andra går ner tar de ut varandra. Brusreducerande hörlurar fungerar så.</p>
+        <p data-en="Sound is air moving back and forth. How often is the <b>frequency</b>, how far is the <b>amplitude</b>.">Ljud är luft som rör sig fram och tillbaka. Hur ofta kallas <b>frekvens</b>, hur långt kallas <b>amplitud</b>.</p>
+        <p data-en="If one wave goes up as the other goes down, it goes quiet. Noise-cancelling headphones work this way.">Går ena vågen upp när den andra går ner blir det tyst. Så fungerar brusreducerande hörlurar.</p>
       </div>
     </details>
 
     <div id="lada"></div>
-
-    <div>
-      <h3 style="font-size:var(--fs-r3)" data-en="As a team">I lag</h3>
-      <p class="liten" style="margin-top:6px" data-en="Each person controls one wave from their phone. Together they build a chord, or cancel a hum coming from the speaker on the table.">Varje person styr en våg från sin mobil. Tillsammans bygger de ett ackord, eller släcker ett brummande ljud från högtalaren på bordet.</p>
-    </div>
   </aside>
 </main>
 
@@ -109,13 +103,12 @@
   const tasks = K.tasks($("mission"), "signal", [
     { id: "spela", text: { sv: "Spela ett ljud", en: "Play a sound" } },
     { id: "hog",   text: { sv: "Gör tonen riktigt ljus", en: "Make the note really high" }, hint: { sv: "Över 600 Hz.", en: "Above 600 Hz." } },
-    { id: "match", text: { sv: "Lägg linjen på målvågen", en: "Lay the line on the target wave" }, hint: { sv: "Det breda, ljusa bandet.", en: "The wide, pale band." } },
-    { id: "tyst",  text: { sv: "Släck ljudet med en motvåg", en: "Cancel the sound with a counter-wave" }, hint: { sv: "Slå på våg B. Samma ton, samma styrka, sedan förskjutning.", en: "Turn on wave B. Same pitch, same loudness, then shift it." } }
+    { id: "match", text: { sv: "Lägg linjen på målvågen", en: "Lay the line on the target wave" }, hint: { sv: "Det breda bandet.", en: "The wide band." } },
+    { id: "tyst",  text: { sv: "Släck ljudet med en motvåg", en: "Cancel the sound with a counter-wave" }, hint: { sv: "Våg B: samma ton och styrka, sedan förskjutning.", en: "Wave B: same pitch and loudness, then shift." } }
   ]);
 
   K.lada($("lada"), {
     nod: "nod-03",
-    delar: { sv: "Pico W, liten förstärkare och högtalare, mikrofon MAX9814, 8 lysdioder som visar styrkan", en: "Pico W, small amplifier and speaker, MAX9814 microphone, 8 LEDs showing loudness" },
     svg: `<svg viewBox="0 0 300 140" role="img" aria-label="Högtalare och en stapel med lysdioder">
       <rect class="hw-platta" x="8" y="10" width="284" height="120" rx="6"/>
       <rect class="hw-kort" x="20" y="22" width="80" height="34" rx="4"/><text class="hw-text-ljus" x="30" y="43">PICO W</text>
@@ -182,9 +175,9 @@
     const cancelled = s.bOn && s.aa >= 0.3 && level / solo < 0.12;
     if (cancelled) tasks.complete("tyst");
 
-    if (!s.playing) K.status(K.t("Inget ljud spelas just nu.", "No sound is playing."));
-    else if (cancelled) K.status(K.t("Nästan tyst. Våg B går upp precis när våg A går ner.", "Almost silent. Wave B goes up exactly as wave A goes down."));
-    else K.status(K.t(`Högtalaren rör sig ${s.fa} gånger per sekund${s.bOn ? " plus våg B" : ""}.`, `The speaker moves ${s.fa} times per second${s.bOn ? " plus wave B" : ""}.`));
+    if (!s.playing) K.status(K.t("Tyst.", "Silent."));
+    else if (cancelled) K.status(K.t("Nästan tyst. Vågorna tar ut varandra.", "Almost silent. The waves cancel out."));
+    else K.status(K.t(`Högtalaren rör sig ${s.fa} gånger per sekund.`, `The speaker moves ${s.fa} times per second.`));
   }
   K.onLang(paint);
 

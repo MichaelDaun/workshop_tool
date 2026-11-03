@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Åtta lampor – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  .rum { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; padding: 18px 14px 14px; }
+  .mobil { display: grid; gap: 6px; justify-items: center; cursor: pointer; border: 0; background: none; padding: 0; }
+  .mobil .skarm { width: 100%; max-width: 64px; aspect-ratio: 9 / 16; border: 3px solid var(--grafit); border-radius: 8px; background: var(--ark); display: grid; place-items: center; transition: background var(--lugn); }
+  .mobil .skarm b { font-family: var(--siffror); font-size: 26px; font-weight: 600; }
+  .mobil[aria-pressed="true"] .skarm { background: var(--aktiv); color: var(--ark); }
+  .mobil .varde { font-family: var(--siffror); font-size: 15px; }
+  .mobil .namn { font-size: 12px; color: var(--blyerts); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  @media (max-width: 560px) { .mobil .namn { display: none; } .mobil .skarm b { font-size: 18px; } .rum { gap: 4px; padding: 12px 6px; } }
+  .tal { display: flex; gap: 24px; align-items: baseline; flex-wrap: wrap; }
+  .tal .stort { font-family: var(--siffror); font-size: 56px; font-weight: 600; line-height: 1; }
+</style>
+</head>
+<body data-domain="logik">
+<header class="topbar" data-title-sv="Åtta lampor" data-title-en="Eight lamps"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="scen"><div class="rum" id="rum"></div></div>
+    <p class="status" aria-live="polite" role="status"></p>
+    <div class="tal">
+      <span class="stort" id="tal">0</span>
+      <div class="readout" style="flex:0 1 160px"><span class="v" id="bokstav">–</span><span class="k" data-en="as a letter">som bokstav</span></div>
+    </div>
+    <div class="rad"><button class="btn ghost" id="noll" type="button" data-en="All off">Släck alla</button></div>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Digital logic · 10 min">Digital logik · 10 min</p>
+      <h2 data-en="The room counts in binary">Rummet räknar binärt</h2>
+      <p class="lead" data-en="Each phone is one lamp. Light the ones that add up to the number.">Varje mobil är en lampa. Tänd de som tillsammans blir talet.</p>
+    </div>
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="Each lamp is a <b>bit</b>, 1 or 0. Eight bits make a <b>byte</b>, enough for 0 to 255.">Varje lampa är en <b>bit</b>, 1 eller 0. Åtta bitar kallas en <b>byte</b> och räcker till 0–255.</p>
+        <p data-en="Letters are stored as numbers. 72 is H.">Bokstäver sparas som tal. 72 är H.</p>
+      </div>
+    </details>
+    <div id="lada"></div>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const VARDEN = [128, 64, 32, 16, 8, 4, 2, 1];
+  const namn = VARDEN.map((_, i) => i === 7 ? K.nick() : K.randomNick());
+  const bits = VARDEN.map(() => false);
+
+  const tasks = K.tasks($("mission"), "binart", [
+    { id: "fem",   text: { sv: "Visa talet 5", en: "Show the number 5" } },
+    { id: "hundra", text: { sv: "Visa 100", en: "Show 100" } },
+    { id: "max",   text: { sv: "Visa det största talet", en: "Show the largest number" } },
+    { id: "h",     text: { sv: "Skriv bokstaven H", en: "Write the letter H" } }
+  ]);
+
+  K.lada($("lada"), {
+    nod: "nod-08",
+    svg: `<svg viewBox="0 0 300 110" role="img" aria-label="Låda med åtta lampor och åtta knappar">
+      <rect class="hw-platta" x="8" y="8" width="284" height="94" rx="6"/>
+      ${VARDEN.map((v, i) => `<circle class="hw-led" id="hw-l${i}" cx="${36 + i * 33}" cy="36" r="9"/>
+        <rect class="hw-knapp" data-i="${i}" x="${24 + i * 33}" y="56" width="24" height="24" rx="4" fill="var(--ark)" stroke="var(--grafit)" stroke-width="2" style="cursor:pointer"/>
+        <text class="hw-text" x="${36 + i * 33}" y="96" text-anchor="middle">${v}</text>`).join("")}
+    </svg>`
+  });
+  document.querySelectorAll(".hw-knapp").forEach(k => k.addEventListener("click", () => flip(+k.dataset.i)));
+
+  const rum = $("rum");
+  VARDEN.forEach((v, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "mobil";
+    b.innerHTML = `<span class="skarm"><b>0</b></span><span class="varde">${v}</span><span class="namn">${namn[i]}</span>`;
+    b.addEventListener("click", () => flip(i));
+    rum.append(b);
+  });
+  function flip(i) { bits[i] = !bits[i]; paint(); }
+  $("noll").addEventListener("click", () => { bits.fill(false); paint(); });
+
+  function paint() {
+    const n = VARDEN.reduce((a, v, i) => a + (bits[i] ? v : 0), 0);
+    [...rum.children].forEach((b, i) => {
+      b.setAttribute("aria-pressed", bits[i]);
+      b.setAttribute("aria-label", `${VARDEN[i]}: ${bits[i] ? 1 : 0}`);
+      b.querySelector("b").textContent = bits[i] ? 1 : 0;
+      $("hw-l" + i).classList.toggle("pa", bits[i]);
+    });
+    $("tal").textContent = n;
+    $("bokstav").textContent = n >= 65 && n <= 90 ? String.fromCharCode(n) : "–";
+    const delar = VARDEN.filter((v, i) => bits[i]);
+    K.status(bits.map(b => b ? 1 : 0).join("") + (delar.length > 1 ? ` = ${delar.join(" + ")} = ${n}` : ` = ${n}`));
+    if (n === 5) tasks.complete("fem");
+    if (n === 100) tasks.complete("hundra");
+    if (n === 255) tasks.complete("max");
+    if (n === 72) tasks.complete("h");
+  }
+  K.onLang(paint);
+  paint();
+})();
+</script>
+</body>
+</html>

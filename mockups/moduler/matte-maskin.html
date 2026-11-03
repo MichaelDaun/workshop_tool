@@ -84,22 +84,19 @@
     </div>
     <p class="status" aria-live="polite" role="status"></p>
 
-    <span class="liten" data-en="Feed the machine a number">Mata maskinen med ett tal</span>
     <div class="knappsats" id="keypad"></div>
 
     <div class="tva">
       <div class="ruta">
-        <span class="liten" data-en="Every test becomes a dot">Varje test blir en prick</span>
-        <svg class="graph" id="graph" viewBox="0 0 320 240" role="img" aria-label="Graf över in- och utvärden" data-aria-en="Graph of in and out values"></svg>
+                <svg class="graph" id="graph" viewBox="0 0 320 240" role="img" aria-label="Graf över in- och utvärden" data-aria-en="Graph of in and out values"></svg>
       </div>
       <div class="ruta">
-        <span class="liten" data-en="Tests so far">Test hittills</span>
-        <table class="log" id="log"><thead><tr><th data-en="in">in</th><th data-en="out">ut</th><th data-en="your rule gives">din regel ger</th></tr></thead><tbody></tbody></table>
+                <table class="log" id="log"><thead><tr><th data-en="in">in</th><th data-en="out">ut</th><th data-en="your rule gives">din regel ger</th></tr></thead><tbody></tbody></table>
       </div>
     </div>
 
     <div class="ruta">
-      <span class="liten" data-en="Your guess at the rule">Din gissning på regeln</span>
+      <span class="liten" data-en="Your guess">Din gissning</span>
       <div class="regelbygge">
         <span data-en="out = in ×">ut = in ×</span>
         <span class="stegare"><button type="button" id="a-" aria-label="Minska gånger-talet" data-aria-en="Decrease the times number">−</button><output id="a">1</output><button type="button" id="a+" aria-label="Öka gånger-talet" data-aria-en="Increase the times number">+</button></span>
@@ -112,27 +109,21 @@
 
   <aside class="panel">
     <div class="mission" id="mission">
-      <p class="meta" data-en="Mathematics, about 10 minutes">Matematik, ungefär 10 minuter</p>
+      <p class="meta" data-en="Mathematics · 10 min">Matematik · 10 min</p>
       <h2 data-en="What does the machine do?">Vad gör maskinen?</h2>
-      <p class="lead" data-en="Put numbers in, watch what comes out and work out the rule inside.">Stoppa in tal, se vad som kommer ut och lista ut regeln där inne.</p>
+      <p class="lead" data-en="Put numbers in and work out the rule.">Stoppa in tal och lista ut regeln.</p>
     </div>
 
     <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="The machine is a <b>function</b>: a rule that turns one number into another.">Maskinen är en <b>funktion</b>: en regel som gör om ett tal till ett annat.</p>
-        <p data-en="The dots lie on a straight line. The times number decides how steep it is. The plus number decides where it crosses the left edge.">Prickarna ligger på en rak linje. Gånger-talet bestämmer hur brant den är. Plus-talet bestämmer var den korsar vänsterkanten.</p>
-        <div class="formula">ut = in × 2 + 1</div>
-        <p data-en="A taxi fare works the same way: a price per kilometre times the distance, plus a start fee.">En taxiresa fungerar likadant: ett pris per kilometer gånger sträckan, plus en startavgift.</p>
+        <p data-en="The machine is a <b>function</b>: a rule that turns numbers into numbers.">Maskinen är en <b>funktion</b>: en regel som gör om tal.</p>
+        <p class="formula" data-en="out = in × 2 + 1">ut = in × 2 + 1</p>
+        <p data-en="The dots land on a straight line. Times sets the slope, plus sets where it starts.">Prickarna hamnar på en rak linje. Gånger avgör lutningen, plus var den börjar.</p>
       </div>
     </details>
 
     <div id="lada"></div>
-
-    <div>
-      <h3 style="font-size:var(--fs-r3)" data-en="Team against team">Lag mot lag</h3>
-      <p class="liten" style="margin-top:6px" data-en="One team sets a secret rule in the box on the table. The other team cracks it with as few tests as they can. Then they swap.">Ett lag ställer in en hemlig regel i lådan på bordet. Det andra laget knäcker den med så få test som möjligt. Sedan byter de.</p>
-    </div>
   </aside>
 </main>
 
@@ -149,7 +140,7 @@
     { id: "mata", text: { sv: "Mata maskinen med tre tal", en: "Feed the machine three numbers" } },
     { id: "r1",   text: { sv: "Knäck maskin 1", en: "Crack machine 1" } },
     { id: "r2",   text: { sv: "Knäck maskin 2", en: "Crack machine 2" } },
-    { id: "alla", text: { sv: "Knäck alla fyra", en: "Crack all four" }, hint: { sv: "I de två sista används både gånger och plus.", en: "The last two use both times and plus." } }
+    { id: "alla", text: { sv: "Knäck alla fyra", en: "Crack all four" }, hint: { sv: "Gånger och plus.", en: "Times and plus." } }
   ]);
   const R = () => RULES[s.lvl];
   const solved = () => K.store.get("matte-solved", []);
@@ -161,7 +152,6 @@
   /* ---- lådan: vred in, två displayer, ett lock som servot lyfter ---- */
   K.lada($("lada"), {
     nod: "nod-07",
-    delar: { sv: "Pico W, vridomkopplare KY-040, två 4-siffriga displayer TM1637, servo SG90 som lyfter locket, en hemlig regel som ställs in från ledarvyn", en: "Pico W, KY-040 rotary encoder, two 4-digit TM1637 displays, SG90 servo that lifts the lid, a secret rule set from the leader view" },
     svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Låda med vred och två sifferdisplayer">
       <rect class="hw-platta" x="8" y="8" width="284" height="134" rx="6"/>
       <g id="hw-lock" style="transform-origin:60px 36px;transition:transform .8s var(--broms)"><rect x="56" y="28" width="188" height="12" rx="3" fill="var(--rutnat)" stroke="var(--grafit)" stroke-width="2"/></g>
@@ -229,7 +219,7 @@
     renderLevels(); renderKeypad(); renderLog(); renderGraph();
   }
   function describeIdle() {
-    K.status(K.t(`Maskin ${s.lvl + 1} är stängd. Tryck på en siffra för att mata in ett tal.`, `Machine ${s.lvl + 1} is closed. Tap a digit to feed it a number.`));
+    K.status(K.t("Tryck på en siffra.", "Tap a digit."));
   }
 
   const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -244,7 +234,7 @@
     const y = f(x);
     $("balls").innerHTML = "";
     paintBox(x, null);
-    K.status(K.t(`${x} går in i maskinen.`, `${x} goes into the machine.`));
+    K.status(K.t("", ""));
     const bi = ball("in", 44, x); await wait(30);
     bi.style.transform = "translate(222px,150px)"; await wait(650);
     bi.style.opacity = 0;
@@ -265,17 +255,17 @@
 
   $("check").addEventListener("click", () => {
     if (s.busy) return;
-    if (!s.tests.length) { K.status(K.t("Maskinen har inte fått några tal än. Mata in några först.", "The machine has not had any numbers yet. Feed it some first.")); return; }
+    if (!s.tests.length) { K.status(K.t("Testa några tal först.", "Try some numbers first.")); return; }
     if (s.ga === R().a && s.gb === R().b) {
       $("machine").classList.add("open"); paintBox(0, 0, true);
       K.store.set("matte-solved", [...new Set([...solved(), R().id])]);
       render();
-      K.status(K.t(`Locket lyfts. Regeln var ${ruleText(R().a, R().b)}.`, `The lid lifts. The rule was ${ruleText(R().a, R().b)}.`), "klar");
+      K.status(K.t(`${ruleText(R().a, R().b)}`, `${ruleText(R().a, R().b)}`), "klar");
       if (R().id === "r1" || R().id === "r2") tasks.complete(R().id);
       if (RULES.every(r => solved().includes(r.id))) tasks.complete("alla");
     } else {
       const ok = s.tests.filter(t => s.ga * t.x + s.gb === t.y).length;
-      K.status(K.t(`Din regel stämmer för ${ok} av ${s.tests.length} test. Locket sitter kvar.`, `Your rule matches ${ok} of ${s.tests.length} tests. The lid stays shut.`));
+      K.status(K.t(`Stämmer för ${ok} av ${s.tests.length} test.`, `Matches ${ok} of ${s.tests.length} tests.`));
       $("machine").animate([{ transform: "translateX(0)" }, { transform: "translateX(-6px)" }, { transform: "translateX(4px)" }, { transform: "translateX(0)" }], { duration: 300 });
     }
   });

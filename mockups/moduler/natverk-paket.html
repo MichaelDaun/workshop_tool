@@ -56,11 +56,10 @@
     <p class="status" aria-live="polite" role="status"></p>
 
     <div class="legend">
-      <span><svg viewBox="0 0 28 14" aria-hidden="true"><line x1="2" y1="7" x2="26" y2="7" stroke="var(--grafit)" stroke-width="3"/></svg><span data-en="Cable">Kabel</span></span>
-      <span><svg viewBox="0 0 28 14" aria-hidden="true"><line x1="2" y1="7" x2="26" y2="7" stroke="var(--aktiv)" stroke-width="7" stroke-linecap="round"/></svg><span data-en="Shortest way right now">Kortaste vägen just nu</span></span>
+            <span><svg viewBox="0 0 28 14" aria-hidden="true"><line x1="2" y1="7" x2="26" y2="7" stroke="var(--aktiv)" stroke-width="7" stroke-linecap="round"/></svg><span data-en="Shortest way right now">Kortaste vägen just nu</span></span>
       <span><svg viewBox="0 0 28 14" aria-hidden="true"><line x1="2" y1="7" x2="26" y2="7" stroke="var(--blyerts)" stroke-width="3" stroke-dasharray="2 6"/></svg><span data-en="Cut cable">Klippt kabel</span></span>
     </div>
-    <p class="liten" data-en="Tap a house to choose who sends and who receives. Tap a cable to cut it, and again to repair it.">Tryck på ett hus för att välja vem som skickar och vem som tar emot. Tryck på en kabel för att klippa den, och igen för att laga den.</p>
+    <p class="liten" data-en="Tap houses to pick sender and receiver. Tap a cable to cut it.">Tryck på hus för att välja avsändare och mottagare. Tryck på en kabel för att klippa den.</p>
 
     <div class="rad">
       <label for="msg" class="liten" data-en="Message">Meddelande</label>
@@ -81,26 +80,20 @@
 
   <aside class="panel">
     <div class="mission" id="mission">
-      <p class="meta" data-en="Networks, about 10 minutes">Nätverk, ungefär 10 minuter</p>
+      <p class="meta" data-en="Networks · 10 min">Nätverk · 10 min</p>
       <h2 data-en="How a message travels">Så reser ett meddelande</h2>
-      <p class="lead" data-en="On the internet every message is cut into small packets. Each packet finds its own way to the receiver.">På internet delas varje meddelande upp i små paket. Varje paket hittar sin egen väg till mottagaren.</p>
+      <p class="lead" data-en="A message is cut into packets. Each packet finds its own way.">Ett meddelande delas upp i paket. Varje paket hittar sin egen väg.</p>
     </div>
 
     <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="A message, a photo or a video call is cut into thousands of <b>packets</b>. Each one carries the address it is going to.">Ett meddelande, en bild eller ett videosamtal delas upp i tusentals <b>paket</b>. Varje paket bär adressen det ska till.</p>
-        <p data-en="The houses here are <b>routers</b>. A router reads the address and sends the packet one step closer.">Husen här är <b>routrar</b>. En router läser adressen och skickar paketet ett steg närmare.</p>
-        <p data-en="When a cable breaks, the packets take another way. With many cables the network keeps working. With too few, one break is enough to cut someone off.">När en kabel går sönder tar paketen en annan väg. Med många kablar fortsätter nätet att fungera. Med för få räcker ett avbrott för att någon blir avskuren.</p>
+        <p data-en="The houses are <b>routers</b>. They pass each packet one step closer.">Husen är <b>routrar</b>. De skickar varje paket ett steg närmare.</p>
+        <p data-en="With many cables there is always a detour.">Med många kablar finns det alltid en omväg.</p>
       </div>
     </details>
 
     <div id="lada"></div>
-
-    <div>
-      <h3 style="font-size:var(--fs-r3)" data-en="With the whole room">Med hela rummet</h3>
-      <p class="liten" style="margin-top:6px" data-en="Every participant is a router on their phone and passes packets on with a tap. The leader cuts cables on the big screen, and the room has to find new ways.">Varje deltagare är en router i mobilen och skickar paket vidare med ett tryck. Ledaren klipper kablar på storskärmen och rummet får hitta nya vägar.</p>
-    </div>
   </aside>
 </main>
 
@@ -122,7 +115,7 @@
   const tasks = K.tasks($("mission"), "natverk", [
     { id: "skicka",   text: { sv: "Skicka ett meddelande", en: "Send a message" } },
     { id: "omvag",    text: { sv: "Klipp en kabel på vägen och skicka igen", en: "Cut a cable on the way and send again" } },
-    { id: "flygande", text: { sv: "Klipp en kabel medan paketen reser", en: "Cut a cable while the packets travel" }, hint: { sv: "Skicka först, klipp sedan en kabel som paketen ska över.", en: "Send first, then cut a cable the packets are about to cross." } },
+    { id: "flygande", text: { sv: "Klipp en kabel medan paketen reser", en: "Cut a cable while the packets travel" }, hint: { sv: "Skicka, klipp sedan.", en: "Send, then cut." } },
     { id: "isolera",  text: { sv: "Gör så att inget kommer fram", en: "Make it impossible to get through" }, hint: { sv: "Hur få kablar räcker?", en: "How few cables are enough?" } }
   ]);
 
@@ -146,7 +139,6 @@
   const hx = x => 22 + x * 0.32, hy = y => 16 + y * 0.25;
   K.lada($("lada"), {
     nod: "nod-05",
-    delar: { sv: "Pico W, 1 m LED-slinga WS2812 klippt i tio bitar (en per kabel), tio bygelkontakter som man drar ur för att klippa, sju hus i kartong", en: "Pico W, 1 m WS2812 LED strip cut into ten pieces (one per cable), ten jumper plugs you pull out to cut, seven cardboard houses" },
     svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Bord med sju små hus och ljusslingor som kablar">
       <rect class="hw-platta" x="8" y="6" width="284" height="138" rx="6"/>
       ${E.map((e, i) => {
@@ -225,17 +217,17 @@
     $("r-hops").textContent = r ? r.length - 1 : K.t("ingen väg", "no way");
     const total = s.pkts.length, arr = s.pkts.filter(p => p.arrived).length;
     $("r-arr").textContent = K.t(`${arr} av ${total}`, `${arr} of ${total}`);
-    $("inkorg-lbl").textContent = K.t(`Det som kommer fram till ${node(s.to).name}:`, `What reaches ${node(s.to).name}:`);
+    $("inkorg-lbl").textContent = K.t(`Hos ${node(s.to).name}:`, `At ${node(s.to).name}:`);
   }
   function describe() {
     if (flying()) {
       const n = s.pkts.filter(p => !p.done).length;
-      K.status(K.t(`${n} paket på väg. Varje router väljer nästa steg själv.`, `${n} packets on the way. Each router picks the next step itself.`));
+      K.status(K.t(`${n} paket på väg.`, `${n} packets on the way.`));
       return;
     }
     const r = route(s.from, s.to);
     if (!r) K.status(K.t(`Ingen väg finns från ${node(s.from).name} till ${node(s.to).name}.`, `There is no way from ${node(s.from).name} to ${node(s.to).name}.`), "fara");
-    else K.status(K.t(`Kortaste vägen just nu: ${names(r)}. ${r.length - 1} hopp.`, `Shortest way right now: ${names(r)}. ${r.length - 1} hops.`));
+    else K.status(K.t(`Kortaste vägen: ${names(r)}.`, `Shortest way: ${names(r)}.`));
   }
 
   /* ---- paket ---- */
@@ -312,10 +304,10 @@
       if (s.usedDetour) tasks.complete("omvag");
       if (s.cutDuringFlight) tasks.complete("flygande");
     } else if (arr === 0 && s.noRoute) {
-      K.status(K.t(`Inget paket kom fram. ${to} är avskuren från resten av nätet.`, `No packet arrived. ${to} is cut off from the rest of the network.`), "fara");
+      K.status(K.t(`${to} är avskuren.`, `${to} is cut off.`), "fara");
       tasks.complete("isolera");
     } else {
-      K.status(K.t(`${arr} av ${total} paket kom fram. Resten fastnade när vägen försvann.`, `${arr} of ${total} packets arrived. The rest got stuck when the way disappeared.`), "fara");
+      K.status(K.t(`${arr} av ${total} paket kom fram.`, `${arr} of ${total} packets arrived.`), "fara");
     }
   }
 

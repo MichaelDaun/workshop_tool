@@ -73,26 +73,20 @@
 
   <aside class="panel">
     <div class="mission" id="mission">
-      <p class="meta" data-en="AI and machine learning, about 12 minutes">AI och maskininlärning, ungefär 12 minuter</p>
+      <p class="meta" data-en="AI and machine learning · 12 min">AI och maskininlärning · 12 min</p>
       <h2 data-en="Teach a machine to sort">Lär en maskin att sortera</h2>
-      <p class="lead" data-en="The machine knows only the fruit you have shown it. Every mark on the map is one example.">Maskinen känner bara till de frukter du har visat den. Varje märke på kartan är ett exempel.</p>
+      <p class="lead" data-en="The machine only knows the fruit on the map.">Maskinen känner bara till frukterna på kartan.</p>
     </div>
 
     <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="For a new fruit the machine finds the examples that are most alike, its <b>neighbours</b>, and goes with the majority.">För en ny frukt letar maskinen upp de exempel som är mest lika, dess <b>grannar</b>, och går på majoriteten.</p>
-        <p data-en="If it has only seen red apples, a green apple looks more like a lemon. The machine has not done anything wrong. The examples were lopsided.">Har den bara sett röda äpplen liknar ett grönt äpple mer en citron. Maskinen har inte räknat fel. Exemplen var skeva.</p>
-        <p data-en="Lopsided examples are called <b>bias</b>. The same thing happens in face recognition trained on too few kinds of faces.">Skeva exempel kallas <b>bias</b>. Samma sak händer i ansiktsigenkänning som tränats på för få sorters ansikten.</p>
+        <p data-en="A new fruit is compared with the most similar examples, its <b>neighbours</b>. The majority decides.">En ny frukt jämförs med de mest lika exemplen, dess <b>grannar</b>. Majoriteten avgör.</p>
+        <p data-en="With only red apples, a green apple looks like a lemon. Lopsided examples are called <b>bias</b>.">Med bara röda äpplen liknar ett grönt äpple en citron. Skeva exempel kallas <b>bias</b>.</p>
       </div>
     </details>
 
     <div id="lada"></div>
-
-    <div>
-      <h3 style="font-size:var(--fs-r3)" data-en="With the whole room">Med hela rummet</h3>
-      <p class="liten" style="margin-top:6px" data-en="Everyone adds fruit from their phone to one shared map on the big screen. Half the room gets only red apples, and then the two halves swap machines.">Alla lägger till frukt från mobilen på en gemensam karta på storskärmen. Halva rummet får bara röda äpplen, sedan byter halvorna maskin med varandra.</p>
-    </div>
   </aside>
 </main>
 
@@ -111,7 +105,7 @@
   const tasks = K.tasks($("mission"), "ai", [
     { id: "lagg",  text: { sv: "Lägg till fyra egna exempel", en: "Add four examples of your own" } },
     { id: "testa", text: { sv: "Visa maskinen tre mystiska frukter", en: "Show the machine three mystery fruits" } },
-    { id: "gron",  text: { sv: "Få den att känna igen ett grönt äpple", en: "Get it to recognise a green apple" }, hint: { sv: "Den har aldrig sett ett. Vad saknas?", en: "It has never seen one. What is missing?" } },
+    { id: "gron",  text: { sv: "Få den att känna igen ett grönt äpple", en: "Get it to recognise a green apple" }, hint: { sv: "Vad saknas på kartan?", en: "What is missing from the map?" } },
     { id: "lura",  text: { sv: "Lura den med ett felaktigt exempel", en: "Fool it with a wrong example" }, hint: { sv: "Lägg ett äpple mitt bland citronerna.", en: "Put an apple right among the lemons." } }
   ], { onComplete: () => flap(1) });
 
@@ -126,7 +120,6 @@
   /* ---- lådan: våg, färgsensor och en lucka som tippar åt rätt låda ---- */
   K.lada($("lada"), {
     nod: "nod-04",
-    delar: { sv: "Pico W, färgsensor TCS34725, lastcell med HX711 (en enkel köksvåg), servo SG90 som vinklar en lucka", en: "Pico W, TCS34725 colour sensor, load cell with HX711 (a simple kitchen scale), SG90 servo that tilts a flap" },
     svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Våg med färgsensor och en lucka över två lådor">
       <rect class="hw-platta" x="8" y="8" width="284" height="134" rx="6"/>
       <rect class="hw-kort" x="20" y="20" width="70" height="30" rx="4"/><text class="hw-text-ljus" x="30" y="39">PICO W</text>
@@ -235,7 +228,7 @@
     flap();
     if (!s.test) {
       $("g-svar").textContent = "–"; $("g-sak").style.width = "0%"; $("teach").hidden = true;
-      K.status(K.t("Ingen mystisk frukt än. Tryck på Ny mystisk frukt.", "No mystery fruit yet. Press New mystery fruit."));
+      K.status("");
       return;
     }
     const pr = predict(s.test), pct = Math.round(pr.conf * 100);
@@ -245,10 +238,10 @@
     $("teach").hidden = ok;
     const votes = Math.round(pr.near.length * pr.conf);
     K.status(ok
-      ? K.t(`Gissningen stämde. Det var ${svArt(s.test.truth)}. ${votes} av ${pr.near.length} grannar röstade så.`,
-            `The guess matched. It was ${enArt(s.test.truth)}. ${votes} of ${pr.near.length} neighbours voted that way.`)
-      : K.t(`Gissningen stämde inte. Det var ${svArt(s.test.truth)}. Maskinen har inte sett någon sådan förut.`,
-            `The guess did not match. It was ${enArt(s.test.truth)}. The machine has not seen one like it before.`));
+      ? K.t(`Det var ${svArt(s.test.truth)}. ${votes} av ${pr.near.length} grannar röstade så.`,
+            `It was ${enArt(s.test.truth)}. ${votes} of ${pr.near.length} neighbours voted that way.`)
+      : K.t(`Det var ${svArt(s.test.truth)}. Maskinen har inte sett någon sådan.`,
+            `It was ${enArt(s.test.truth)}. The machine has not seen one like it.`));
   }
 
   function newTest() {

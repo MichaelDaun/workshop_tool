@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ficklampan – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  .tråd { fill: none; stroke: var(--grafit); stroke-width: 3; stroke-linecap: round; }
+  .tråd.flod { stroke: var(--aktiv); stroke-width: 4; stroke-dasharray: 10 8; animation: flod var(--fart, 1s) linear infinite; }
+  @keyframes flod { to { stroke-dashoffset: -18; } }
+  .batt { fill: var(--ark); stroke: var(--grafit); stroke-width: 2.5; }
+  .pol { fill: var(--grafit); }
+  .lampa { cursor: pointer; }
+  .lampa .glas { fill: var(--ark); stroke: var(--grafit); stroke-width: 2.5; }
+  .lampa .glod { fill: var(--aktiv); }
+  .lampa .trad { fill: none; stroke: var(--grafit); stroke-width: 2; }
+  .lampa.ur .glas { stroke-dasharray: 5 5; fill: var(--ark); }
+  .lampa:focus-visible { outline: none; }
+  .lampa:focus-visible .glas { stroke-width: 4; }
+  .etikett { font-family: var(--text); font-size: 14px; fill: var(--blyerts); }
+</style>
+</head>
+<body data-domain="el">
+<header class="topbar" data-title-sv="Ficklampan" data-title-en="The torch"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="scen"><svg id="krets" class="fritt" viewBox="0 0 600 340" role="img" aria-label="Två batterier och två lampor" data-aria-en="Two batteries and two bulbs"></svg></div>
+    <p class="status" aria-live="polite" role="status"></p>
+
+    <div class="readouts">
+      <div class="readout"><span class="v" id="r-u"></span><span class="k" data-en="voltage">spänning</span></div>
+      <div class="readout"><span class="v" id="r-i"></span><span class="k" data-en="current">ström</span></div>
+      <div class="readout"><span class="v" id="r-t"></span><span class="k" data-en="lasts">räcker</span></div>
+    </div>
+
+    <div class="rad">
+      <span class="liten" data-en="Batteries">Batterier</span>
+      <button class="chip" type="button" data-b="rad" data-en="In a row">I rad</button>
+      <button class="chip" type="button" data-b="bredvid" data-en="Side by side">Bredvid</button>
+    </div>
+    <div class="rad">
+      <span class="liten" data-en="Bulbs">Lampor</span>
+      <button class="chip" type="button" data-l="rad" data-en="In a row">I rad</button>
+      <button class="chip" type="button" data-l="bredvid" data-en="Side by side">Bredvid</button>
+      <span class="liten" data-en="Tap a bulb to unscrew it.">Tryck på en lampa för att skruva ur den.</span>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Electricity · 10 min">Ellära · 10 min</p>
+      <h2 data-en="Build a torch">Bygg en ficklampa</h2>
+      <p class="lead" data-en="Connect the batteries and bulbs in different ways.">Koppla batterier och lampor på olika sätt.</p>
+    </div>
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="Batteries in a row add their voltages. Side by side they last longer.">Batterier i rad lägger ihop sin spänning. Bredvid varandra räcker de längre.</p>
+        <p data-en="Bulbs in a row share the voltage, and one broken bulb breaks the whole loop. Side by side each gets all of it.">Lampor i rad delar på spänningen, och en trasig lampa bryter hela slingan. Bredvid varandra får var och en allt.</p>
+      </div>
+    </details>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const CELL = 1.5, R = 3, MAH = 2000;   // ett AA-batteri och en liten glödlampa
+  const s = { b: "bredvid", l: "bredvid", in: [false, false], forra: 0 };
+
+  const tasks = K.tasks($("mission"), "ficklampa", [
+    { id: "tand",    text: { sv: "Tänd båda lamporna", en: "Light both bulbs" } },
+    { id: "stark",   text: { sv: "Gör dem så starka det går", en: "Make them as bright as possible" } },
+    { id: "slocknar", text: { sv: "Skruva ur en lampa så att den andra slocknar", en: "Unscrew one bulb so the other goes out" } },
+    { id: "langst",  text: { sv: "Få ficklampan att lysa i minst 8 timmar", en: "Make the torch last at least 8 hours" } }
+  ]);
+
+  function calc() {
+    const U = s.b === "rad" ? 2 * CELL : CELL, cap = s.b === "rad" ? MAH : 2 * MAH;
+    let P = [0, 0], I = 0;
+    if (s.l === "rad") {
+      if (s.in[0] && s.in[1]) { I = U / (2 * R); P = [I * I * R, I * I * R]; }
+    } else {
+      s.in.forEach((on, k) => { if (on) { I += U / R; P[k] = U * U / R; } });
+    }
+    return { U, I, P, h: I ? cap / (I * 1000) : 0 };
+  }
+
+  const NS = "http://www.w3.org/2000/svg";
+  const TOP = 50, BOT = 290;
+  const cols = (cx, how) => how === "rad" ? [cx] : [cx - 52, cx + 52];
+
+  function draw(c) {
+    const svg = $("krets");
+    const bx = cols(150, s.b), lx = cols(450, s.l), all = [...bx, ...lx];
+    const left = Math.min(...all), right = Math.max(...all);
+    const on = c.I > 0, fart = on ? (1.6 / Math.min(4, c.I * 2 + .4)).toFixed(2) + "s" : "1s";
+    let h = "";
+    const wire = (d, flow) => { h += `<path class="tråd${flow && on ? " flod" : ""}" style="--fart:${fart}" d="${d}"/>`; };
+    wire(`M${left} ${TOP}H${right}`, true); wire(`M${left} ${BOT}H${right}`, true);
+
+    // varje kolumn går från övre till nedre skenan, med en eller två delar i
+    const column = (x, parts) => {
+      const ys = parts.length === 2 ? [120, 220] : [170];
+      let y0 = TOP;
+      parts.forEach((p, k) => {
+        const flow = p.kind === "lampa" ? (s.l === "rad" ? true : s.in[p.i]) : true;
+        wire(`M${x} ${y0}V${ys[k] - 30}`, flow);
+        h += p.kind === "batt" ? battery(x, ys[k]) : bulb(x, ys[k], p.i, c.P[p.i]);
+        y0 = ys[k] + 30;
+      });
+      const last = parts[parts.length - 1];
+      wire(`M${x} ${y0}V${BOT}`, last.kind === "lampa" && s.l !== "rad" ? s.in[last.i] : true);
+    };
+    if (s.b === "rad") column(bx[0], [{ kind: "batt" }, { kind: "batt" }]);
+    else bx.forEach(x => column(x, [{ kind: "batt" }]));
+    if (s.l === "rad") column(lx[0], [{ kind: "lampa", i: 0 }, { kind: "lampa", i: 1 }]);
+    else lx.forEach((x, i) => column(x, [{ kind: "lampa", i }]));
+    h += `<text class="etikett" x="150" y="${BOT + 32}" text-anchor="middle">${K.t("batterier", "batteries")}</text>
+          <text class="etikett" x="450" y="${BOT + 32}" text-anchor="middle">${K.t("lampor", "bulbs")}</text>`;
+    svg.innerHTML = h;
+    svg.querySelectorAll(".lampa").forEach(el => {
+      const flip = () => { const i = +el.dataset.i; s.in[i] = !s.in[i]; update(); };
+      el.addEventListener("click", flip);
+      el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+    });
+  }
+  function battery(x, y) {
+    return `<rect class="batt" x="${x - 18}" y="${y - 30}" width="36" height="60" rx="4"/>
+      <rect class="pol" x="${x - 7}" y="${y - 35}" width="14" height="5" rx="1"/>
+      <text class="etikett" x="${x}" y="${y + 5}" text-anchor="middle">1,5 V</text>`;
+  }
+  function bulb(x, y, i, p) {
+    const b = Math.min(1, p / 3), ur = !s.in[i];
+    return `<g class="lampa${ur ? " ur" : ""}" data-i="${i}" tabindex="0" role="button" aria-label="${ur ? K.t("Skruva i lampan", "Screw in the bulb") : K.t("Skruva ur lampan", "Unscrew the bulb")}">
+      ${b > 0 ? `<circle class="glod" cx="${x}" cy="${y}" r="${26 + b * 20}" opacity="${.12 + b * .25}"/>` : ""}
+      <circle class="glas" cx="${x}" cy="${y}" r="26"/>
+      ${ur ? "" : `<circle class="glod" cx="${x}" cy="${y}" r="24" opacity="${b * .85}"/><path class="trad" d="M${x - 10} ${y + 8}l6-14 4 10 4-10 6 14"/>`}
+    </g>`;
+  }
+
+  const n = v => v.toFixed(2).replace(".", ",");
+  function update() {
+    const c = calc();
+    document.querySelectorAll("[data-b]").forEach(b => b.setAttribute("aria-pressed", b.dataset.b === s.b));
+    document.querySelectorAll("[data-l]").forEach(b => b.setAttribute("aria-pressed", b.dataset.l === s.l));
+    draw(c);
+    $("r-u").textContent = n(c.U).replace(/0$/, "") + " V";
+    $("r-i").textContent = n(c.I) + " A";
+    $("r-t").textContent = c.I ? c.h.toString().replace(".", ",") + " h" : "–";
+
+    const lit = c.P.filter(p => p > 0).length, U = n(c.U).replace(/0$/, "");
+    if (!c.I) K.status(K.t("Slingan är bruten. Ingen lampa lyser.", "The loop is broken. No bulb is lit."));
+    else if (s.l === "rad") K.status(K.t(`Lamporna delar på ${U} V.`, `The bulbs share ${U} V.`));
+    else K.status(K.t(`${lit === 2 ? "Varje lampa" : "Lampan"} får ${U} V.`, `${lit === 2 ? "Each bulb" : "The bulb"} gets ${U} V.`));
+
+    if (lit === 2) tasks.complete("tand");
+    if (lit === 2 && c.P.every(p => p >= 3)) tasks.complete("stark");
+    if (s.l === "rad" && s.forra === 2 && s.in.filter(Boolean).length === 1) tasks.complete("slocknar");
+    if (lit === 2 && c.h >= 8) tasks.complete("langst");
+    s.forra = lit;
+  }
+  document.querySelectorAll("[data-b]").forEach(b => b.addEventListener("click", () => { s.b = b.dataset.b; update(); }));
+  document.querySelectorAll("[data-l]").forEach(b => b.addEventListener("click", () => { s.l = b.dataset.l; update(); }));
+  K.onLang(update);
+  update();
+})();
+</script>
+</body>
+</html>

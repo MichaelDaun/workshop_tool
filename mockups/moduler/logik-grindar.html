@@ -90,7 +90,7 @@
     </div>
 
     <div>
-      <p class="liten" data-en="Truth table. It fills in as you test.">Sanningstabell. Den fylls i när du testar.</p>
+      <p class="liten" data-en="Truth table">Sanningstabell</p>
       <table class="truth" id="truth">
         <thead><tr><th>A</th><th>B</th><th data-en="Lamp">Lampa</th></tr></thead>
         <tbody></tbody>
@@ -100,9 +100,9 @@
 
   <aside class="panel">
     <div class="mission" id="mission">
-      <p class="meta" data-en="Digital logic, about 10 minutes">Digital logik, ungefär 10 minuter</p>
+      <p class="meta" data-en="Digital logic · 10 min">Digital logik · 10 min</p>
       <h2 data-en="Yes, no and the lamp">Ja, nej och lampan</h2>
-      <p class="lead" data-en="Flip the switches and choose a gate. The lamp shows the answer.">Slå på brytarna och välj en grind. Lampan visar svaret.</p>
+      <p class="lead" data-en="Flip the switches and choose a gate.">Slå på brytarna och välj grind.</p>
     </div>
 
     <div id="riddle"></div>
@@ -110,18 +110,12 @@
     <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="A gate is a tiny decision. It looks at what comes in and answers yes (1) or no (0).">En grind är ett litet beslut. Den tittar på det som kommer in och svarar ja (1) eller nej (0).</p>
-        <p data-en="AND needs both. OR needs at least one. XOR needs exactly one. NOT flips the answer.">OCH kräver båda. ELLER räcker med en. ANTINGEN kräver exakt en. INTE vänder på svaret.</p>
-        <p data-en="A phone holds billions of gates like these. Put together in the right order they add numbers and draw pictures.">En mobil innehåller miljarder sådana grindar. Kopplade i rätt ordning räknar de och ritar bilder.</p>
+        <p data-en="A gate answers 1 or 0. AND needs both, OR at least one, XOR exactly one.">En grind svarar 1 eller 0. OCH kräver båda, ELLER minst en, ANTINGEN exakt en.</p>
+        <p data-en="A phone holds billions of gates.">En mobil innehåller miljarder grindar.</p>
       </div>
     </details>
 
     <div id="lada"></div>
-
-    <div>
-      <h3 style="font-size:var(--fs-r3)" data-en="With the whole room">Med hela rummet</h3>
-      <p class="liten" style="margin-top:6px" data-en="Every participant is one gate on their phone. The arrows on the big screen are the wires, and together the room adds 1 + 1.">Varje deltagare är en grind i sin mobil. Pilarna på storskärmen är sladdarna, och tillsammans räknar rummet ut 1 + 1.</p>
-    </div>
   </aside>
 </main>
 
@@ -159,7 +153,6 @@
   /* låda: Pico W med två stora knappar och en lysdiod. Knapparna på ritningen går att trycka på. */
   K.lada($("lada"), {
     nod: "nod-02",
-    delar: { sv: "Pico W, två arkadknappar, en lysdiod. Tryck på knapparna i ritningen.", en: "Pico W, two arcade buttons, one LED. Press the buttons in the drawing." },
     svg: `<svg viewBox="0 0 300 140" role="img" aria-label="Låda med knapparna A och B och en lampa">
       <rect x="10" y="14" width="280" height="116" rx="10" fill="var(--logik)"/>
       <rect x="18" y="8" width="264" height="108" rx="8" fill="var(--grafit)"/>
@@ -220,7 +213,7 @@
     const r = RIDDLES[riddleIdx];
     box.innerHTML = `<p class="liten">${K.t("Gåta", "Riddle")} ${riddleIdx + 1} ${K.t("av", "of")} ${RIDDLES.length}</p>
       <h3 style="font-size:var(--fs-r3); margin-top:2px">${K.t(r.title)}</h3><p style="margin-top:6px">${K.t(r.text)}</p>
-      <p class="liten" style="margin-top:8px">${K.t("Välj en grind och testa alla fyra lägen för att visa att den stämmer.", "Choose a gate and test all four combinations to show it fits.")}</p>`;
+      <p class="liten" style="margin-top:8px">${K.t("Välj grind och testa alla fyra lägen.", "Choose a gate and test all four combinations.")}</p>`;
     if (state.gate === r.gate && complete) { tasks.complete(r.id); riddleIdx++; setTimeout(() => renderRiddle(false), 1000); }
   }
 

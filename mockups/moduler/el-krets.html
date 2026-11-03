@@ -161,27 +161,20 @@
 
   <aside class="panel">
     <div class="mission" id="mission">
-      <p class="meta" data-en="Electricity, about 10 minutes">Ellära, ungefär 10 minuter</p>
+      <p class="meta" data-en="Electricity · 10 min">Ellära · 10 min</p>
       <h2 data-en="Make it light up">Få det att lysa</h2>
-      <p class="lead" data-en="Flip the switch at the bottom. Then change the batteries and the resistance.">Slå på brytaren längst ner. Ändra sedan batterierna och motståndet.</p>
+      <p class="lead" data-en="Flip the switch. Change batteries and resistance.">Slå på brytaren. Ändra batterier och motstånd.</p>
     </div>
 
     <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="The batteries push the current round the loop. More batteries give a bigger push, which is called <b>voltage</b>.">Batterierna knuffar strömmen runt i slingan. Fler batterier ger mer knuff, det som kallas <b>spänning</b>.</p>
-        <p data-en="The resistor brakes the current, like a narrow section of pipe slows water.">Motståndet bromsar strömmen, ungefär som en smal bit rör bromsar vatten.</p>
+        <p data-en="The batteries push the current round. The push is called <b>voltage</b>. The resistor brakes it.">Batterierna knuffar strömmen runt. Knuffen kallas <b>spänning</b>. Motståndet bromsar.</p>
         <p class="formula" data-en="I = V ÷ R">I = U ÷ R</p>
-        <p data-en="Current equals push divided by brake. The rule is called Ohm’s law. The water picture stops working for things like magnets and radio, but it holds for this circuit.">Ström är knuff delat med broms. Regeln heter Ohms lag. Vattenbilden slutar fungera för till exempel magneter och radio, men för den här kretsen stämmer den.</p>
       </div>
     </details>
 
     <div id="lada"></div>
-
-    <div class="lag">
-      <h3 style="font-size:var(--fs-r3)" data-en="As a team">I lag</h3>
-      <p class="liten" style="margin-top:6px" data-en="Three people share one circuit. One controls the batteries, one the resistance and one the switch. They have to agree to reach just the right light.">Tre personer delar en krets. En styr batterierna, en motståndet och en brytaren. De måste komma överens för att få lagom ljus.</p>
-    </div>
   </aside>
 </main>
 
@@ -197,16 +190,15 @@
 
   const tasks = K.tasks($("mission"), "el-krets", [
     { id: "tand",   text: { sv: "Tänd lampan", en: "Turn on the bulb" } },
-    { id: "stark",  text: { sv: "Gör lampan stark", en: "Make the bulb bright" }, hint: { sv: "Visaren ska nå den markerade zonen.", en: "The needle should reach the marked zone." } },
-    { id: "lagom",  text: { sv: "Lagom ljus med exakt 4 batterier", en: "Just right with exactly 4 batteries" }, hint: { sv: "Nu behöver du ändra motståndet.", en: "Now you need to change the resistance." } },
+    { id: "stark",  text: { sv: "Gör lampan stark", en: "Make the bulb bright" }, hint: { sv: "Till det markerade fältet.", en: "Into the marked field." } },
+    { id: "lagom",  text: { sv: "Lagom ljus med exakt 4 batterier", en: "Just right with exactly 4 batteries" }, hint: { sv: "Ändra motståndet.", en: "Change the resistance." } },
     { id: "vatten", text: { sv: "Se kretsen som vatten", en: "See the circuit as water" } },
-    { id: "sonder", text: { sv: "Ge lampan för mycket ström", en: "Give the bulb too much current" }, hint: { sv: "Det är bara på skärmen.", en: "It only happens on screen." } }
+    { id: "sonder", text: { sv: "Ge lampan för mycket ström", en: "Give the bulb too much current" }, hint: { sv: "Bara på skärmen.", en: "Only on screen." } }
   ], { onComplete: () => { const g = $("glowc"); g.classList.remove("blink"); void g.getBBox(); g.classList.add("blink"); } });
 
   /* låda på bordet: Pico W med lysdiod och potentiometer */
   const lada = K.lada($("lada"), {
     nod: "nod-01",
-    delar: { sv: "Pico W, lysdiod, potentiometer 10 kΩ, strömsensor INA219", en: "Pico W, LED, 10 kΩ potentiometer, INA219 current sensor" },
     svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Kopplingsplatta med Pico W, lysdiod och vridmotstånd">
       <rect class="hw-platta" x="8" y="10" width="284" height="130" rx="6"/>
       ${Array.from({ length: 13 }, (_, i) => Array.from({ length: 5 }, (_, j) => `<rect class="hw-hal" x="${20 + i * 21}" y="${86 + j * 10}" width="4" height="4"/>`).join("")).join("")}
@@ -266,12 +258,12 @@
 
   function describe(I, P) {
     if (state.broken) return;
-    if (!state.closed) { K.status(K.t("Brytaren är av. Ingen ström går runt.", "The switch is off. No current flows.")); return; }
+    if (!state.closed) { K.status(K.t("Brytaren är av.", "The switch is off.")); return; }
     const a = fmt(I, 2) + " A";
-    if (P < 0.5) K.status(K.t(`Lampan glöder svagt. ${a} går genom tråden.`, `The bulb glows faintly. ${a} flows through the wire.`));
-    else if (P < ZONE[0]) K.status(K.t(`Lampan lyser. ${a} går genom tråden.`, `The bulb is on. ${a} flows through the wire.`));
-    else if (P <= ZONE[1]) K.status(K.t(`Lagom ljus. ${a} går genom tråden.`, `Just right. ${a} flows through the wire.`));
-    else K.status(K.t(`Lampan lyser starkt, ${a}. Den tål högst 1,6 A.`, `The bulb is very bright, ${a}. It can take 1.6 A at most.`), "fara");
+    if (P < 0.5) K.status(K.t(`Svagt sken. ${a}.`, `Faint glow. ${a}.`));
+    else if (P < ZONE[0]) K.status(K.t(`Lampan lyser. ${a}.`, `The bulb is on. ${a}.`));
+    else if (P <= ZONE[1]) K.status(K.t(`Lagom ljus. ${a}.`, `Just right. ${a}.`));
+    else K.status(K.t(`${a}. Lampan tål högst 1,6 A.`, `${a}. The bulb takes 1.6 A at most.`), "fara");
   }
 
   function update() {
@@ -301,7 +293,7 @@
       state.broken = true;
       tasks.complete("sonder");
       update();
-      K.status(K.t("Poff. Lampan tålde inte strömmen. Byt lampa.", "Pop. The bulb could not take the current. Fit a new one."), "fara");
+      K.status(K.t("Poff. Byt lampa.", "Pop. Fit a new bulb."), "fara");
     }
   }
 

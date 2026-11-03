@@ -66,10 +66,9 @@
     </div>
     <p class="status" aria-live="polite" role="status"></p>
 
-    <span class="liten" data-en="Tap a block to add it to the end of the program">Tryck på ett block för att lägga det sist i programmet</span>
     <div class="rad" id="palette"></div>
     <div class="program-box">
-      <span class="liten" data-en="Program. Tap a Forward block to make it repeat.">Program. Tryck på ett Framåt-block för att få det att upprepas.</span>
+      <span class="liten" data-en="Program">Program</span>
       <div class="rad program" id="program"></div>
     </div>
     <div class="rad mellan">
@@ -85,26 +84,20 @@
 
   <aside class="panel">
     <div class="mission" id="mission">
-      <p class="meta" data-en="Software, about 15 minutes">Mjukvara, ungefär 15 minuter</p>
+      <p class="meta" data-en="Software · 15 min">Mjukvara · 15 min</p>
       <h2 data-en="Give the robot instructions">Ge roboten instruktioner</h2>
-      <p class="lead" data-en="The robot follows the list from start to end and does exactly what it says.">Roboten följer listan från början till slut och gör exakt det som står.</p>
+      <p class="lead" data-en="The robot does exactly what the program says.">Roboten gör exakt det som står i programmet.</p>
     </div>
 
     <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="A <b>program</b> is a list of instructions that run in order, one at a time.">Ett <b>program</b> är en lista med instruktioner som körs i ordning, en i taget.</p>
-        <p data-en="A <b>bug</b> is when the program does something you did not mean. Finding the block where it went wrong is called <b>debugging</b>.">En <b>bugg</b> är när programmet gör något du inte menade. Att leta upp blocket där det gick fel kallas att <b>felsöka</b>.</p>
-        <p data-en="A <b>loop</b> says the same thing many times with one block. Forward ×4 is a small loop.">En <b>loop</b> säger samma sak många gånger med ett block. Framåt ×4 är en liten loop.</p>
+        <p data-en="A <b>program</b> is instructions in order. A <b>bug</b> is when it does something you did not mean.">Ett <b>program</b> är instruktioner i ordning. En <b>bugg</b> är när det gör något annat än du menade.</p>
+        <p data-en="Forward ×4 is a small <b>loop</b>.">Framåt ×4 är en liten <b>loop</b>.</p>
       </div>
     </details>
 
     <div id="lada"></div>
-
-    <div>
-      <h3 style="font-size:var(--fs-r3)" data-en="In pairs">I par</h3>
-      <p class="liten" style="margin-top:6px" data-en="One person sees the map, the other writes the program without seeing it. Then the robot on the floor runs what they agreed on.">En person ser kartan, den andra skriver programmet utan att se den. Sedan kör roboten på golvet det de kommit överens om.</p>
-    </div>
   </aside>
 </main>
 
@@ -132,15 +125,14 @@
   const s = { lvl: 0, prog: [], running: false, pos: null, felAt: -1 };
   const tasks = K.tasks($("mission"), "robot", [
     { id: "n1",   text: { sv: "Nivå 1: nå stjärnan", en: "Level 1: reach the star" } },
-    { id: "bugg", text: { sv: "Kör in i ett träd med flit", en: "Drive into a tree on purpose" }, hint: { sv: "Se vilket block som markeras när det går fel.", en: "See which block is marked when it goes wrong." } },
+    { id: "bugg", text: { sv: "Kör in i ett träd med flit", en: "Drive into a tree on purpose" } },
     { id: "n2",   text: { sv: "Nivå 2: sväng åt rätt håll", en: "Level 2: turn the right way" } },
-    { id: "n3",   text: { sv: "Nivå 3: högst fem block", en: "Level 3: five blocks at most" }, hint: { sv: "Ett Framåt-block kan upprepas.", en: "A Forward block can repeat." } }
+    { id: "n3",   text: { sv: "Nivå 3: högst fem block", en: "Level 3: five blocks at most" }, hint: { sv: "Tryck på ett Framåt-block i programmet.", en: "Tap a Forward block in the program." } }
   ]);
 
   /* ---- lådan: en liten robot på en golvmatta ---- */
   K.lada($("lada"), {
     nod: "nod-06",
-    delar: { sv: "Pico W, två stegmotorer 28BYJ-48 med drivkort, powerbank, golvmatta med 7 × 5 rutor à 15 cm", en: "Pico W, two 28BYJ-48 stepper motors with driver boards, power bank, floor mat with 7 × 5 squares of 15 cm" },
     svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Robot sedd uppifrån på en golvmatta">
       <rect class="hw-platta" x="8" y="6" width="284" height="138" rx="6"/>
       ${Array.from({ length: 8 }, (_, i) => `<line x1="${24 + i * 36}" y1="16" x2="${24 + i * 36}" y2="134" stroke="var(--linje)" stroke-width="1.5"/>`).join("")}
@@ -210,7 +202,7 @@
   }
   function renderProgram() {
     const p = $("program"); p.innerHTML = "";
-    if (!s.prog.length) p.innerHTML = `<span class="tom">${K.t("Inga block än.", "No blocks yet.")}</span>`;
+    if (!s.prog.length) p.innerHTML = `<span class="tom">${K.t("Tryck på ett block ovanför.", "Tap a block above.")}</span>`;
     s.prog.forEach((b, i) => {
       const el = block(b.t, b.n, e => {
         if (s.running) return;
@@ -230,15 +222,15 @@
   function describeIdle() {
     const max = L().max;
     K.status(max
-      ? K.t(`Nivå ${s.lvl + 1}. Nå stjärnan med högst ${max} block.`, `Level ${s.lvl + 1}. Reach the star with ${max} blocks at most.`)
-      : K.t(`Nivå ${s.lvl + 1}. Roboten står still och pekar åt höger.`, `Level ${s.lvl + 1}. The robot is standing still, pointing right.`));
+      ? K.t(`Högst ${max} block.`, `${max} blocks at most.`)
+      : "");
   }
 
   const wait = ms => new Promise(r => setTimeout(r, ms));
   async function run() {
     if (s.running || !s.prog.length) return;
     s.running = true; s.felAt = -1; renderProgram(); resetRobot(); $("trail").innerHTML = ""; $("krock").innerHTML = "";
-    K.status(K.t("Programmet körs.", "The program is running."));
+    K.status("");
     $("hw-led").classList.add("pa");
     await wait(250);
     let crash = null;
@@ -275,10 +267,10 @@
     } else if (atStar && max && s.prog.length > max) {
       K.status(K.t(`Roboten nådde stjärnan med ${s.prog.length} block. Det går med ${max}.`, `The robot reached the star with ${s.prog.length} blocks. It can be done with ${max}.`));
     } else if (atStar) {
-      K.status(K.t(`Roboten står på stjärnan. Programmet hade ${s.prog.length} block.`, `The robot is on the star. The program had ${s.prog.length} blocks.`), "klar");
+      K.status(K.t(`Framme med ${s.prog.length} block.`, `There with ${s.prog.length} blocks.`), "klar");
       tasks.complete(L().id); renderLevels();
     } else {
-      K.status(K.t("Programmet tog slut innan roboten var framme.", "The program ran out before the robot got there."));
+      K.status(K.t("Programmet tog slut före stjärnan.", "The program ended before the star."));
     }
     s.running = false;
   }
