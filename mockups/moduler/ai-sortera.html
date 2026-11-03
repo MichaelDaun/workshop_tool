@@ -6,28 +6,21 @@
 <title>Fruktsorteraren – Verkstan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
 <link rel="stylesheet" href="../shared/theme.css">
 <style>
-  .plot-wrap { display: grid; grid-template-columns: 28px minmax(0, 1fr); grid-template-rows: auto 28px; gap: 6px; }
-  .axis-y { writing-mode: vertical-rl; transform: rotate(180deg); display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--ink-soft); }
-  .axis-x { grid-column: 2; display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font-size: var(--fs-xs); color: var(--ink-soft); }
-  .axis-x .grad { height: 10px; border-radius: 99px; background: linear-gradient(90deg, #5bb53a, #f3cf1f 50%, #d9342b); }
-  #plot { aspect-ratio: 3 / 2; border-radius: var(--r-m); cursor: crosshair; touch-action: manipulation; background: var(--surface-2); }
-  .teach { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
-  .label-btn { display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 16px 0 10px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); cursor: pointer; font-weight: 700; transition: border-color .3s, background .3s; }
-  .label-btn svg { width: 28px; height: 28px; }
-  .label-btn[aria-pressed="true"].lemon { border-color: var(--c-el); background: color-mix(in srgb, var(--c-el) 14%, var(--surface)); }
-  .label-btn[aria-pressed="true"].apple { border-color: var(--c-ai); background: color-mix(in srgb, var(--c-ai) 14%, var(--surface)); }
-  .bot { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px; align-items: center; margin-top: 14px; padding: 12px; border-radius: var(--r-m); background: var(--surface-2); }
-  .bot .face { width: 52px; height: 52px; border-radius: 16px; background: var(--domain); display: grid; place-items: center; }
-  .bot .face svg { width: 34px; height: 34px; }
-  .bot .say { font-family: var(--font-display); font-size: var(--fs-l); font-weight: 700; }
-  .bot .sub { font-size: var(--fs-s); color: var(--ink-soft); }
-  .conf { height: 8px; border-radius: 99px; background: var(--surface); margin-top: 6px; overflow: hidden; }
-  .conf i { display: block; height: 100%; background: var(--domain); transition: width .5s var(--ease); width: 0; }
-  .bot-actions { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
-  .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+  #plot { aspect-ratio: 3 / 2; cursor: crosshair; touch-action: manipulation; }
+  .rad { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+  .rad .liten { margin-right: 4px; }
+  .chip svg { width: 22px; height: 22px; }
+  .gissning { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  @media (max-width: 560px) { .gissning { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .gissning .readout:first-child { grid-column: 1 / -1; } }
+  .readout .v.ord { font-family: var(--text); font-weight: 800; }
+  .säkerhet { height: 6px; background: var(--rutnat); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+  .säkerhet i { display: block; height: 100%; width: 0; background: var(--aktiv); transition: width var(--lugn) var(--broms); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: var(--fs-liten); color: var(--blyerts); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .ruta { width: 16px; height: 16px; border: 1px solid var(--linje); border-radius: 2px; }
 </style>
 </head>
 <body data-domain="ai">
@@ -35,66 +28,71 @@
 
 <main class="module">
   <section class="stage">
-    <div class="plot-wrap">
-      <div class="axis-y"><span data-en="small">liten</span><span data-en="Size">Storlek</span><span data-en="big">stor</span></div>
-      <canvas id="plot" width="1200" height="800" aria-label="Karta där varje frukt är en prick. Bakgrundens färg visar vad AI:n tror." data-aria-en="A map where each fruit is a dot. The background colour shows what the AI believes."></canvas>
-      <div class="axis-x"><span data-en="green">grön</span><span class="grad" aria-hidden="true"></span><span data-en="red">röd</span></div>
+    <div class="scen">
+      <canvas id="plot" width="1200" height="800" aria-label="Karta över frukter. Åt höger blir frukten rödare, uppåt blir den större. Bakgrunden visar vad maskinen skulle svara." data-aria-en="A map of fruit. To the right the fruit gets redder, upwards it gets bigger. The background shows what the machine would answer."></canvas>
+    </div>
+    <p class="status" aria-live="polite" role="status"></p>
+
+    <div class="legend">
+      <span><span class="ruta" style="background:color-mix(in srgb, var(--aktiv) 26%, var(--ark))"></span><span data-en="Here the machine answers apple">Här svarar maskinen äpple</span></span>
+      <span><span class="ruta" style="background:var(--ark)"></span><span data-en="Here it answers lemon">Här svarar den citron</span></span>
     </div>
 
-    <div class="teach">
-      <span class="eyebrow" data-en="Tap the map to add:">Tryck på kartan för att lägga till:</span>
-      <button class="label-btn lemon" id="pick-lemon" type="button" aria-pressed="true">
-        <svg viewBox="0 0 28 28" aria-hidden="true"><ellipse cx="14" cy="14" rx="11" ry="8" fill="#f3cf1f" stroke="var(--c-el)" stroke-width="2.5"/></svg>
+    <div class="rad">
+      <span class="liten" data-en="Tap the map to add">Tryck på kartan för att lägga till</span>
+      <button class="chip" id="pick-lemon" type="button" aria-pressed="true">
+        <svg viewBox="0 0 28 28" aria-hidden="true"><ellipse cx="14" cy="14" rx="11" ry="8" fill="#f1cf2a" stroke="var(--grafit)" stroke-width="2"/></svg>
         <span data-en="Lemon">Citron</span></button>
-      <button class="label-btn apple" id="pick-apple" type="button" aria-pressed="false">
-        <svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="15" r="10" fill="#d9342b" stroke="var(--c-ai)" stroke-width="2.5"/><path d="M14 5v4" stroke="var(--ink)" stroke-width="2"/></svg>
+      <button class="chip" id="pick-apple" type="button" aria-pressed="false">
+        <svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="16" r="9.5" fill="#d23d2f" stroke="var(--grafit)" stroke-width="2"/><path d="M14 6.5v-3" stroke="var(--grafit)" stroke-width="2" stroke-linecap="round"/></svg>
         <span data-en="Apple">Äpple</span></button>
     </div>
 
-    <div class="bot" aria-live="polite">
-      <div class="face"><svg viewBox="0 0 34 34" aria-hidden="true"><rect x="5" y="9" width="24" height="18" rx="6" fill="#fff"/><circle cx="13" cy="18" r="2.6" fill="var(--domain)"/><circle cx="21" cy="18" r="2.6" fill="var(--domain)"/><path d="M17 9V4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
-      <div>
-        <div class="say" id="say"></div>
-        <div class="sub" id="say-sub"></div>
-        <div class="conf"><i id="conf"></i></div>
+    <div class="gissning">
+      <div class="readout">
+        <span class="v ord" id="g-svar">–</span>
+        <span class="k" data-en="the machine's guess">maskinens gissning</span>
+        <span class="säkerhet" aria-hidden="true"><i id="g-sak"></i></span>
       </div>
-      <div class="bot-actions">
-        <button class="btn" id="test" type="button" data-en="New mystery fruit">Ny mystisk frukt</button>
-        <button class="btn ghost" style="background:var(--surface)" id="teach" type="button" hidden data-en="Teach the AI the right answer">Lär AI:n rätt svar</button>
-      </div>
+      <div class="readout"><span class="v" id="n-ex">8</span><span class="k" data-en="examples">exempel</span></div>
+      <div class="readout"><span class="v" id="n-ok">0 av 0</span><span class="k" data-en="guesses that matched">gissningar som stämde</span></div>
+    </div>
+
+    <div class="rad">
+      <button class="btn" id="test" type="button" data-en="New mystery fruit">Ny mystisk frukt</button>
+      <button class="btn ghost" id="teach" type="button" hidden data-en="Add it as an example">Lägg in den som exempel</button>
     </div>
 
     <div class="controls">
       <div class="control">
-        <label for="k"><span data-en="How many neighbours does the AI ask?">Hur många grannar frågar AI:n?</span><output id="o-k">3</output></label>
+        <label for="k"><span data-en="Neighbours that get a vote">Grannar som får rösta</span><output id="o-k">3</output></label>
         <input type="range" id="k" min="1" max="7" step="2" value="3">
-      </div>
-      <div class="stats">
-        <div class="readout"><span class="v" id="n-ex">8</span><span class="k" data-en="examples">exempel</span></div>
-        <div class="readout"><span class="v" id="n-ok">0/0</span><span class="k" data-en="correct guesses">rätta gissningar</span></div>
       </div>
     </div>
   </section>
 
   <aside class="panel">
-    <div class="card mission" id="mission">
-      <div class="eyebrow" data-en="AI & machine learning · ~12 min">AI & maskininlärning · ~12 min</div>
-      <h2 data-en="Teach a machine">Lär upp en maskin</h2>
-      <p class="lead" data-en="The AI only knows what you show it. Every dot is an example.">AI:n vet bara det du visar den. Varje prick är ett exempel.</p>
+    <div class="mission" id="mission">
+      <p class="meta" data-en="AI and machine learning, about 12 minutes">AI och maskininlärning, ungefär 12 minuter</p>
+      <h2 data-en="Teach a machine to sort">Lär en maskin att sortera</h2>
+      <p class="lead" data-en="The machine knows only the fruit you have shown it. Every mark on the map is one example.">Maskinen känner bara till de frukter du har visat den. Varje märke på kartan är ett exempel.</p>
     </div>
 
-    <details class="card why">
+    <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="<strong>The AI looks at its neighbours.</strong> For a new fruit it finds the most similar examples and goes with the majority.">
-          <strong>AI:n tittar på sina grannar.</strong> För en ny frukt letar den upp de mest lika exemplen och går på majoriteten.</p>
-        <p data-en="<strong>It is never smarter than its examples.</strong> With only red apples, a green apple looks like a lemon.">
-          <strong>Den blir aldrig smartare än sina exempel.</strong> Har den bara sett röda äpplen ser ett grönt äpple ut som en citron.</p>
-        <p data-en="That is called <strong>bias</strong>. It happens in real AI too, for example in face recognition trained on too few kinds of faces.">
-          Det kallas <strong>bias</strong> (skevhet). Det händer i riktiga AI-system också, till exempel ansiktsigenkänning som tränats på för få sorters ansikten.</p>
+        <p data-en="For a new fruit the machine finds the examples that are most alike, its <b>neighbours</b>, and goes with the majority.">För en ny frukt letar maskinen upp de exempel som är mest lika, dess <b>grannar</b>, och går på majoriteten.</p>
+        <p data-en="If it has only seen red apples, a green apple looks more like a lemon. The machine has not done anything wrong. The examples were lopsided.">Har den bara sett röda äpplen liknar ett grönt äpple mer en citron. Maskinen har inte räknat fel. Exemplen var skeva.</p>
+        <p data-en="Lopsided examples are called <b>bias</b>. The same thing happens in face recognition trained on too few kinds of faces.">Skeva exempel kallas <b>bias</b>. Samma sak händer i ansiktsigenkänning som tränats på för få sorters ansikten.</p>
       </div>
     </details>
-    <p class="mock-note" data-en="Mock-up. Whole-room version: everyone adds fruit from their phone and the big screen shows the shared AI learning live.">Mockup. Helrumsversion: alla lägger till frukt från mobilen och storskärmen visar den gemensamma AI:n lära sig live.</p>
+
+    <div id="lada"></div>
+
+    <div>
+      <h3 style="font-size:var(--fs-r3)" data-en="With the whole room">Med hela rummet</h3>
+      <p class="liten" style="margin-top:6px" data-en="Everyone adds fruit from their phone to one shared map on the big screen. Half the room gets only red apples, and then the two halves swap machines.">Alla lägger till frukt från mobilen på en gemensam karta på storskärmen. Halva rummet får bara röda äpplen, sedan byter halvorna maskin med varandra.</p>
+    </div>
   </aside>
 </main>
 
@@ -102,7 +100,7 @@
 <script>
 (() => {
   const $ = id => document.getElementById(id);
-  // x: färg 0 = grön, .5 = gul, 1 = röd.  y: storlek 0 = liten, 1 = stor
+  // x: färg, 0 = grön, 0,5 = gul, 1 = röd. y: storlek, 0 = liten, 1 = stor
   const data = [
     { x: .46, y: .32, c: "lemon" }, { x: .52, y: .40, c: "lemon" }, { x: .42, y: .25, c: "lemon" }, { x: .55, y: .30, c: "lemon" },
     { x: .82, y: .62, c: "apple" }, { x: .90, y: .70, c: "apple" }, { x: .78, y: .74, c: "apple" }, { x: .93, y: .56, c: "apple" }
@@ -111,11 +109,11 @@
   const s = { pick: "lemon", k: 3, test: null, tests: 0, right: 0, testsMade: 0 };
 
   const tasks = K.tasks($("mission"), "ai", [
-    { id: "lagg",  text: { sv: "Lägg till 4 egna exempel", en: "Add 4 examples of your own" } },
-    { id: "testa", text: { sv: "Testa AI:n på 3 mystiska frukter", en: "Test the AI on 3 mystery fruits" } },
-    { id: "gron",  text: { sv: "Få AI:n att känna igen ett grönt äpple", en: "Get the AI to recognise a green apple" }, hint: { sv: "Den har aldrig sett ett. Vad behöver den?", en: "It has never seen one. What does it need?" } },
-    { id: "lura",  text: { sv: "Lura AI:n med ett felaktigt exempel", en: "Fool the AI with a wrong example" }, hint: { sv: "Lägg ett äpple mitt bland citronerna.", en: "Put an apple right among the lemons." } }
-  ]);
+    { id: "lagg",  text: { sv: "Lägg till fyra egna exempel", en: "Add four examples of your own" } },
+    { id: "testa", text: { sv: "Visa maskinen tre mystiska frukter", en: "Show the machine three mystery fruits" } },
+    { id: "gron",  text: { sv: "Få den att känna igen ett grönt äpple", en: "Get it to recognise a green apple" }, hint: { sv: "Den har aldrig sett ett. Vad saknas?", en: "It has never seen one. What is missing?" } },
+    { id: "lura",  text: { sv: "Lura den med ett felaktigt exempel", en: "Fool it with a wrong example" }, hint: { sv: "Lägg ett äpple mitt bland citronerna.", en: "Put an apple right among the lemons." } }
+  ], { onComplete: () => flap(1) });
 
   function predict(p, k = s.k) {
     const near = data.map(d => ({ d, dist: Math.hypot(d.x - p.x, d.y - p.y) })).sort((a, b) => a.dist - b.dist).slice(0, Math.min(k, data.length));
@@ -125,118 +123,156 @@
     return { c, conf, near };
   }
 
-  /* --- frukt-färg --- */
+  /* ---- lådan: våg, färgsensor och en lucka som tippar åt rätt låda ---- */
+  K.lada($("lada"), {
+    nod: "nod-04",
+    delar: { sv: "Pico W, färgsensor TCS34725, lastcell med HX711 (en enkel köksvåg), servo SG90 som vinklar en lucka", en: "Pico W, TCS34725 colour sensor, load cell with HX711 (a simple kitchen scale), SG90 servo that tilts a flap" },
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Våg med färgsensor och en lucka över två lådor">
+      <rect class="hw-platta" x="8" y="8" width="284" height="134" rx="6"/>
+      <rect class="hw-kort" x="20" y="20" width="70" height="30" rx="4"/><text class="hw-text-ljus" x="30" y="39">PICO W</text>
+      <rect x="22" y="96" width="100" height="10" rx="2" fill="var(--rutnat)" stroke="var(--grafit)" stroke-width="2"/>
+      <path class="hw-tråd" d="M40 106v18M104 106v18"/>
+      <text class="hw-text" x="44" y="88">${K.t("VÅG", "SCALE")}</text>
+      <rect x="106" y="56" width="26" height="22" rx="3" fill="var(--ark)" stroke="var(--grafit)" stroke-width="2"/>
+      <circle id="hw-sensor" cx="119" cy="67" r="5" class="hw-led"/>
+      <rect x="168" y="104" width="50" height="28" rx="2" fill="var(--rutnat)" stroke="var(--grafit)" stroke-width="2"/>
+      <rect x="226" y="104" width="50" height="28" rx="2" fill="var(--rutnat)" stroke="var(--grafit)" stroke-width="2"/>
+      <text class="hw-text" x="174" y="122">${K.t("CITRON", "LEMON")}</text><text class="hw-text" x="234" y="122">${K.t("ÄPPLE", "APPLE")}</text>
+      <g id="hw-lucka" style="transform-origin:222px 62px;transition:transform .5s var(--broms)">
+        <path class="hw-tråd" d="M222 62v-22M222 62l-34 28" stroke-width="4"/>
+        <circle cx="222" cy="62" r="6" fill="var(--ark)" stroke="var(--grafit)" stroke-width="2.5"/>
+      </g>
+      <text class="hw-text" x="200" y="30">SERVO</text>
+    </svg>`
+  });
+  function flap(blink) {
+    const el = $("hw-lucka"); if (!el) return;
+    const pr = s.test ? predict(s.test) : null;
+    // luckan pekar mot den låda maskinen väljer
+    el.style.transform = pr && pr.c === "apple" ? "scaleX(-1)" : "none";
+    $("hw-sensor").classList.toggle("pa", !!s.test);
+    if (blink) { const sn = $("hw-sensor"); sn.classList.add("pa"); setTimeout(() => sn.classList.toggle("pa", !!s.test), 500); }
+  }
+
+  /* ---- ritning ---- */
   function fruitColor(x) {
-    const stops = [[91, 181, 58], [243, 207, 31], [217, 52, 43]];
-    const t = x * 2, i = Math.min(1, Math.floor(t)), f = t - i;
-    const a = stops[i], b = stops[i + 1];
+    const stops = [[96, 170, 60], [241, 207, 42], [210, 61, 47]];
+    const t = x * 2, i = Math.min(1, Math.floor(t)), f = t - i, a = stops[i], b = stops[i + 1];
     return `rgb(${a.map((v, j) => Math.round(v + (b[j] - v) * f)).join(",")})`;
   }
+  const cv = $("plot"), g = cv.getContext("2d"), W = cv.width, H = cv.height;
+  const PAD_L = 90, PAD_B = 80, PAD = 30;
+  const toPx = p => ({ px: PAD_L + p.x * (W - PAD_L - PAD), py: H - PAD_B - p.y * (H - PAD_B - PAD) });
+  const fromPx = (px, py) => ({ x: Math.max(0, Math.min(1, (px - PAD_L) / (W - PAD_L - PAD))), y: Math.max(0, Math.min(1, (H - PAD_B - py) / (H - PAD_B - PAD))) });
+  let CS; const C = n => CS.getPropertyValue(n).trim();
 
-  /* --- ritning --- */
-  const cv = $("plot"), g = cv.getContext("2d");
-  const W = cv.width, H = cv.height;
-  const toPx = p => ({ px: 40 + p.x * (W - 80), py: H - 40 - p.y * (H - 80) });
-  const fromPx = (px, py) => ({ x: Math.max(0, Math.min(1, (px - 40) / (W - 80))), y: Math.max(0, Math.min(1, (H - 40 - py) / (H - 80))) });
-
-  function drawFruit(p, ring, alpha = 1, scale = 1) {
-    const { px, py } = toPx(p);
-    const r = (16 + p.y * 22) * scale;
-    g.save(); g.globalAlpha = alpha;
-    g.fillStyle = fruitColor(p.x); g.strokeStyle = ring; g.lineWidth = 5;
+  function drawFruit(p, kind, scale = 1) {
+    const { px, py } = toPx(p), r = (14 + p.y * 20) * scale;
+    g.fillStyle = fruitColor(p.x); g.strokeStyle = C("--grafit"); g.lineWidth = 3.5;
     g.beginPath();
-    if (p.c === "lemon") g.ellipse(px, py, r * 1.25, r * .9, 0, 0, Math.PI * 2);
-    else if (p.c === "apple") g.arc(px, py, r, 0, Math.PI * 2);
-    else g.arc(px, py, r, 0, Math.PI * 2);
+    if (kind === "lemon") g.ellipse(px, py, r * 1.25, r * .88, 0, 0, Math.PI * 2); else g.arc(px, py, r, 0, Math.PI * 2);
     g.fill(); g.stroke();
-    if (p.c === "apple") { g.strokeStyle = cs("--ink"); g.lineWidth = 4; g.beginPath(); g.moveTo(px, py - r); g.lineTo(px + 3, py - r - 12); g.stroke(); }
-    g.restore();
+    if (kind === "apple") { g.lineWidth = 4; g.lineCap = "round"; g.beginPath(); g.moveTo(px, py - r); g.lineTo(px + 3, py - r - 11); g.stroke(); }
   }
-  let CS; const cs = n => CS.getPropertyValue(n).trim();
-  const map = document.createElement("canvas"); map.width = W; map.height = H; let mapKey = "";
 
-  function draw() {
+  const map = document.createElement("canvas"); map.width = W; map.height = H; let mapKey = "";
+  function draw(now) {
     CS = getComputedStyle(document.body);
     g.clearRect(0, 0, W, H);
-    // AI:ns karta – räknas bara om när exemplen, k eller temat ändras
-    const key = data.length + ":" + s.k + ":" + cs("--c-ai");
+    const key = data.length + ":" + s.k + ":" + C("--aktiv") + C("--ark");
     if (key !== mapKey) {
       mapKey = key;
-      const m = map.getContext("2d"); m.clearRect(0, 0, W, H);
-      const cell = 20;
-      for (let x = 0; x < W; x += cell) for (let y = 0; y < H; y += cell) {
+      const m = map.getContext("2d"); m.clearRect(0, 0, W, H); m.fillStyle = C("--aktiv");
+      const cell = 10;
+      for (let x = PAD_L; x < W - PAD; x += cell) for (let y = PAD; y < H - PAD_B; y += cell) {
         const { c, conf } = predict(fromPx(x + cell / 2, y + cell / 2));
-        m.fillStyle = c === "apple" ? cs("--c-ai") : cs("--c-el");
-        m.globalAlpha = 0.08 + (conf - .5) * 0.3;
-        m.fillRect(x, y, cell, cell);
+        if (c !== "apple") continue;
+        m.globalAlpha = 0.12 + (conf - .5) * 0.36; m.fillRect(x, y, cell, cell);
       }
     }
     g.drawImage(map, 0, 0);
-    // grannar till testfrukten
+
+    // axlar
+    g.strokeStyle = C("--grafit"); g.lineWidth = 2;
+    g.beginPath(); g.moveTo(PAD_L, PAD); g.lineTo(PAD_L, H - PAD_B); g.lineTo(W - PAD, H - PAD_B); g.stroke();
+    const grad = g.createLinearGradient(PAD_L, 0, W - PAD, 0);
+    grad.addColorStop(0, fruitColor(0)); grad.addColorStop(.5, fruitColor(.5)); grad.addColorStop(1, fruitColor(1));
+    g.fillStyle = grad; g.fillRect(PAD_L, H - PAD_B + 12, W - PAD_L - PAD, 10);
+    g.fillStyle = C("--blyerts"); g.font = `26px ${C("--text")}`;
+    g.textAlign = "left"; g.fillText(K.t("grön", "green"), PAD_L, H - 18);
+    g.textAlign = "center"; g.fillText(K.t("färg", "colour"), (PAD_L + W - PAD) / 2, H - 18);
+    g.textAlign = "right"; g.fillText(K.t("röd", "red"), W - PAD, H - 18);
+    g.save(); g.translate(46, (PAD + H - PAD_B) / 2); g.rotate(-Math.PI / 2); g.textAlign = "center";
+    g.fillText(K.t("liten   storlek   stor", "small   size   big"), 0, 0); g.restore();
+
     if (s.test) {
-      const { near } = predict(s.test);
-      const t = toPx(s.test);
-      g.strokeStyle = cs("--ink-soft"); g.lineWidth = 3; g.setLineDash([8, 8]);
+      const { near, c } = predict(s.test), t = toPx(s.test);
+      g.strokeStyle = C("--grafit"); g.lineWidth = 2.5; g.setLineDash([8, 8]);
       near.forEach(n => { const q = toPx(n.d); g.beginPath(); g.moveTo(t.px, t.py); g.lineTo(q.px, q.py); g.stroke(); });
       g.setLineDash([]);
     }
-    data.forEach(d => drawFruit(d, d.c === "apple" ? cs("--c-ai") : cs("--c-el")));
+    data.forEach(d => drawFruit(d, d.c));
     if (s.test) {
-      const t = toPx(s.test);
-      const pulse = 1 + Math.sin(performance.now() / 300) * .06;
-      g.strokeStyle = cs("--ink"); g.lineWidth = 4; g.setLineDash([6, 6]);
-      g.beginPath(); g.arc(t.px, t.py, 58 * pulse, 0, Math.PI * 2); g.stroke(); g.setLineDash([]);
-      drawFruit({ ...s.test, c: s.test.truth }, cs("--ink"), 1, 1.1);
-      g.fillStyle = cs("--ink"); g.font = `700 34px ${cs("--font-display")}`; g.textAlign = "center";
-      g.fillText("?", t.px, t.py - 70);
+      const t = toPx(s.test), still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const r = 54 + (still ? 0 : Math.sin(now / 400) * 3);
+      g.fillStyle = C("--ark"); g.strokeStyle = C("--grafit"); g.lineWidth = 3;
+      g.beginPath(); g.arc(t.px, t.py, r, 0, Math.PI * 2); g.fill(); g.stroke();
+      drawFruit(s.test, s.test.truth, 1.05);
+      g.fillStyle = C("--grafit"); g.font = `700 32px ${C("--text")}`; g.textAlign = "center";
+      g.fillText("?", t.px, t.py - r - 12);
     }
     requestAnimationFrame(draw);
   }
 
-  function name(c) { return c === "apple" ? K.t("ett äpple", "an apple") : K.t("en citron", "a lemon"); }
-  function Name(c) { return c === "apple" ? K.t("Äpple", "Apple") : K.t("Citron", "Lemon"); }
+  const name = c => c === "apple" ? K.t("äpple", "apple") : K.t("citron", "lemon");
+  const enArt = c => c === "apple" ? "an apple" : "a lemon";
+  const svArt = c => c === "apple" ? "ett äpple" : "en citron";
 
-  function say() {
+  function paint() {
     $("n-ex").textContent = data.length;
-    $("n-ok").textContent = s.right + "/" + s.tests;
+    $("n-ok").textContent = K.t(`${s.right} av ${s.tests}`, `${s.right} of ${s.tests}`);
     $("o-k").textContent = s.k;
+    flap();
     if (!s.test) {
-      $("say").textContent = K.t("Visa mig en frukt!", "Show me a fruit!");
-      $("say-sub").textContent = K.t("Tryck på ”Ny mystisk frukt” så gissar jag.", "Tap “New mystery fruit” and I will guess.");
-      $("conf").style.width = "0%"; $("teach").hidden = true; return;
+      $("g-svar").textContent = "–"; $("g-sak").style.width = "0%"; $("teach").hidden = true;
+      K.status(K.t("Ingen mystisk frukt än. Tryck på Ny mystisk frukt.", "No mystery fruit yet. Press New mystery fruit."));
+      return;
     }
-    const pr = predict(s.test);
+    const pr = predict(s.test), pct = Math.round(pr.conf * 100);
+    $("g-svar").textContent = `${name(pr.c)[0].toUpperCase() + name(pr.c).slice(1)}, ${pct} %`;
+    $("g-sak").style.width = pct + "%";
     const ok = pr.c === s.test.truth;
-    $("say").textContent = K.t("Jag tror: ", "I think: ") + Name(pr.c) + ` (${Math.round(pr.conf * 100)} %)`;
-    $("say-sub").textContent = ok
-      ? K.t("Rätt! Det var ", "Correct! It was ") + name(s.test.truth) + "."
-      : K.t("Fel! Det var ", "Wrong! It was ") + name(s.test.truth) + K.t(". Jag har inte sett nog med sådana.", ". I have not seen enough of those.");
-    $("conf").style.width = pr.conf * 100 + "%";
     $("teach").hidden = ok;
+    const votes = Math.round(pr.near.length * pr.conf);
+    K.status(ok
+      ? K.t(`Gissningen stämde. Det var ${svArt(s.test.truth)}. ${votes} av ${pr.near.length} grannar röstade så.`,
+            `The guess matched. It was ${enArt(s.test.truth)}. ${votes} of ${pr.near.length} neighbours voted that way.`)
+      : K.t(`Gissningen stämde inte. Det var ${svArt(s.test.truth)}. Maskinen har inte sett någon sådan förut.`,
+            `The guess did not match. It was ${enArt(s.test.truth)}. The machine has not seen one like it before.`));
   }
 
   function newTest() {
     s.testsMade++;
-    let t;
     const r = Math.random();
+    let t;
     if (s.testsMade === 2 || (s.testsMade > 3 && r < .35)) t = { x: .05 + Math.random() * .18, y: .5 + Math.random() * .3, truth: "apple" };
     else if (r < .65) t = { x: .42 + Math.random() * .16, y: .2 + Math.random() * .25, truth: "lemon" };
     else t = { x: .78 + Math.random() * .18, y: .5 + Math.random() * .35, truth: "apple" };
     s.test = t;
     const pr = predict(t);
     s.tests++; if (pr.c === t.truth) s.right++;
+    paint();
     if (s.tests >= 3) tasks.complete("testa");
     if (t.truth === "apple" && t.x < .3 && pr.c === "apple") tasks.complete("gron");
-    say();
   }
 
   function addExample(p, c) {
     const before = predict(p);
     data.push({ x: p.x, y: p.y, c });
+    paint();
     if (data.length - startCount >= 4) tasks.complete("lagg");
     if (before.c !== c && before.conf >= .99 && c === "apple" && p.x > .3 && p.x < .7) tasks.complete("lura");
     if (s.test && s.test.truth === "apple" && s.test.x < .3 && predict(s.test).c === "apple") tasks.complete("gron");
-    say();
   }
 
   cv.addEventListener("click", e => {
@@ -247,11 +283,11 @@
   $("pick-lemon").addEventListener("click", () => pick("lemon"));
   $("pick-apple").addEventListener("click", () => pick("apple"));
   $("test").addEventListener("click", newTest);
-  $("teach").addEventListener("click", () => { if (s.test) addExample(s.test, s.test.truth); });
-  $("k").addEventListener("input", e => { s.k = +e.target.value; say(); });
-  K.onLang(say);
+  $("teach").addEventListener("click", () => { if (s.test) { addExample(s.test, s.test.truth); s.test = null; paint(); } });
+  $("k").addEventListener("input", e => { s.k = +e.target.value; paint(); });
+  K.onLang(paint);
 
-  say();
+  paint();
   requestAnimationFrame(draw);
 })();
 </script>

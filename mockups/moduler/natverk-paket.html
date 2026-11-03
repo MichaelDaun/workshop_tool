@@ -6,95 +6,101 @@
 <title>Paketresan – Verkstan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
 <link rel="stylesheet" href="../shared/theme.css">
 <style>
   #net { user-select: none; touch-action: manipulation; }
-  .link { stroke: var(--line); stroke-width: 8; stroke-linecap: round; transition: stroke .3s; }
-  .link.route { stroke: color-mix(in srgb, var(--domain) 45%, var(--line)); }
-  .link.cut { stroke: var(--bad); stroke-dasharray: 4 14; stroke-width: 6; }
+  .link { stroke: var(--grafit); stroke-width: 3; stroke-linecap: round; fill: none; }
+  .link.route { stroke: var(--aktiv); stroke-width: 7; }
+  .link.cut { stroke: var(--blyerts); stroke-width: 3; stroke-dasharray: 2 8; }
   .link-hit { stroke: transparent; stroke-width: 34; cursor: pointer; }
-  .link-hit:hover + .scissor { opacity: 1; }
-  .scissor { opacity: 0; pointer-events: none; transition: opacity .2s; }
-  .scissor.show { opacity: 1; }
+  .link-hit:focus-visible { outline: none; stroke: color-mix(in srgb, var(--grafit) 14%, transparent); }
+  .sax { pointer-events: none; opacity: 0; transition: opacity var(--kort); }
+  .link-hit:hover + .sax, .link-hit:focus-visible + .sax { opacity: 1; }
   .node { cursor: pointer; }
-  .node circle.base { fill: var(--surface); stroke: var(--ink); stroke-width: 3; transition: fill .3s, stroke .3s; }
-  .node.from circle.base { fill: var(--domain); stroke: var(--domain); }
-  .node.to circle.base { fill: var(--c-kod); stroke: var(--c-kod); }
-  .node .house { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; }
-  .node.from .house, .node.to .house { stroke: #fff; }
-  .node text { font-family: var(--font-display); font-weight: 700; font-size: 19px; fill: var(--ink); }
-  .node .tag { font-family: var(--font-data); font-size: 13px; font-weight: 600; fill: var(--ink-soft); letter-spacing: .06em; }
-  .node:hover circle.base { stroke-width: 5; }
-  .pkt rect { fill: var(--domain); }
-  .pkt text { font-family: var(--font-data); font-weight: 600; font-size: 18px; fill: #fff; }
-  .pkt.lost rect { fill: var(--bad); }
-  .msg-box { display: flex; gap: 6px; align-items: center; min-height: 52px; flex-wrap: wrap; }
-  .msg-box .slot { width: 42px; height: 48px; border-radius: 10px; border: 2px dashed var(--line); display: grid; place-items: center; font-family: var(--font-data); font-size: 1.4rem; font-weight: 600; transition: all .4s var(--ease); }
-  .msg-box .slot.in { border: 2px solid var(--domain); background: var(--domain); color: #fff; transform: translateY(-3px); }
-  .msg-box .slot.lost { border-color: var(--bad); color: var(--bad); }
-  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-top: 12px; }
-  .legend-n { display: flex; gap: 14px; flex-wrap: wrap; font-size: var(--fs-s); color: var(--ink-soft); }
-  .legend-n span { display: inline-flex; gap: 6px; align-items: center; }
-  .legend-n i { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
-  #msg { height: 46px; width: 9ch; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); padding: 0 14px; font-family: var(--font-data); font-size: 1.1rem; text-transform: uppercase; }
+  .node .base { fill: var(--ark); stroke: var(--grafit); stroke-width: 2.5; }
+  .node .hus { fill: none; stroke: var(--grafit); stroke-width: 2.5; stroke-linejoin: round; }
+  .node.from .base { fill: var(--grafit); }
+  .node.from .hus { stroke: var(--pa-grafit); }
+  .node.to .base { stroke: var(--aktiv); stroke-width: 6; }
+  .node text { font-family: var(--text); font-weight: 700; font-size: 19px; fill: var(--grafit); paint-order: stroke; stroke: var(--ark); stroke-width: 6px; stroke-linejoin: round; }
+  .node .tag { font-size: 14px; font-weight: 400; fill: var(--blyerts); }
+  .node:focus-visible { outline: none; }
+  .node:focus-visible .base, .node:hover .base { stroke-width: 4.5; }
+  .node.to:hover .base { stroke-width: 7; }
+  .pkt rect { fill: var(--aktiv); }
+  .pkt text { font-family: var(--siffror); font-weight: 600; font-size: 17px; fill: var(--ark); }
+  .pkt.lost rect { fill: var(--blyerts); }
+
+  .rad { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  #msg { height: 48px; width: 10ch; border-radius: 6px; border: 1px solid var(--grafit); background: var(--ark); padding: 0 12px; font-family: var(--siffror); font-size: 18px; text-transform: uppercase; }
+  .inkorg { display: flex; gap: 6px; align-items: center; min-height: 50px; flex-wrap: wrap; }
+  .inkorg .slot { width: 40px; height: 46px; border-radius: 6px; border: 1px dashed var(--linje); display: grid; place-items: center; font-family: var(--siffror); font-size: 20px; font-weight: 600; transition: border-color var(--lugn), background var(--lugn); }
+  .inkorg .slot.in { border: 1px solid var(--grafit); background: color-mix(in srgb, var(--aktiv) 14%, var(--ark)); }
+  .inkorg .slot.lost { border: 1px solid var(--blyerts); color: var(--blyerts); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: var(--fs-liten); color: var(--blyerts); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .legend svg { width: 28px; height: 14px; }
 </style>
 </head>
 <body data-domain="nat">
-<header class="topbar" data-title-sv="Paketresan" data-title-en="The packet journey"></header>
+<header class="topbar" data-title-sv="Paketresan" data-title-en="Packet tour"></header>
 
 <main class="module">
   <section class="stage">
-    <svg id="net" viewBox="0 0 800 470" role="img" aria-label="Ett nätverk av hus som är sammankopplade med kablar" data-aria-en="A network of houses connected by cables">
-      <g id="links"></g>
-      <g id="nodes"></g>
-      <g id="pkts"></g>
-    </svg>
+    <div class="scen">
+      <svg id="net" viewBox="0 0 800 470" role="img" aria-label="Sju hus som är sammankopplade med kablar" data-aria-en="Seven houses connected by cables">
+        <g id="links"></g><g id="nodes"></g><g id="pkts"></g>
+      </svg>
+    </div>
+    <p class="status" aria-live="polite" role="status"></p>
 
-    <div class="row">
-      <div class="legend-n">
-        <span><i style="background:var(--domain)"></i><span data-en="Sender">Avsändare</span></span>
-        <span><i style="background:var(--c-kod)"></i><span data-en="Receiver">Mottagare</span></span>
-        <span><i style="background:var(--bad)"></i><span data-en="Cut cable">Klippt kabel</span></span>
-      </div>
-      <span class="eyebrow" data-en="Tap a house · tap a cable to cut it">Tryck på ett hus · tryck på en kabel för att klippa</span>
+    <div class="legend">
+      <span><svg viewBox="0 0 28 14" aria-hidden="true"><line x1="2" y1="7" x2="26" y2="7" stroke="var(--grafit)" stroke-width="3"/></svg><span data-en="Cable">Kabel</span></span>
+      <span><svg viewBox="0 0 28 14" aria-hidden="true"><line x1="2" y1="7" x2="26" y2="7" stroke="var(--aktiv)" stroke-width="7" stroke-linecap="round"/></svg><span data-en="Shortest way right now">Kortaste vägen just nu</span></span>
+      <span><svg viewBox="0 0 28 14" aria-hidden="true"><line x1="2" y1="7" x2="26" y2="7" stroke="var(--blyerts)" stroke-width="3" stroke-dasharray="2 6"/></svg><span data-en="Cut cable">Klippt kabel</span></span>
+    </div>
+    <p class="liten" data-en="Tap a house to choose who sends and who receives. Tap a cable to cut it, and again to repair it.">Tryck på ett hus för att välja vem som skickar och vem som tar emot. Tryck på en kabel för att klippa den, och igen för att laga den.</p>
+
+    <div class="rad">
+      <label for="msg" class="liten" data-en="Message">Meddelande</label>
+      <input id="msg" maxlength="6" value="HEJ" autocomplete="off" spellcheck="false">
+      <button class="btn" id="send" type="button" data-en="Send">Skicka</button>
+      <button class="btn ghost" id="fix" type="button" data-en="Repair all cables">Laga alla kablar</button>
+    </div>
+    <div class="rad">
+      <span class="liten" id="inkorg-lbl"></span>
+      <div class="inkorg" id="inbox"></div>
     </div>
 
-    <div class="row">
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-        <label for="msg" class="eyebrow" data-en="Message">Meddelande</label>
-        <input id="msg" maxlength="6" value="HEJ!" autocomplete="off">
-        <button class="btn" id="send" type="button" data-en="Send">Skicka</button>
-        <button class="btn ghost" id="fix" type="button" data-en="Repair all cables">Laga alla kablar</button>
-      </div>
-      <div class="msg-box" id="inbox" aria-live="polite"></div>
+    <div class="readouts">
+      <div class="readout"><span class="v" id="r-hops">–</span><span class="k" data-en="hops on the shortest way">hopp på kortaste vägen</span></div>
+      <div class="readout"><span class="v" id="r-arr">0 av 0</span><span class="k" data-en="packets arrived">paket framme</span></div>
     </div>
   </section>
 
   <aside class="panel">
-    <div class="card mission" id="mission">
-      <div class="eyebrow" data-en="Networks · ~10 min">Nätverk · ~10 min</div>
-      <h2 data-en="How does a message travel?">Hur reser ett meddelande?</h2>
-      <p class="lead" data-en="The internet chops every message into small packets. Each one finds its own way.">Internet hackar varje meddelande i små paket. Varje paket hittar sin egen väg.</p>
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Networks, about 10 minutes">Nätverk, ungefär 10 minuter</p>
+      <h2 data-en="How a message travels">Så reser ett meddelande</h2>
+      <p class="lead" data-en="On the internet every message is cut into small packets. Each packet finds its own way to the receiver.">På internet delas varje meddelande upp i små paket. Varje paket hittar sin egen väg till mottagaren.</p>
     </div>
-    <div class="card">
-      <div class="readouts">
-        <div class="readout"><span class="v" id="r-hops">–</span><span class="k" data-en="hops (shortest way)">hopp (kortaste vägen)</span></div>
-        <div class="readout"><span class="v" id="r-arr">0/0</span><span class="k" data-en="packets arrived">paket framme</span></div>
-      </div>
-    </div>
-    <details class="card why">
+
+    <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="<strong>Packets:</strong> a message, a photo or a video call is cut into thousands of small pieces with an address on each.">
-          <strong>Paket:</strong> ett meddelande, en bild eller ett videosamtal delas upp i tusentals små bitar med en adress på varje.</p>
-        <p data-en="<strong>Routers</strong> (here: the houses) look at the address and pass the packet one step closer.">
-          <strong>Routrar</strong> (här: husen) läser adressen och skickar paketet ett steg närmare.</p>
-        <p data-en="<strong>Many ways = strong network.</strong> If a cable breaks, the packets go around. That is why the internet rarely stops.">
-          <strong>Många vägar = starkt nät.</strong> Om en kabel går sönder tar paketen en omväg. Därför stannar internet nästan aldrig.</p>
+        <p data-en="A message, a photo or a video call is cut into thousands of <b>packets</b>. Each one carries the address it is going to.">Ett meddelande, en bild eller ett videosamtal delas upp i tusentals <b>paket</b>. Varje paket bär adressen det ska till.</p>
+        <p data-en="The houses here are <b>routers</b>. A router reads the address and sends the packet one step closer.">Husen här är <b>routrar</b>. En router läser adressen och skickar paketet ett steg närmare.</p>
+        <p data-en="When a cable breaks, the packets take another way. With many cables the network keeps working. With too few, one break is enough to cut someone off.">När en kabel går sönder tar paketen en annan väg. Med många kablar fortsätter nätet att fungera. Med för få räcker ett avbrott för att någon blir avskuren.</p>
       </div>
     </details>
-    <p class="mock-note" data-en="Mock-up. Whole-room version: each participant is a router on their phone and passes packets on by tapping. The room becomes the network.">Mockup. Helrumsversion: varje deltagare är en router i mobilen och skickar paket vidare med ett tryck. Rummet blir nätverket.</p>
+
+    <div id="lada"></div>
+
+    <div>
+      <h3 style="font-size:var(--fs-r3)" data-en="With the whole room">Med hela rummet</h3>
+      <p class="liten" style="margin-top:6px" data-en="Every participant is a router on their phone and passes packets on with a tap. The leader cuts cables on the big screen, and the room has to find new ways.">Varje deltagare är en router i mobilen och skickar paket vidare med ett tryck. Ledaren klipper kablar på storskärmen och rummet får hitta nya vägar.</p>
+    </div>
   </aside>
 </main>
 
@@ -110,17 +116,17 @@
     { id: "G", name: "Gus",  x: 710, y: 330 }
   ];
   const E = [["A","B"],["A","C"],["B","D"],["C","D"],["C","E"],["D","F"],["D","E"],["E","G"],["F","G"],["B","F"]].map(([a, b]) => ({ a, b, cut: false }));
-  const s = { from: "A", to: "G", pickNext: "from", pkts: [], sending: false, cutDuringFlight: false, baseRoute: null };
+  const s = { from: "A", to: "G", pickNext: "from", pkts: [], cutDuringFlight: false };
   const node = id => N.find(n => n.id === id);
 
   const tasks = K.tasks($("mission"), "natverk", [
-    { id: "skicka", text: { sv: "Skicka ett meddelande", en: "Send a message" } },
-    { id: "omvag",  text: { sv: "Klipp en kabel på vägen och skicka igen", en: "Cut a cable on the way and send again" } },
-    { id: "flygande", text: { sv: "Klipp en kabel medan paketen reser", en: "Cut a cable while packets are travelling" }, hint: { sv: "Var snabb!", en: "Be quick!" } },
-    { id: "isolera",  text: { sv: "Gör så att inget kan komma fram", en: "Make it impossible to get through" }, hint: { sv: "Hur många kablar måste du klippa?", en: "How many cables must you cut?" } }
+    { id: "skicka",   text: { sv: "Skicka ett meddelande", en: "Send a message" } },
+    { id: "omvag",    text: { sv: "Klipp en kabel på vägen och skicka igen", en: "Cut a cable on the way and send again" } },
+    { id: "flygande", text: { sv: "Klipp en kabel medan paketen reser", en: "Cut a cable while the packets travel" }, hint: { sv: "Skicka först, klipp sedan en kabel som paketen ska över.", en: "Send first, then cut a cable the packets are about to cross." } },
+    { id: "isolera",  text: { sv: "Gör så att inget kommer fram", en: "Make it impossible to get through" }, hint: { sv: "Hur få kablar räcker?", en: "How few cables are enough?" } }
   ]);
 
-  /* --- graf --- */
+  /* ---- graf ---- */
   const neighbours = id => E.filter(e => !e.cut && (e.a === id || e.b === id)).map(e => e.a === id ? e.b : e.a);
   function route(from, to) {
     const prev = { [from]: null }, q = [from];
@@ -133,50 +139,81 @@
     return path;
   }
   const edgeOf = (a, b) => E.find(e => (e.a === a && e.b === b) || (e.a === b && e.b === a));
+  const names = path => path.map(id => node(id).name).join(", ");
+  const flying = () => s.pkts.some(p => !p.done);
 
-  /* --- ritning --- */
+  /* ---- lådan: nätverksbordet ---- */
+  const hx = x => 22 + x * 0.32, hy = y => 16 + y * 0.25;
+  K.lada($("lada"), {
+    nod: "nod-05",
+    delar: { sv: "Pico W, 1 m LED-slinga WS2812 klippt i tio bitar (en per kabel), tio bygelkontakter som man drar ur för att klippa, sju hus i kartong", en: "Pico W, 1 m WS2812 LED strip cut into ten pieces (one per cable), ten jumper plugs you pull out to cut, seven cardboard houses" },
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Bord med sju små hus och ljusslingor som kablar">
+      <rect class="hw-platta" x="8" y="6" width="284" height="138" rx="6"/>
+      ${E.map((e, i) => {
+        const A = node(e.a), B = node(e.b), mx = (hx(A.x) + hx(B.x)) / 2, my = (hy(A.y) + hy(B.y)) / 2;
+        const leds = [0.27, 0.73].map(t => `<circle class="hw-led" r="3" cx="${hx(A.x) + (hx(B.x) - hx(A.x)) * t}" cy="${hy(A.y) + (hy(B.y) - hy(A.y)) * t}"/>`).join("");
+        return `<g id="hw-e${i}"><line x1="${hx(A.x)}" y1="${hy(A.y)}" x2="${hx(B.x)}" y2="${hy(B.y)}" stroke="var(--linje)" stroke-width="4" stroke-linecap="round"/>${leds}
+          <rect class="hw-plugg" x="${mx - 4}" y="${my - 3}" width="8" height="6" rx="1" fill="var(--grafit)"/></g>`;
+      }).join("")}
+      ${N.map(n => `<rect x="${hx(n.x) - 7}" y="${hy(n.y) - 7}" width="14" height="14" rx="2" fill="var(--ark)" stroke="var(--grafit)" stroke-width="2"/>`).join("")}
+    </svg>`
+  });
+  function paintBox() {
+    E.forEach((e, i) => {
+      const g = $("hw-e" + i); if (!g) return;
+      const busy = s.pkts.some(p => !p.done && p.next && edgeOf(p.from, p.next) === e && !e.cut);
+      g.querySelectorAll(".hw-led").forEach(l => l.classList.toggle("pa", busy));
+      const plug = g.querySelector(".hw-plugg");
+      plug.setAttribute("transform", e.cut ? "translate(0 -9)" : "");
+      plug.setAttribute("fill", e.cut ? "var(--blyerts)" : "var(--grafit)");
+    });
+  }
+
+  /* ---- ritning ---- */
   function drawLinks() {
     const g = $("links"); g.innerHTML = "";
     const r = route(s.from, s.to) || [];
     const onRoute = new Set(r.slice(1).map((n, i) => edgeOf(r[i], n)));
     E.forEach(e => {
-      const A = node(e.a), B = node(e.b);
+      const A = node(e.a), B = node(e.b), mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
       const l = document.createElementNS(NS, "line");
       l.setAttribute("x1", A.x); l.setAttribute("y1", A.y); l.setAttribute("x2", B.x); l.setAttribute("y2", B.y);
       l.setAttribute("class", "link" + (e.cut ? " cut" : onRoute.has(e) ? " route" : ""));
       const hit = l.cloneNode(); hit.setAttribute("class", "link-hit");
       hit.setAttribute("tabindex", "0"); hit.setAttribute("role", "button");
       hit.setAttribute("aria-label", (e.cut ? K.t("Laga kabeln ", "Repair the cable ") : K.t("Klipp kabeln ", "Cut the cable ")) + A.name + "–" + B.name);
-      const sc = document.createElementNS(NS, "g"); sc.setAttribute("class", "scissor" + (e.cut ? " show" : ""));
-      const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
-      sc.innerHTML = `<circle cx="${mx}" cy="${my}" r="16" fill="var(--surface)" stroke="${e.cut ? "var(--bad)" : "var(--ink)"}" stroke-width="2.5"/>
-        <path d="M${mx - 6} ${my - 6} l12 12 M${mx + 6} ${my - 6} l-12 12" stroke="${e.cut ? "var(--bad)" : "var(--ink)"}" stroke-width="2.5" stroke-linecap="round"/>`;
+      // en sax som syns när man pekar, och ett avklippt glapp när kabeln är klippt
+      const sax = document.createElementNS(NS, "g"); sax.setAttribute("class", "sax");
+      sax.innerHTML = `<circle cx="${mx}" cy="${my}" r="15" fill="var(--ark)" stroke="var(--grafit)" stroke-width="2"/>
+        <circle cx="${mx - 5}" cy="${my + 5}" r="3.5" fill="none" stroke="var(--grafit)" stroke-width="2"/><circle cx="${mx + 5}" cy="${my + 5}" r="3.5" fill="none" stroke="var(--grafit)" stroke-width="2"/>
+        <path d="M${mx - 3} ${my + 2} L${mx + 5} ${my - 8} M${mx + 3} ${my + 2} L${mx - 5} ${my - 8}" stroke="var(--grafit)" stroke-width="2" stroke-linecap="round"/>`;
       const toggle = () => {
         e.cut = !e.cut;
-        if (e.cut && s.pkts.some(p => !p.done)) s.cutDuringFlight = true;
-        drawLinks(); readouts();
+        if (e.cut && flying()) s.cutDuringFlight = true;
+        drawLinks(); readouts(); paintBox(); describe();
       };
       hit.addEventListener("click", toggle);
       hit.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggle(); } });
-      g.append(l, hit, sc);
+      g.append(l, hit, sax);
     });
   }
   function drawNodes() {
     const g = $("nodes"); g.innerHTML = "";
     N.forEach(n => {
       const el = document.createElementNS(NS, "g");
-      el.setAttribute("class", "node" + (n.id === s.from ? " from" : n.id === s.to ? " to" : ""));
-      el.setAttribute("tabindex", "0"); el.setAttribute("role", "button"); el.setAttribute("aria-label", n.name);
-      el.innerHTML = `<circle class="base" cx="${n.x}" cy="${n.y}" r="32"/>
-        <path class="house" d="M${n.x - 13} ${n.y + 12} V${n.y - 2} L${n.x} ${n.y - 14} L${n.x + 13} ${n.y - 2} V${n.y + 12} Z M${n.x - 4} ${n.y + 12} V${n.y + 3} H${n.x + 4} V${n.y + 12}"/>
-        <text x="${n.x}" y="${n.y + 58}" text-anchor="middle">${n.name}</text>
-        ${n.id === s.from ? `<text class="tag" x="${n.x}" y="${n.y - 44}" text-anchor="middle">${K.t("FRÅN", "FROM")}</text>` : ""}
-        ${n.id === s.to ? `<text class="tag" x="${n.x}" y="${n.y - 44}" text-anchor="middle">${K.t("TILL", "TO")}</text>` : ""}`;
+      const role = n.id === s.from ? "from" : n.id === s.to ? "to" : "";
+      el.setAttribute("class", "node " + role);
+      el.setAttribute("tabindex", "0"); el.setAttribute("role", "button");
+      el.setAttribute("aria-label", n.name + (role === "from" ? K.t(", skickar", ", sends") : role === "to" ? K.t(", tar emot", ", receives") : ""));
+      el.innerHTML = `<circle class="base" cx="${n.x}" cy="${n.y}" r="30"/>
+        <path class="hus" d="M${n.x - 12} ${n.y + 11} V${n.y - 2} L${n.x} ${n.y - 13} L${n.x + 12} ${n.y - 2} V${n.y + 11} Z M${n.x - 4} ${n.y + 11} V${n.y + 3} H${n.x + 4} V${n.y + 11}"/>
+        <text x="${n.x}" y="${n.y + 56}" text-anchor="middle">${n.name}</text>
+        ${role ? `<text class="tag" x="${n.x}" y="${n.y - 42}" text-anchor="middle">${role === "from" ? K.t("skickar", "sends") : K.t("tar emot", "receives")}</text>` : ""}`;
       const pick = () => {
-        if (s.pkts.some(p => !p.done)) return;
+        if (flying()) return;
         if (s.pickNext === "from") { if (n.id === s.to) s.to = s.from; s.from = n.id; s.pickNext = "to"; }
         else { if (n.id === s.from) return; s.to = n.id; s.pickNext = "from"; }
-        drawNodes(); drawLinks(); readouts();
+        drawNodes(); drawLinks(); readouts(); describe();
       };
       el.addEventListener("click", pick);
       el.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); pick(); } });
@@ -185,19 +222,30 @@
   }
   function readouts() {
     const r = route(s.from, s.to);
-    $("r-hops").textContent = r ? r.length - 1 : "✕";
+    $("r-hops").textContent = r ? r.length - 1 : K.t("ingen väg", "no way");
     const total = s.pkts.length, arr = s.pkts.filter(p => p.arrived).length;
-    $("r-arr").textContent = arr + "/" + total;
+    $("r-arr").textContent = K.t(`${arr} av ${total}`, `${arr} of ${total}`);
+    $("inkorg-lbl").textContent = K.t(`Det som kommer fram till ${node(s.to).name}:`, `What reaches ${node(s.to).name}:`);
+  }
+  function describe() {
+    if (flying()) {
+      const n = s.pkts.filter(p => !p.done).length;
+      K.status(K.t(`${n} paket på väg. Varje router väljer nästa steg själv.`, `${n} packets on the way. Each router picks the next step itself.`));
+      return;
+    }
+    const r = route(s.from, s.to);
+    if (!r) K.status(K.t(`Ingen väg finns från ${node(s.from).name} till ${node(s.to).name}.`, `There is no way from ${node(s.from).name} to ${node(s.to).name}.`), "fara");
+    else K.status(K.t(`Kortaste vägen just nu: ${names(r)}. ${r.length - 1} hopp.`, `Shortest way right now: ${names(r)}. ${r.length - 1} hops.`));
   }
 
-  /* --- paket --- */
+  /* ---- paket ---- */
   function inbox(text) {
     const box = $("inbox"); box.innerHTML = "";
     [...text].forEach(() => { const d = document.createElement("div"); d.className = "slot"; box.append(d); });
   }
   function send() {
-    if (s.pkts.some(p => !p.done)) return;
-    const text = ($("msg").value || "HEJ!").toUpperCase().slice(0, 6);
+    if (flying()) return;
+    const text = ($("msg").value.trim() || "HEJ").toUpperCase().slice(0, 6);
     inbox(text);
     s.cutDuringFlight = false;
     const r = route(s.from, s.to);
@@ -210,10 +258,10 @@
     const g = $("pkts"); g.innerHTML = "";
     s.pkts.forEach(p => {
       p.el = document.createElementNS(NS, "g"); p.el.setAttribute("class", "pkt");
-      p.el.innerHTML = `<rect x="-17" y="-15" width="34" height="30" rx="7"/><text text-anchor="middle" y="7">${p.ch.replace(/[<>&]/g, "")}</text>`;
+      p.el.innerHTML = `<rect x="-16" y="-14" width="32" height="28" rx="4"/><text text-anchor="middle" y="6">${p.ch.replace(/[<>&]/g, "")}</text>`;
       g.append(p.el);
     });
-    readouts();
+    readouts(); describe();
   }
 
   let last = performance.now();
@@ -227,24 +275,23 @@
         if (p.at === s.to) { arrive(p); changed = true; return; }
         const r = route(p.at, s.to);
         if (!r) { p.stuck += dt; if (p.stuck > 1.6) { lose(p); changed = true; } place(p); return; }
-        p.stuck = 0; p.from = p.at; p.next = r[1]; p.t = 0; p.back = false;
+        p.stuck = 0; p.from = p.at; p.next = r[1]; p.t = 0; p.back = false; changed = true;
       }
       const e = edgeOf(p.from, p.next);
-      if (e.cut && !p.back) { p.back = true; }       // kabeln klipptes: studsa tillbaka
+      if (e.cut && !p.back) p.back = true;            // kabeln klipptes: paketet vänder
       p.t += dt * (p.back ? -1.6 : 1.1);
-      if (p.back && p.t <= 0) { p.t = 0; p.next = null; p.at = p.from; }
-      else if (!p.back && p.t >= 1) { p.at = p.next; p.next = null; p.t = 0; }
+      if (p.back && p.t <= 0) { p.t = 0; p.next = null; p.at = p.from; changed = true; }
+      else if (!p.back && p.t >= 1) { p.at = p.next; p.next = null; p.t = 0; changed = true; }
       place(p);
     });
-    if (changed) { readouts(); checkDone(); }
+    if (changed) { readouts(); paintBox(); checkDone(); }
     requestAnimationFrame(step);
   }
   function place(p) {
     let x, y;
     if (p.next) { const A = node(p.from), B = node(p.next); x = A.x + (B.x - A.x) * p.t; y = A.y + (B.y - A.y) * p.t; }
-    else { const A = node(p.at); x = A.x; y = A.y; }
-    const off = p.next ? 0 : (p.i - 2) * 6;
-    p.el.setAttribute("transform", `translate(${x + off},${y - (p.next ? 0 : 40)})`);
+    else { const A = node(p.at); x = A.x + (p.i - 2) * 6; y = A.y - 40; }
+    p.el.setAttribute("transform", `translate(${x},${y})`);
     p.el.style.opacity = p.wait > 0 ? 0 : 1;
   }
   function arrive(p) {
@@ -257,24 +304,27 @@
     const slot = $("inbox").children[p.i]; slot.textContent = "?"; slot.classList.add("lost");
   }
   function checkDone() {
-    if (!s.pkts.length || s.pkts.some(p => !p.done)) return;
-    const all = s.pkts.every(p => p.arrived), none = s.pkts.every(p => !p.arrived);
-    if (all) {
+    if (!s.pkts.length || flying()) return;
+    const arr = s.pkts.filter(p => p.arrived).length, total = s.pkts.length, to = node(s.to).name;
+    if (arr === total) {
+      K.status(K.t(`Alla ${total} paket kom fram till ${to}${s.usedDetour ? ", via en omväg" : ""}.`, `All ${total} packets reached ${to}${s.usedDetour ? ", by a detour" : ""}.`), "klar");
       tasks.complete("skicka");
       if (s.usedDetour) tasks.complete("omvag");
       if (s.cutDuringFlight) tasks.complete("flygande");
-    } else if (none && s.noRoute) {
+    } else if (arr === 0 && s.noRoute) {
+      K.status(K.t(`Inget paket kom fram. ${to} är avskuren från resten av nätet.`, `No packet arrived. ${to} is cut off from the rest of the network.`), "fara");
       tasks.complete("isolera");
-      K.toast(K.t("Ingen väg fram. Så sårbart blir ett nät med för få kablar.", "No way through. That is how fragile a network with too few cables is."), "!");
+    } else {
+      K.status(K.t(`${arr} av ${total} paket kom fram. Resten fastnade när vägen försvann.`, `${arr} of ${total} packets arrived. The rest got stuck when the way disappeared.`), "fara");
     }
   }
 
   $("send").addEventListener("click", send);
   $("msg").addEventListener("keydown", e => { if (e.key === "Enter") send(); });
-  $("fix").addEventListener("click", () => { E.forEach(e => e.cut = false); drawLinks(); readouts(); });
-  K.onLang(() => { drawNodes(); drawLinks(); });
+  $("fix").addEventListener("click", () => { E.forEach(e => e.cut = false); drawLinks(); readouts(); paintBox(); describe(); });
+  K.onLang(() => { drawNodes(); drawLinks(); readouts(); describe(); });
 
-  drawLinks(); drawNodes(); inbox("HEJ!"); readouts();
+  drawLinks(); drawNodes(); inbox("HEJ"); readouts(); paintBox(); describe();
   requestAnimationFrame(step);
 })();
 </script>

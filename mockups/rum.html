@@ -3,96 +3,114 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rumsläge – Verkstan</title>
+<title>Rumsvyn – Verkstan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
 <link rel="stylesheet" href="shared/theme.css">
 <style>
-  .room { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 22px; max-width: 1320px; margin: 0 auto; padding-block: 20px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); align-items: start; }
+  .room { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; max-width: 1320px; margin: 0 auto; padding-block: 20px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); align-items: start; }
   @media (max-width: 980px) { .room { grid-template-columns: minmax(0, 1fr); } }
-  .label-top { font-family: var(--font-data); font-size: var(--fs-xs); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px; display: flex; gap: 8px; align-items: center; }
-  .label-top i { width: 8px; height: 8px; border-radius: 50%; background: var(--bad); animation: blink 1.4s infinite; }
-  @keyframes blink { 50% { opacity: .2; } }
+  .over { font-size: var(--fs-liten); color: var(--blyerts); margin-bottom: 8px; }
 
-  /* Storskärm */
-  .screen { background: var(--surface); border-radius: var(--r-l); box-shadow: var(--shadow); overflow: hidden; min-width: 0; }
-  .screen-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 18px 20px; background: var(--ink); color: var(--bg); }
-  @media (max-width: 640px) { .screen-head { grid-template-columns: auto minmax(0, 1fr); } .screen-head .count { grid-column: 1 / -1; } }
-  .qr { width: 76px; height: 76px; border-radius: 10px; background: #fff; padding: 6px; display: grid; grid-template-columns: repeat(11, 1fr); gap: 0; }
-  .qr i { background: #142231; }
+  /* storskärmen */
+  .screen { background: var(--ark); border: 1px solid var(--linje); border-radius: 10px; overflow: hidden; min-width: 0; }
+  .screen-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--linje); }
+  @media (max-width: 640px) { .screen-head { grid-template-columns: auto minmax(0, 1fr); } .screen-head .count { grid-column: 1 / -1; text-align: left; } }
+  .qr { width: 80px; height: 80px; border: 1px solid var(--grafit); border-radius: 6px; background: var(--ark); padding: 6px; display: grid; grid-template-columns: repeat(11, 1fr); }
+  .qr i { background: var(--grafit); }
   .qr i.o { background: transparent; }
-  .code { font-family: var(--font-data); font-size: clamp(1.8rem, 1.2rem + 2vw, 2.8rem); font-weight: 600; letter-spacing: .06em; line-height: 1; }
-  .join-text { font-size: var(--fs-s); opacity: .8; margin-top: 6px; }
+  .code { font-family: var(--siffror); font-size: clamp(1.8rem, 1.2rem + 2vw, 2.6rem); font-weight: 600; line-height: 1; }
+  .join-text { font-size: var(--fs-liten); color: var(--blyerts); margin-top: 6px; }
   .count { text-align: right; }
-  .count b { font-family: var(--font-display); font-size: 2.4rem; display: block; line-height: 1; }
-  .count span { font-size: var(--fs-xs); opacity: .8; }
-  .tabs { display: flex; gap: 6px; padding: 12px 16px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-  .tab { border: 0; background: transparent; padding: 10px 14px; border-radius: 10px 10px 0 0; font-weight: 700; cursor: pointer; color: var(--ink-soft); border-bottom: 3px solid transparent; }
-  .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--c-logik); }
-  .pane { padding: 18px 20px 22px; }
+  .count b { font-family: var(--siffror); font-size: 34px; font-weight: 600; display: block; line-height: 1; }
+  .count span { font-size: var(--fs-liten); color: var(--blyerts); }
+  .tabs { display: flex; gap: 2px; padding: 0 12px; border-bottom: 1px solid var(--linje); overflow-x: auto; }
+  .tab { border: 0; background: transparent; padding: 12px 12px 10px; font-weight: 700; cursor: pointer; color: var(--blyerts); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+  .tab[aria-selected="true"] { color: var(--grafit); border-bottom-color: var(--grafit); }
+  .pane { padding: 18px; display: grid; gap: 16px; }
+  .rad { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
 
-  .people { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
-  .person { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; align-items: center; padding: 7px 9px; border-radius: 12px; background: var(--surface-2); border: 2px solid transparent; animation: join .6s var(--ease) both; transition: border-color .4s; }
-  @keyframes join { from { opacity: 0; transform: scale(.8) translateY(8px); } }
-  .person .av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #fff; }
-  .person .nm { font-size: var(--fs-xs); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* översikt */
+  .summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0 20px; }
+  .sum { padding: 8px 0; border-top: 1px solid var(--rutnat); display: grid; gap: 4px; min-width: 0; }
+  .sum .namn { display: grid; font-size: var(--fs-liten); min-width: 0; }
+  .sum .namn b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sum .namn span { color: var(--blyerts); font-variant-numeric: tabular-nums; }
+  .sum .bar { height: 4px; border-radius: 2px; background: var(--rutnat); overflow: hidden; display: flex; }
+  .sum .bar i { display: block; height: 100%; background: var(--aktiv); transition: width .8s var(--broms); }
+  .sum .bar i + i { background: color-mix(in srgb, var(--aktiv) 30%, var(--rutnat)); }
+  .lagesbild { padding: 10px 14px; border-left: 3px solid var(--grafit); background: var(--papper); font-size: 16px; border-radius: 0 6px 6px 0; }
+  .people { display: grid; grid-template-columns: repeat(auto-fill, minmax(156px, 1fr)); gap: 6px; }
+  .person { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; align-items: center; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--rutnat); animation: in var(--lugn) var(--broms) both; }
+  .person.me { border-color: var(--grafit); }
+  .person .av { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--grafit); display: grid; place-items: center; font-size: 11px; font-weight: 700; }
+  .person .av.lag { border-radius: 6px; background: var(--grafit); color: var(--pa-grafit); font-family: var(--siffror); }
+  .person .nm { font-size: var(--fs-liten); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .person .dots { display: flex; gap: 3px; margin-top: 3px; }
-  .person .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); transition: background .5s; }
-  .person.me { background: color-mix(in srgb, var(--c-logik) 18%, var(--surface)); }
-  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(108px, 1fr)); gap: 10px; margin-bottom: 16px; }
-  .sum { padding: 10px 12px; border-radius: 12px; background: var(--surface-2); display: grid; gap: 6px; }
-  .sum b { font-family: var(--font-display); font-size: var(--fs-s); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sum .bar { height: 8px; border-radius: 99px; background: var(--surface); overflow: hidden; }
-  .sum .bar i { display: block; height: 100%; background: var(--domain); transition: width .8s var(--ease); }
-  .sum span { font-family: var(--font-data); font-size: var(--fs-xs); color: var(--ink-soft); }
-  .insight { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--warn); margin-bottom: 16px; font-size: var(--fs-s); }
-  .insight .ic { width: 30px; height: 30px; border-radius: 50%; background: var(--warn); color: #fff; display: grid; place-items: center; font-weight: 800; flex: none; }
-  .pane-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .person .dots i { width: 9px; height: 9px; border-radius: 2px; border: 1.5px solid var(--linje); }
+  .person .dots i.pagar { border-color: var(--aktiv); }
+  .person .dots i.klar { border-color: var(--aktiv); background: var(--aktiv); }
 
-  #class-ai { width: 100%; aspect-ratio: 16 / 8; border-radius: var(--r-m); background: var(--surface-2); display: block; }
-  .ticker { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; min-height: 32px; }
-  .ticker span { font-size: var(--fs-xs); padding: 4px 10px; border-radius: 999px; background: var(--surface-2); animation: join .5s var(--ease) both; }
+  /* klassens AI */
+  #class-ai { aspect-ratio: 16 / 8; }
+  .ticker { display: grid; gap: 2px; min-height: 92px; align-content: start; }
+  .ticker span { font-size: var(--fs-liten); color: var(--blyerts); animation: in var(--lugn) var(--broms) both; }
+  .ticker span.mitt { color: var(--grafit); font-weight: 700; }
 
-  .poll-q { font-family: var(--font-display); font-size: var(--fs-xl); margin-bottom: 16px; }
-  .opt { display: grid; grid-template-columns: 40px minmax(0, 1fr) 56px; gap: 12px; align-items: center; margin-bottom: 10px; }
-  .opt .letter { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; color: #fff; }
-  .opt .track { position: relative; height: 40px; border-radius: 12px; background: var(--surface-2); overflow: hidden; }
-  .opt .track i { position: absolute; inset: 0 auto 0 0; width: 0; transition: width .6s var(--ease); opacity: .3; }
-  .opt .track span { position: relative; display: flex; align-items: center; height: 100%; padding: 0 12px; font-size: var(--fs-s); }
-  .opt .n { font-family: var(--font-data); text-align: right; }
-  .opt.right .track { outline: 3px solid var(--ok); }
+  /* snabbfråga */
+  .poll-q { font-size: var(--fs-r2); font-weight: 800; line-height: 1.2; }
+  .opts { display: grid; gap: 8px; }
+  .opt { display: grid; grid-template-columns: 40px minmax(0, 1fr) 48px; gap: 12px; align-items: center; }
+  .opt .letter { width: 40px; height: 40px; border-radius: 6px; border: 1px solid var(--grafit); display: grid; place-items: center; font-weight: 800; }
+  .opt .track { position: relative; height: 40px; border-radius: 6px; border: 1px solid var(--linje); overflow: hidden; }
+  .opt .track i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--rutnat); transition: width .6s var(--broms); }
+  .opt .track span { position: relative; display: flex; align-items: center; gap: 8px; height: 100%; padding: 0 12px; font-size: 16px; }
+  .opt .n { font-family: var(--siffror); text-align: right; }
+  .opt.right .letter { background: var(--grafit); color: var(--pa-grafit); }
+  .opt.right .track { border: 2px solid var(--grafit); }
+  .opt.right .track i { background: color-mix(in srgb, var(--nat) 22%, var(--ark)); }
 
-  /* Mobil */
+  /* lådor */
+  .lador { width: 100%; border-collapse: collapse; font-size: 16px; }
+  .lador th { text-align: left; font-weight: 400; font-size: var(--fs-liten); color: var(--blyerts); padding: 0 8px 6px; }
+  .lador td { padding: 10px 8px; border-top: 1px solid var(--rutnat); vertical-align: middle; }
+  .lador td.mono { font-family: var(--siffror); }
+  .lador select { height: 40px; border-radius: 6px; border: 1px solid var(--grafit); background: var(--ark); padding: 0 8px; max-width: 100%; }
+  .lador .btn { min-height: 40px; font-size: var(--fs-liten); padding: 0 12px; }
+  .lampa { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--grafit); vertical-align: -1px; margin-right: 6px; }
+  .lampa.pa { background: var(--grafit); }
+  .lampa.blink { animation: blink .5s steps(1) infinite; }
+  @keyframes blink { 50% { background: transparent; } }
+  .tyst { color: var(--blyerts); }
+  .tejp { display: inline-block; width: 18px; height: 12px; background: var(--tejp-monster); border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+  .tabell-wrap { overflow-x: auto; }
+  @media (max-width: 720px) { .lador .dold-smal { display: none; } }
+
+  /* mobilen */
   .phone-col { position: sticky; top: calc(76px + env(safe-area-inset-top, 0px)); }
   @media (max-width: 980px) { .phone-col { position: static; } }
-  .phone { width: min(100%, 320px); margin: 0 auto; border-radius: 38px; background: var(--ink); padding: 12px; box-shadow: var(--shadow); }
-  .phone-screen { border-radius: 28px; background: var(--bg); min-height: 560px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; }
-  .phone-top { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 10px; background: var(--surface); border-bottom: 1px solid var(--line); }
-  .phone-top b { font-family: var(--font-display); }
-  .phone-top .code-s { font-family: var(--font-data); font-size: var(--fs-xs); color: var(--ink-soft); }
+  .phone { width: min(100%, 300px); margin: 0 auto; border-radius: 30px; border: 8px solid var(--grafit); background: var(--papper); overflow: hidden; min-height: 560px; display: grid; grid-template-rows: auto 1fr; }
+  .phone-top { display: flex; justify-content: space-between; align-items: center; padding: 14px 14px 10px; background: var(--ark); border-bottom: 1px solid var(--linje); font-size: var(--fs-liten); }
+  .phone-top .code-s { font-family: var(--siffror); color: var(--blyerts); }
   .phone-body { padding: 14px; display: grid; gap: 10px; align-content: start; }
-  .phone-body h3 { font-size: var(--fs-l); }
-  .phone-body p { font-size: var(--fs-s); color: var(--ink-soft); }
-  .p-mod { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 14px; background: var(--surface); text-decoration: none; }
-  .p-mod i { width: 12px; height: 12px; border-radius: 50%; background: var(--domain); flex: none; }
-  .p-mod span { font-size: var(--fs-s); font-weight: 700; }
-  #mini { width: 100%; aspect-ratio: 1; border-radius: 16px; background: var(--surface); cursor: crosshair; display: block; touch-action: manipulation; }
-  .p-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .p-pick button, .p-vote button { height: 48px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); font-weight: 700; cursor: pointer; }
-  .p-pick button[aria-pressed="true"] { border-color: var(--ink); background: var(--surface-2); }
-  .p-vote { display: grid; gap: 8px; }
-  .p-vote button { text-align: left; padding: 0 14px; display: flex; gap: 10px; align-items: center; }
-  .p-vote button[aria-pressed="true"] { border-color: var(--c-logik); background: color-mix(in srgb, var(--c-logik) 14%, var(--surface)); }
-  .p-vote b { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; color: #fff; flex: none; }
+  .phone-body h3 { font-size: var(--fs-r3); }
+  .phone-body p { font-size: var(--fs-liten); color: var(--blyerts); }
+  .p-mod { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--linje); background: var(--ark); text-decoration: none; font-size: var(--fs-liten); font-weight: 700; }
+  .p-mod i { width: 10px; height: 10px; border-radius: 50%; background: var(--aktiv); flex: none; }
+  #mini { aspect-ratio: 1; cursor: crosshair; touch-action: manipulation; }
+  .p-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .p-vote { display: grid; gap: 6px; }
+  .p-vote .chip { justify-content: flex-start; min-height: 48px; text-align: left; }
+  .p-vote .chip b { width: 24px; flex: none; }
 </style>
 </head>
 <body>
-<header class="topbar" data-back="index.html" data-title-sv="Rumsläge" data-title-en="Room mode"></header>
+<header class="topbar" data-back="index.html" data-title-sv="Rumsvyn" data-title-en="Room view"></header>
 
 <main class="room">
   <div style="min-width:0">
-    <div class="label-top"><i></i><span data-en="Big screen · workshop leader">Storskärm · workshopledare</span></div>
+    <p class="over" data-en="Big screen, for the workshop leader">Storskärmen, för workshopledaren</p>
     <section class="screen">
       <div class="screen-head">
         <div class="qr" id="qr" aria-label="QR-kod (exempel)" data-aria-en="QR code (example)" role="img"></div>
@@ -106,47 +124,64 @@
         <button class="tab" role="tab" id="t-overview" aria-selected="true" data-en="Overview">Översikt</button>
         <button class="tab" role="tab" id="t-ai" aria-selected="false" data-en="The class's AI">Klassens AI</button>
         <button class="tab" role="tab" id="t-poll" aria-selected="false" data-en="Quick question">Snabbfråga</button>
+        <button class="tab" role="tab" id="t-lador" aria-selected="false" data-en="Boxes">Lådor</button>
       </div>
 
       <div class="pane" id="p-overview">
         <div class="summary" id="summary"></div>
-        <div class="insight"><span class="ic">!</span><span id="insight"></span></div>
-        <div class="pane-actions">
-          <span class="eyebrow" data-en="Each dot is a workshop">Varje prick är en verkstad</span>
-          <button class="btn ghost" id="teams" type="button" data-en="Split into teams of 4">Dela in i lag om 4</button>
+        <p class="lagesbild" id="insight"></p>
+        <div class="rad">
+          <span class="liten" data-en="Each square is a workshop. Filled means done.">Varje ruta är en verkstad. Fylld betyder klar.</span>
+          <button class="btn ghost" id="teams" type="button" data-en="Split into teams of four">Dela in i lag om fyra</button>
         </div>
         <div class="people" id="people"></div>
       </div>
 
-      <div class="pane" id="p-ai" hidden>
-        <div class="pane-actions">
-          <span class="eyebrow" data-en="Everyone adds fruit from their phone. The AI learns from all of you.">Alla lägger till frukt från mobilen. AI:n lär sig av er alla.</span>
-          <span class="mono" id="ai-n" style="font-size:var(--fs-s)"></span>
+      <div class="pane" id="p-ai" hidden data-domain="ai">
+        <div class="rad">
+          <span class="liten" data-en="Everyone adds fruit from their phone. The map shows what the shared machine would answer.">Alla lägger till frukt från mobilen. Kartan visar vad den gemensamma maskinen skulle svara.</span>
+          <span class="mono liten" id="ai-n"></span>
         </div>
-        <canvas id="class-ai" width="1600" height="800" aria-label="Gemensam AI-karta" data-aria-en="Shared AI map"></canvas>
-        <div class="ticker" id="ticker"></div>
+        <div class="scen"><canvas id="class-ai" width="1600" height="800" aria-label="Gemensam karta över frukter" data-aria-en="Shared map of fruit"></canvas></div>
+        <div class="ticker" id="ticker" aria-live="polite"></div>
       </div>
 
-      <div class="pane" id="p-poll" hidden>
-        <div class="eyebrow" data-en="Before the network workshop">Inför nätverksverkstaden</div>
-        <div class="poll-q" data-en="If one cable on the internet breaks, what happens?">Om en kabel på internet går sönder, vad händer?</div>
-        <div id="opts"></div>
-        <div class="pane-actions" style="margin-top:14px">
-          <span class="mono" id="votes" style="font-size:var(--fs-s)"></span>
-          <button class="btn" id="reveal" type="button" style="--domain:var(--c-nat)" data-en="Show answer">Visa svaret</button>
+      <div class="pane" id="p-poll" hidden data-domain="nat">
+        <span class="liten" data-en="Before the network workshop">Inför nätverksverkstaden</span>
+        <p class="poll-q" data-en="If one cable on the internet breaks, what happens?">Om en kabel på internet går sönder, vad händer?</p>
+        <div class="opts" id="opts"></div>
+        <div class="rad">
+          <span class="mono liten" id="votes"></span>
+          <button class="btn" id="reveal" type="button" data-en="Show the answer">Visa svaret</button>
+        </div>
+      </div>
+
+      <div class="pane" id="p-lador" hidden>
+        <div class="rad">
+          <span class="liten" data-en="The boxes on the tables connect to the room server over the venue wifi. Choose which workshop or team each box belongs to.">Lådorna på borden ansluter till rumsservern via lokalens wifi. Välj vilken verkstad eller vilket lag varje låda hör till.</span>
+        </div>
+        <div class="tabell-wrap">
+          <table class="lador">
+            <thead><tr>
+              <th data-en="Box">Låda</th><th data-en="Status">Status</th><th class="dold-smal" data-en="Signal">Signal</th><th data-en="Belongs to">Hör till</th><th></th>
+            </tr></thead>
+            <tbody id="lador"></tbody>
+          </table>
+        </div>
+        <div class="rad">
+          <span class="liten" data-en="New box: hold the button on the box until its light blinks fast. It then shows up in the list.">Ny låda: håll inne knappen på lådan tills lampan blinkar snabbt. Då dyker den upp i listan.</span>
+          <button class="btn ghost" id="para" type="button" data-en="Look for new boxes">Leta efter nya lådor</button>
         </div>
       </div>
     </section>
-    <p class="mock-note" style="margin-top:12px" data-en="Simulated demo. The other participants are fake. In a real version a small room server keeps everyone in sync. See docs/03-samarbete-och-arkitektur.md.">Simulerad demo. De andra deltagarna är påhittade. I en riktig version håller en liten rumsserver alla i synk. Se docs/03-samarbete-och-arkitektur.md.</p>
+    <p class="mock-note" style="margin-top:12px" data-en="Simulated demo. The other participants and boxes are made up. In a real version a small room server keeps everyone in sync, see docs/03 and docs/05.">Simulerad demo. De andra deltagarna och lådorna är påhittade. I en riktig version håller en liten rumsserver alla i synk, se docs/03 och docs/05.</p>
   </div>
 
   <aside class="phone-col">
-    <div class="label-top"><span data-en="Your phone · participant">Din mobil · deltagare</span></div>
+    <p class="over" data-en="Your phone, as a participant">Din mobil, som deltagare</p>
     <div class="phone">
-      <div class="phone-screen">
-        <div class="phone-top"><b id="p-nick"></b><span class="code-s">VERK-42</span></div>
-        <div class="phone-body" id="phone"></div>
-      </div>
+      <div class="phone-top"><b id="p-nick"></b><span class="code-s">VERK-42</span></div>
+      <div class="phone-body" id="phone"></div>
     </div>
   </aside>
 </main>
@@ -160,16 +195,15 @@
     { id: "logik", dom: "logik", n: 4, t: { sv: "Logikgrindar", en: "Logic gates" }, f: "moduler/logik-grindar.html" },
     { id: "signal", dom: "signal", n: 4, t: { sv: "Ljudvågor", en: "Sound waves" }, f: "moduler/signal-vagor.html" },
     { id: "ai", dom: "ai", n: 4, t: { sv: "Fruktsorteraren", en: "The fruit sorter" }, f: "moduler/ai-sortera.html" },
-    { id: "natverk", dom: "nat", n: 4, t: { sv: "Paketresan", en: "The packet journey" }, f: "moduler/natverk-paket.html" },
+    { id: "natverk", dom: "nat", n: 4, t: { sv: "Paketresan", en: "Packet tour" }, f: "moduler/natverk-paket.html" },
     { id: "robot", dom: "kod", n: 4, t: { sv: "Robotens väg", en: "The robot's path" }, f: "moduler/robot-kod.html" },
     { id: "matte", dom: "matte", n: 4, t: { sv: "Funktionsmaskinen", en: "The function machine" }, f: "moduler/matte-maskin.html" }
   ];
-  const TEAM_COLORS = ["--c-el", "--c-logik", "--c-signal", "--c-ai", "--c-nat", "--c-kod", "--c-matte"];
   const me = { nick: K.nick(), me: true, prog: MODS.map(m => K.progress(m.id).length / m.n), team: null };
   const people = [me];
   let tab = "overview";
 
-  /* --- QR-mönster (bara bild) --- */
+  /* ---- QR-mönster (bara bild) ---- */
   (() => {
     const q = $("qr"); let seed = 7;
     const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
@@ -182,73 +216,65 @@
     }
   })();
 
-  /* --- simulerade deltagare --- */
+  /* ---- påhittade deltagare ---- */
   function fake() {
     let n; do { n = K.randomNick(); } while (people.some(p => p.nick === n) && people.length < 90);
     return { nick: n, prog: MODS.map(() => 0), speed: .3 + Math.random() * .9, focus: Math.floor(Math.random() * MODS.length), team: null };
   }
-  for (let i = 0; i < 14; i++) { const p = fake(); p.prog = p.prog.map((_, j) => Math.random() < .35 ? Math.random() : 0); people.push(p); }
+  for (let i = 0; i < 14; i++) { const p = fake(); p.prog = p.prog.map(() => Math.random() < .35 ? Math.random() : 0); people.push(p); }
 
   function tickSim() {
     if (people.length < 27 && Math.random() < .6) people.push(fake());
     people.forEach(p => {
-      if (p.me) return;
-      if (Math.random() < .25) {
-        const j = p.prog[p.focus] >= 1 ? (p.focus = Math.floor(Math.random() * MODS.length)) : p.focus;
-        // robotens nivå 3 är svår: långsammare där
-        const slow = MODS[j].id === "robot" && p.prog[j] > .5 ? .25 : 1;
-        p.prog[j] = Math.min(1, p.prog[j] + .25 * p.speed * slow);
-      }
+      if (p.me || Math.random() >= .25) return;
+      const j = p.prog[p.focus] >= 1 ? (p.focus = Math.floor(Math.random() * MODS.length)) : p.focus;
+      const slow = MODS[j].id === "robot" && p.prog[j] > .5 ? .25 : 1;  // nivå 3 i robotverkstaden tar längre tid
+      p.prog[j] = Math.min(1, p.prog[j] + .25 * p.speed * slow);
     });
     if (tab === "overview") renderOverview();
   }
 
-  const avatarColor = p => p.team != null ? `var(${TEAM_COLORS[p.team % TEAM_COLORS.length]})` : p.me ? "var(--c-logik)" : "var(--ink-soft)";
-
   function renderOverview() {
     $("count").textContent = people.length;
     const wrap = $("people");
-    // lägg till nya kort utan att rita om befintliga (behåller animationen)
     people.forEach((p, i) => {
       let el = wrap.children[i];
       if (!el) {
         el = document.createElement("div"); el.className = "person" + (p.me ? " me" : "");
-        el.innerHTML = `<span class="av"></span><div style="min-width:0"><div class="nm"></div><div class="dots">${MODS.map(() => "<i></i>").join("")}</div></div>`;
+        el.innerHTML = `<span class="av"></span><div style="min-width:0"><div class="nm"></div><div class="dots">${MODS.map(m => `<i data-domain="${m.dom}"></i>`).join("")}</div></div>`;
         wrap.append(el);
       }
-      el.querySelector(".av").textContent = K.initials(p.nick);
-      el.querySelector(".av").style.background = avatarColor(p);
-      el.style.borderColor = p.team != null ? avatarColor(p) : "transparent";
+      const av = el.querySelector(".av");
+      av.textContent = p.team != null ? p.team + 1 : K.initials(p.nick);
+      av.classList.toggle("lag", p.team != null);
+      av.title = p.team != null ? K.t(`Lag ${p.team + 1}`, `Team ${p.team + 1}`) : "";
       el.querySelector(".nm").textContent = p.me ? p.nick + K.t(" (du)", " (you)") : p.nick;
-      [...el.querySelectorAll(".dots i")].forEach((d, j) => {
-        d.style.background = p.prog[j] >= 1 ? `var(--c-${MODS[j].dom})` : p.prog[j] > 0 ? `color-mix(in srgb, var(--c-${MODS[j].dom}) 40%, var(--line))` : "";
-      });
+      [...el.querySelectorAll(".dots i")].forEach((d, j) => { d.className = p.prog[j] >= 1 ? "klar" : p.prog[j] > 0 ? "pagar" : ""; });
     });
     const sum = $("summary");
-    if (!sum.children.length) MODS.forEach(m => { const d = document.createElement("div"); d.className = "sum"; d.dataset.domain = m.dom; d.innerHTML = "<b></b><div class='bar'><i></i></div><span></span>"; sum.append(d); });
+    if (!sum.children.length) MODS.forEach(m => { const d = document.createElement("div"); d.className = "sum"; d.dataset.domain = m.dom; d.innerHTML = "<div class='namn'><b></b><span></span></div><div class='bar'><i></i><i></i></div>"; sum.append(d); });
     let worst = null;
     MODS.forEach((m, j) => {
-      const started = people.filter(p => p.prog[j] > 0), done = people.filter(p => p.prog[j] >= 1);
-      const d = sum.children[j];
+      const started = people.filter(p => p.prog[j] > 0).length, done = people.filter(p => p.prog[j] >= 1).length, busy = started - done;
+      const d = sum.children[j], [a, b] = d.querySelectorAll(".bar i");
       d.querySelector("b").textContent = K.t(m.t);
-      d.querySelector("i").style.width = done.length / people.length * 100 + "%";
-      d.querySelector("span").textContent = `${done.length} ${K.t("klara", "done")} · ${started.length - done.length} ${K.t("pågår", "busy")}`;
-      const stuck = started.length - done.length;
-      if (!worst || stuck > worst.stuck) worst = { m, stuck };
+      d.querySelector(".namn span").textContent = K.t(`${done} klara, ${busy} pågår`, `${done} done, ${busy} busy`);
+      a.style.width = done / people.length * 100 + "%"; b.style.width = busy / people.length * 100 + "%";
+      if (!worst || busy > worst.busy) worst = { m, busy };
     });
-    $("insight").textContent = worst && worst.stuck > 2
-      ? K.t(`${worst.stuck} personer håller på med ${K.t(worst.m.t)} just nu. Kanske dags för en gemensam genomgång?`, `${worst.stuck} people are working on ${K.t(worst.m.t)} right now. Time for a short walkthrough?`)
-      : K.t("Alla verkar ta sig fram bra.", "Everyone seems to be moving along nicely.");
+    $("insight").textContent = worst && worst.busy > 2
+      ? K.t(`Flest är mitt i ${K.t(worst.m.t)} just nu: ${worst.busy} personer.${worst.m.id === "robot" ? " Nivå 3 brukar ta längst tid." : ""}`,
+            `Most people are in the middle of ${K.t(worst.m.t)} right now: ${worst.busy}.${worst.m.id === "robot" ? " Level 3 usually takes longest." : ""}`)
+      : K.t("Ingen verkstad har många som står still just nu.", "No workshop has many people stuck right now.");
   }
 
   $("teams").addEventListener("click", () => {
-    const shuffled = people.map((p, i) => i).sort(() => Math.random() - .5);
-    shuffled.forEach((idx, k) => { people[idx].team = Math.floor(k / 4); });
-    renderOverview();
-    K.toast(K.t(`${Math.ceil(people.length / 4)} lag skapade. Färgen visar laget.`, `${Math.ceil(people.length / 4)} teams created. The colour shows the team.`));
+    const order = people.map((p, i) => i).sort(() => Math.random() - .5);
+    order.forEach((idx, k) => { people[idx].team = Math.floor(k / 4); });
+    renderOverview(); renderPhone();
   });
 
-  /* --- Klassens AI --- */
+  /* ---- klassens AI ---- */
   const fruits = [];
   for (let i = 0; i < 10; i++) addFake(true);
   function addFake(silent) {
@@ -261,10 +287,9 @@
     if (!silent) ticker(f);
   }
   function ticker(f) {
-    const t = $("ticker");
-    const s = document.createElement("span");
+    const t = $("ticker"), s = document.createElement("span");
     s.textContent = `${f.by} ${K.t("lade till", "added")} ${f.c === "apple" ? K.t("ett äpple", "an apple") : K.t("en citron", "a lemon")}`;
-    if (f.mine) s.style.background = "color-mix(in srgb, var(--c-logik) 25%, var(--surface))";
+    if (f.mine) s.className = "mitt";
     t.prepend(s); while (t.children.length > 4) t.lastChild.remove();
   }
   function predict(p) {
@@ -272,21 +297,27 @@
     const apples = near.filter(n => n.d.c === "apple").length;
     return { c: apples * 2 > near.length ? "apple" : "lemon", conf: Math.max(apples, near.length - apples) / near.length };
   }
-  const color = x => { const st = [[91, 181, 58], [243, 207, 31], [217, 52, 43]], t = x * 2, i = Math.min(1, Math.floor(t)), f = t - i; return `rgb(${st[i].map((v, j) => Math.round(v + (st[i + 1][j] - v) * f))})`; };
+  const color = x => { const st = [[96, 170, 60], [241, 207, 42], [210, 61, 47]], t = x * 2, i = Math.min(1, Math.floor(t)), f = t - i; return `rgb(${st[i].map((v, j) => Math.round(v + (st[i + 1][j] - v) * f))})`; };
   function drawPlot(cv, small) {
     const g = cv.getContext("2d"), W = cv.width, H = cv.height, cs = getComputedStyle(document.body), C = n => cs.getPropertyValue(n).trim();
     g.clearRect(0, 0, W, H);
-    const cell = small ? 24 : 32;
+    const cell = small ? 20 : 25;
+    g.fillStyle = C("--ai");
     for (let x = 0; x < W; x += cell) for (let y = 0; y < H; y += cell) {
       const { c, conf } = predict({ x: (x + cell / 2) / W, y: 1 - (y + cell / 2) / H });
-      g.fillStyle = c === "apple" ? C("--c-ai") : C("--c-el"); g.globalAlpha = .08 + (conf - .5) * .3; g.fillRect(x, y, cell, cell);
+      if (c !== "apple") continue;
+      g.globalAlpha = .12 + (conf - .5) * .36; g.fillRect(x, y, cell, cell);
     }
     g.globalAlpha = 1;
     fruits.forEach(f => {
       const px = f.x * W, py = (1 - f.y) * H, r = (small ? 12 : 14) + f.y * (small ? 14 : 20);
-      g.fillStyle = color(f.x); g.strokeStyle = f.mine ? C("--ink") : f.c === "apple" ? C("--c-ai") : C("--c-el"); g.lineWidth = f.mine ? 7 : 4;
-      g.beginPath(); f.c === "lemon" ? g.ellipse(px, py, r * 1.25, r * .9, 0, 0, 7) : g.arc(px, py, r, 0, 7); g.fill(); g.stroke();
-      if (f.fresh && !small) { g.strokeStyle = C("--ink"); g.lineWidth = 3; g.globalAlpha = Math.max(0, 1 - (performance.now() - f.fresh) / 1500); g.beginPath(); g.arc(px, py, r + 10 + (performance.now() - f.fresh) / 40, 0, 7); g.stroke(); g.globalAlpha = 1; }
+      g.fillStyle = color(f.x); g.strokeStyle = C("--grafit"); g.lineWidth = f.mine ? 8 : 3.5;
+      g.beginPath(); f.c === "lemon" ? g.ellipse(px, py, r * 1.25, r * .88, 0, 0, 7) : g.arc(px, py, r, 0, 7); g.fill(); g.stroke();
+      if (f.c === "apple") { g.lineWidth = 4; g.beginPath(); g.moveTo(px, py - r); g.lineTo(px + 3, py - r - 11); g.stroke(); }
+      if (f.fresh && !small) {
+        const age = performance.now() - f.fresh;
+        if (age < 1500) { g.lineWidth = 2.5; g.globalAlpha = 1 - age / 1500; g.beginPath(); g.arc(px, py, r + 10 + age / 40, 0, 7); g.stroke(); g.globalAlpha = 1; }
+      }
     });
   }
   function aiLoop() {
@@ -295,75 +326,119 @@
     requestAnimationFrame(aiLoop);
   }
 
-  /* --- Snabbfråga --- */
+  /* ---- snabbfråga ---- */
   const OPTS = [
-    { l: "A", c: "--c-ai", t: { sv: "Internet stängs av i hela landet", en: "The internet shuts down across the country" }, v: 0 },
-    { l: "B", c: "--c-nat", t: { sv: "Paketen tar en annan väg", en: "The packets take another way" }, v: 0, right: true },
-    { l: "C", c: "--c-el", t: { sv: "Bara den som bor närmast märker det", en: "Only the people nearest notice" }, v: 0 }
+    { l: "A", t: { sv: "Internet slutar fungera i hela landet", en: "The internet stops working across the country" }, v: 0 },
+    { l: "B", t: { sv: "Paketen tar en annan väg", en: "The packets take another way" }, v: 0, right: true },
+    { l: "C", t: { sv: "Bara de som bor närmast märker det", en: "Only the people nearest notice" }, v: 0 }
   ];
   let myVote = null, revealed = false;
+  const BOCK = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function renderPoll() {
     const total = OPTS.reduce((a, o) => a + o.v, 0) || 1;
     $("opts").innerHTML = OPTS.map(o => `<div class="opt ${revealed && o.right ? "right" : ""}">
-      <span class="letter" style="background:var(${o.c})">${o.l}</span>
-      <div class="track"><i style="width:${o.v / total * 100}%; background:var(${o.c})"></i><span>${K.t(o.t)}</span></div>
+      <span class="letter">${o.l}</span>
+      <div class="track"><i style="width:${o.v / total * 100}%"></i><span>${K.t(o.t)}${revealed && o.right ? BOCK : ""}</span></div>
       <span class="n">${o.v}</span></div>`).join("");
-    $("votes").textContent = `${OPTS.reduce((a, o) => a + o.v, 0)} ${K.t("svar", "answers")}`;
+    $("votes").textContent = K.t(`${OPTS.reduce((a, o) => a + o.v, 0)} svar`, `${OPTS.reduce((a, o) => a + o.v, 0)} answers`);
+    $("reveal").disabled = revealed;
   }
   function tickPoll() {
-    if (OPTS.reduce((a, o) => a + o.v, 0) < people.length - (myVote ? 0 : 1)) {
-      const r = Math.random(); OPTS[r < .25 ? 0 : r < .75 ? 1 : 2].v++;
-    }
+    if (OPTS.reduce((a, o) => a + o.v, 0) < people.length - (myVote ? 0 : 1)) { const r = Math.random(); OPTS[r < .25 ? 0 : r < .75 ? 1 : 2].v++; }
     if (tab === "poll") renderPoll();
   }
-  $("reveal").addEventListener("click", () => { revealed = true; renderPoll(); K.confetti(); });
+  $("reveal").addEventListener("click", () => { revealed = true; renderPoll(); if (tab === "poll") renderPhone(); });
 
-  /* --- mobilen --- */
+  /* ---- lådor ---- */
+  const LADOR = MODS.map((m, i) => ({ nod: `nod-0${i + 1}`, mod: m.id, rssi: -48 - Math.round(Math.random() * 22), online: m.id !== "robot", seen: m.id === "robot" ? 4 : 0, blink: false }));
+  LADOR.push({ nod: "nod-08", mod: "", rssi: -71, online: true, seen: 0, blink: false, ny: true });
+  function signal(rssi) { return rssi > -60 ? K.t("stark", "strong") : rssi > -70 ? K.t("bra", "good") : K.t("svag", "weak"); }
+  function renderLador() {
+    const tb = $("lador"); tb.innerHTML = "";
+    LADOR.forEach((l, i) => {
+      if (l.ny && !l.visas) return;
+      const tr = document.createElement("tr");
+      const opts = [`<option value="">${K.t("Ingen ännu", "None yet")}</option>`]
+        .concat(MODS.map(m => `<option value="${m.id}" ${l.mod === m.id ? "selected" : ""}>${K.t(m.t)}</option>`))
+        .concat(Array.from({ length: 4 }, (_, k) => `<option value="lag${k + 1}" ${l.mod === "lag" + (k + 1) ? "selected" : ""}>${K.t("Lag", "Team")} ${k + 1}</option>`));
+      tr.innerHTML = `<td class="mono">${l.nod}</td>
+        <td>${l.online
+          ? `<span class="lampa pa${l.blink ? " blink" : ""}" aria-hidden="true"></span>${l.blink ? K.t("blinkar", "blinking") : K.t("ansluten", "connected")}`
+          : `<span class="tejp" aria-hidden="true"></span><span class="tyst">${K.t(`ingen kontakt på ${l.seen} min`, `no contact for ${l.seen} min`)}</span>`}</td>
+        <td class="mono dold-smal">${l.online ? `${l.rssi} dBm <span class="tyst" style="font-family:var(--text)">${signal(l.rssi)}</span>` : "–"}</td>
+        <td><select aria-label="${K.t("Vad lådan " + l.nod + " hör till", "What box " + l.nod + " belongs to")}">${opts.join("")}</select></td>
+        <td><button class="btn ghost" type="button" ${l.online ? "" : "disabled"}>${K.t("Hitta", "Find")}</button></td>`;
+      tr.querySelector("select").addEventListener("change", e => { l.mod = e.target.value; renderPhone(); });
+      tr.querySelector(".btn").addEventListener("click", () => {
+        l.blink = true; renderLador();
+        setTimeout(() => { l.blink = false; if (tab === "lador") renderLador(); }, 3000);
+      });
+      tb.append(tr);
+    });
+  }
+  $("para").addEventListener("click", () => {
+    const ny = LADOR.find(l => l.ny);
+    if (ny.visas) return;
+    $("para").disabled = true; $("para").textContent = K.t("Letar …", "Looking …");
+    setTimeout(() => { ny.visas = true; $("para").disabled = false; $("para").textContent = K.t("Leta efter nya lådor", "Look for new boxes"); renderLador(); }, 1600);
+  });
+
+  /* ---- mobilen ---- */
   let pick = "apple";
   function renderPhone() {
     $("p-nick").textContent = me.nick;
     const ph = $("phone");
     if (tab === "overview") {
-      ph.innerHTML = `<h3>${K.t("Du är med!", "You're in!")}</h3><p>${K.t("Välj en verkstad och kör i egen takt. Ledaren ser hur det går.", "Pick a workshop and go at your own pace. The leader can see how it's going.")}</p>` +
+      ph.innerHTML = `<h3>${me.team != null ? K.t(`Du är i lag ${me.team + 1}`, `You are in team ${me.team + 1}`) : K.t("Du är med i rummet", "You are in the room")}</h3>
+        <p>${K.t("Välj en verkstad och kör i egen takt. Ledaren ser hur långt du har kommit, inte vad du svarar.", "Pick a workshop and go at your own pace. The leader sees how far you have come, not what you answer.")}</p>` +
         MODS.map(m => `<a class="p-mod" href="${m.f}" data-domain="${m.dom}"><i></i><span>${K.t(m.t)}</span></a>`).join("");
     } else if (tab === "ai") {
-      ph.innerHTML = `<h3>${K.t("Lär klassens AI", "Teach the class AI")}</h3><p>${K.t("Välj frukt och tryck på rutan.", "Pick a fruit and tap the square.")}</p>
-        <div class="p-pick"><button type="button" data-c="lemon" aria-pressed="${pick === "lemon"}">${K.t("Citron", "Lemon")}</button><button type="button" data-c="apple" aria-pressed="${pick === "apple"}">${K.t("Äpple", "Apple")}</button></div>
-        <canvas id="mini" width="600" height="600"></canvas>`;
+      ph.innerHTML = `<h3>${K.t("Lär klassens maskin", "Teach the class machine")}</h3><p>${K.t("Välj frukt och tryck på kartan.", "Pick a fruit and tap the map.")}</p>
+        <div class="p-pick"><button class="chip" type="button" data-c="lemon" aria-pressed="${pick === "lemon"}">${K.t("Citron", "Lemon")}</button><button class="chip" type="button" data-c="apple" aria-pressed="${pick === "apple"}">${K.t("Äpple", "Apple")}</button></div>
+        <div class="scen" data-domain="ai"><canvas id="mini" width="600" height="600"></canvas></div>`;
       ph.querySelectorAll(".p-pick button").forEach(b => b.addEventListener("click", () => { pick = b.dataset.c; renderPhone(); }));
       $("mini").addEventListener("click", e => {
         const r = e.target.getBoundingClientRect();
         const f = { x: (e.clientX - r.left) / r.width, y: 1 - (e.clientY - r.top) / r.height, c: pick, by: me.nick, mine: true, fresh: performance.now() };
         fruits.push(f); ticker(f);
       });
-    } else {
+    } else if (tab === "poll") {
       ph.innerHTML = `<h3>${K.t("Snabbfråga", "Quick question")}</h3><p>${K.t("Om en kabel på internet går sönder, vad händer?", "If one cable on the internet breaks, what happens?")}</p>
-        <div class="p-vote">${OPTS.map(o => `<button type="button" data-l="${o.l}" aria-pressed="${myVote === o.l}"><b style="background:var(${o.c})">${o.l}</b>${K.t(o.t)}</button>`).join("")}</div>`;
+        <div class="p-vote">${OPTS.map(o => `<button class="chip" type="button" data-l="${o.l}" aria-pressed="${myVote === o.l}"><b>${o.l}</b>${K.t(o.t)}</button>`).join("")}</div>
+        ${revealed ? `<p>${K.t("Rätt svar är B. Paketen hittar en annan väg, som i Paketresan.", "The answer is B. The packets find another way, as in Packet tour.")}</p>` : ""}`;
       ph.querySelectorAll(".p-vote button").forEach(b => b.addEventListener("click", () => {
         if (myVote) OPTS.find(o => o.l === myVote).v--;
         myVote = b.dataset.l; OPTS.find(o => o.l === myVote).v++;
         renderPhone(); renderPoll();
       }));
+    } else {
+      const l = LADOR.find(x => x.mod === "ai") || LADOR[3];
+      const m = MODS.find(x => x.id === l.mod);
+      ph.innerHTML = `<h3>${K.t("Lådan på ert bord", "The box on your table")}</h3>
+        <p>${m ? K.t(`${l.nod} hör till ${K.t(m.t)}. När du öppnar verkstaden reagerar lådan på det du gör.`, `${l.nod} belongs to ${K.t(m.t)}. When you open the workshop the box reacts to what you do.`)
+              : K.t(`${l.nod} hör inte till någon verkstad ännu.`, `${l.nod} does not belong to a workshop yet.`)}</p>
+        ${m ? `<a class="p-mod" href="${m.f}" data-domain="${m.dom}"><i></i><span>${K.t("Öppna", "Open")} ${K.t(m.t)}</span></a>` : ""}`;
     }
   }
 
-  /* --- flikar --- */
+  /* ---- flikar ---- */
+  const TABS = ["overview", "ai", "poll", "lador"];
   function setTab(t) {
     tab = t;
-    ["overview", "ai", "poll"].forEach(k => { $("t-" + k).setAttribute("aria-selected", k === t); $("p-" + k).hidden = k !== t; });
+    TABS.forEach(k => { $("t-" + k).setAttribute("aria-selected", k === t); $("p-" + k).hidden = k !== t; });
     if (t === "overview") renderOverview();
     if (t === "poll") renderPoll();
+    if (t === "lador") renderLador();
     renderPhone();
   }
-  $("t-overview").addEventListener("click", () => setTab("overview"));
-  $("t-ai").addEventListener("click", () => setTab("ai"));
-  $("t-poll").addEventListener("click", () => setTab("poll"));
+  TABS.forEach(k => $("t-" + k).addEventListener("click", () => setTab(k)));
   K.onLang(() => setTab(tab));
 
   setInterval(tickSim, 900);
   setInterval(() => { if (fruits.length < 60) { addFake(false); fruits[fruits.length - 1].fresh = performance.now(); } }, 1800);
   setInterval(tickPoll, 500);
-  setTab(location.hash === "#klassens-ai" ? "ai" : location.hash === "#snabbfraga" ? "poll" : "overview");
+  const HASH = { "#klassens-ai": "ai", "#snabbfraga": "poll", "#lador": "lador" };
+  setTab(HASH[location.hash] || "overview");
   requestAnimationFrame(aiLoop);
 })();
 </script>

@@ -241,8 +241,8 @@ Deltagarna är vuxna eller nästan vuxna och ska inte behandlas som barn.
 | fantastiskt, grymt (som beröm) | amazing, great job |
 
 Ordvitsar som bara fungerar på svenska är välkomna (”Paketresan”). De översätts inte
-ord för ord. Den engelska versionen får en egen titel (”The packet journey” är för platt,
-bättre vore till exempel ”Packet tour”).
+ord för ord. Den engelska versionen får en egen titel (”The packet journey” var för platt,
+nu heter den ”Packet tour”).
 
 **Svensk typografi**
 
@@ -274,7 +274,7 @@ samma ton som på svenska.
 Samma manual gäller lådorna på bordet (se dokument 5):
 
 - Lådan har modulens ämnesfärg. Locket är grafit med etikett i Atkinson Hyperlegible.
-- LED-ringen följer samma betydelser som skärmen: modulens färg betyder aktivt,
+- Lamporna på lådan följer samma betydelser som skärmen: modulens färg betyder aktivt,
   ett kort vitt blink betyder klart, gul–svart växling betyder fara.
 - Etiketter på knappar och uttag använder samma ord som appen (”A”, ”B”, ”Sensor”).
 - Nummer på locket (”07”) matchar numret i appens rumsvy.

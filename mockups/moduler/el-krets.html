@@ -6,52 +6,48 @@
 <title>Strömkretsen – Verkstan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
 <link rel="stylesheet" href="../shared/theme.css">
 <style>
-  .circuit { touch-action: manipulation; user-select: none; }
-  .wire { fill: none; stroke: var(--ink); stroke-width: 5; stroke-linejoin: round; transition: stroke-width .6s var(--ease), stroke .6s var(--ease); }
-  .water .wire { stroke: color-mix(in srgb, var(--c-nat) 35%, var(--surface)); stroke-width: 30; }
-  .pipe-edge { fill: none; stroke: var(--c-nat); stroke-width: 34; opacity: 0; transition: opacity .6s var(--ease); stroke-linejoin: round; }
-  .water .pipe-edge { opacity: .25; }
-  .electron { fill: var(--c-el); transition: r .6s var(--ease); }
-  .water .electron { fill: var(--c-nat); }
-  .mask { fill: var(--surface); }
-  .part-label { font-family: var(--font-display); font-weight: 700; font-size: 20px; fill: var(--ink); }
-  .part-sub { font-family: var(--font-data); font-size: 15px; fill: var(--ink-soft); }
-  .elec-only, .water-only { transition: opacity .5s var(--ease); }
+  .circuit { user-select: none; touch-action: manipulation; }
+  .wire { fill: none; stroke: var(--grafit); stroke-width: 4; stroke-linejoin: round; transition: stroke-width .5s var(--broms), stroke .5s var(--broms); }
+  .water .wire { stroke: color-mix(in srgb, var(--nat) 30%, var(--ark)); stroke-width: 28; }
+  .pipe-edge { fill: none; stroke: var(--nat); stroke-width: 32; opacity: 0; stroke-linejoin: round; transition: opacity .5s var(--broms); }
+  .water .pipe-edge { opacity: .3; }
+  .electron { fill: var(--aktiv); }
+  .water .electron { fill: var(--nat); }
+  .mask { fill: var(--ark); }
+  .part-label { font-family: var(--text); font-weight: 700; font-size: 19px; fill: var(--grafit); }
+  .part-sub { font-family: var(--siffror); font-size: 15px; fill: var(--blyerts); }
+  @media (max-width: 600px) { .part-label { font-size: 28px; } .part-sub { font-size: 22px; } }
+  .elec-only, .water-only { transition: opacity .4s var(--broms); }
   .water .elec-only { opacity: 0; pointer-events: none; }
   .water-only { opacity: 0; pointer-events: none; }
   .water .water-only { opacity: 1; pointer-events: auto; }
-  .cell { fill: var(--c-el); stroke: var(--ink); stroke-width: 2; }
-  .glass { fill: var(--surface); stroke: var(--ink); stroke-width: 3; transition: fill .3s; }
-  .broken .glass { fill: var(--surface-2); stroke-dasharray: 8 5; }
-  .filament { fill: none; stroke: var(--ink); stroke-width: 2.5; }
-  .crack { stroke: var(--ink); stroke-width: 2; opacity: 0; }
+  .cell { fill: var(--ark); stroke: var(--grafit); stroke-width: 2.5; }
+  .cell-plus { fill: var(--aktiv); }
+  .glass { fill: var(--ark); stroke: var(--grafit); stroke-width: 3; }
+  .broken .glass { fill: var(--rutnat); stroke-dasharray: 7 5; }
+  .filament { fill: none; stroke: var(--grafit); stroke-width: 2.5; }
+  .crack { stroke: var(--grafit); stroke-width: 2; opacity: 0; }
   .broken .crack { opacity: 1; }
-  .switch-hit { cursor: pointer; fill: transparent; }
-  .lever { stroke: var(--ink); stroke-width: 6; stroke-linecap: round; transition: transform .35s var(--ease); transform-origin: 360px 380px; }
+  #glowc.blink { animation: blink .7s var(--broms); }
+  @keyframes blink { 40% { opacity: 1; } }
+  .switch-hit { cursor: pointer; fill: transparent; outline: none; }
+  .switch-hit:focus-visible { stroke: var(--grafit); stroke-width: 2; stroke-dasharray: 4 4; }
+  .lever { stroke: var(--grafit); stroke-width: 5; stroke-linecap: round; transition: transform .3s var(--broms); transform-origin: 360px 380px; }
   .open .lever { transform: rotate(-28deg); }
-  .term { fill: var(--surface); stroke: var(--ink); stroke-width: 3; }
-  .hint-pulse { fill: none; stroke: var(--domain); stroke-width: 3; animation: pulse 1.8s var(--ease) infinite; transform-origin: 400px 380px; }
-  @keyframes pulse { 0% { opacity: .9; transform: scale(.7); } 100% { opacity: 0; transform: scale(1.5); } }
-  .pump-blade, .wheel-spoke { stroke: var(--c-nat); stroke-width: 6; stroke-linecap: round; }
-  .pump-body, .wheel-rim { fill: var(--surface); stroke: var(--c-nat); stroke-width: 5; }
+  .term { fill: var(--ark); stroke: var(--grafit); stroke-width: 3; }
+  .hint-ring { fill: none; stroke: var(--grafit); stroke-width: 2; stroke-dasharray: 5 6; animation: snurra 6s linear infinite; transform-origin: 400px 380px; }
+  @keyframes snurra { to { transform: rotate(360deg); } }
+  .pump-blade, .wheel-spoke { stroke: var(--nat); stroke-width: 5; stroke-linecap: round; }
+  .pump-body, .wheel-rim { fill: var(--ark); stroke: var(--nat); stroke-width: 4; }
 
-  .battery-picker { display: flex; align-items: center; gap: 10px; }
-  .battery-picker .step { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--surface-2); font-size: 22px; font-weight: 700; cursor: pointer; }
-  .battery-picker .step:active { transform: scale(.94); }
-  .cells { display: flex; gap: 4px; }
-  .cells i { width: 14px; height: 26px; border-radius: 3px; background: var(--surface-2); border: 2px solid var(--line); transition: background .3s var(--ease), border-color .3s; }
-  .cells i.on { background: var(--c-el); border-color: var(--c-el); }
-
-  .light-meter { position: relative; height: 18px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
-  .light-meter .zone { position: absolute; top: 0; bottom: 0; background: color-mix(in srgb, var(--ok) 30%, transparent); border-inline: 2px solid var(--ok); }
-  .light-meter .danger { position: absolute; top: 0; bottom: 0; right: 0; background: color-mix(in srgb, var(--bad) 22%, transparent); }
-  .light-meter .needle { position: absolute; top: 0; bottom: 0; width: 0; background: var(--c-el); border-radius: 99px; transition: width .4s var(--ease); }
-  .meter-labels { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--ink-soft); margin-top: 4px; }
-  @media (max-width: 600px) { .part-label { font-size: 30px; } .part-sub { font-size: 24px; } }
-  .formula { font-family: var(--font-data); font-size: 1.4rem; color: var(--ink); text-align: center; padding: 10px; background: var(--surface-2); border-radius: var(--r-s); }
+  .light-meter { position: relative; height: 14px; border-radius: 3px; border: 1px solid var(--grafit); overflow: hidden; }
+  .light-meter .zone { position: absolute; top: 0; bottom: 0; border-inline: 2px solid var(--grafit); background: color-mix(in srgb, var(--aktiv) 18%, transparent); }
+  .light-meter .danger { position: absolute; top: 0; bottom: 0; right: 0; background: var(--tejp-monster); opacity: .85; }
+  .light-meter .needle { position: absolute; top: 0; bottom: 0; left: 0; width: 0; background: var(--aktiv); transition: width .35s var(--broms); }
+  .meter-labels { display: flex; justify-content: space-between; font-size: var(--fs-liten); color: var(--blyerts); margin-top: 4px; }
 </style>
 </head>
 <body data-domain="el">
@@ -59,289 +55,288 @@
 
 <main class="module">
   <section class="stage">
-    <svg class="circuit" id="circuit" viewBox="0 0 800 460" role="img" aria-label="En strömkrets med batterier, motstånd, lampa och strömbrytare" data-aria-en="A circuit with batteries, a resistor, a bulb and a switch">
-      <defs>
-        <radialGradient id="glow">
-          <stop offset="0" stop-color="var(--c-el)" stop-opacity=".95"/>
-          <stop offset=".45" stop-color="var(--c-el)" stop-opacity=".35"/>
-          <stop offset="1" stop-color="var(--c-el)" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
+    <div class="scen">
+      <svg class="circuit" id="circuit" viewBox="0 0 800 460" role="img" aria-label="En strömkrets med batterier, motstånd, lampa och strömbrytare" data-aria-en="A circuit with batteries, a resistor, a bulb and a switch">
+        <defs>
+          <radialGradient id="glow">
+            <stop offset="0" stop-color="var(--el)" stop-opacity=".9"/>
+            <stop offset=".5" stop-color="var(--el)" stop-opacity=".3"/>
+            <stop offset="1" stop-color="var(--el)" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <path class="pipe-edge" d="M120,230 V80 H680 V380 H120 Z"/>
+        <path id="loop" class="wire" d="M120,230 V80 H680 V380 H120 Z"/>
+        <g id="electrons"></g>
 
-      <path class="pipe-edge" d="M120,230 V80 H680 V380 H120 Z"/>
-      <path id="loop" class="wire" d="M120,230 V80 H680 V380 H120 Z"/>
-      <g id="electrons"></g>
-
-      <!-- Batteri / pump -->
-      <g id="battery">
-        <rect class="mask" id="batt-mask" x="78" y="140" width="84" height="180" rx="10"/>
-        <g class="elec-only" id="cells"></g>
-        <g class="water-only">
-          <circle class="pump-body" cx="120" cy="230" r="46"/>
-          <g id="impeller" style="transform-origin:120px 230px">
-            <line class="pump-blade" x1="120" y1="230" x2="120" y2="196"/>
-            <line class="pump-blade" x1="120" y1="230" x2="149" y2="247"/>
-            <line class="pump-blade" x1="120" y1="230" x2="91" y2="247"/>
+        <g id="battery">
+          <rect class="mask" id="batt-mask" x="78" y="140" width="84" height="180"/>
+          <g class="elec-only" id="cells"></g>
+          <g class="water-only">
+            <circle class="pump-body" cx="120" cy="230" r="46"/>
+            <g id="impeller" style="transform-origin:120px 230px">
+              <line class="pump-blade" x1="120" y1="230" x2="120" y2="196"/>
+              <line class="pump-blade" x1="120" y1="230" x2="149" y2="247"/>
+              <line class="pump-blade" x1="120" y1="230" x2="91" y2="247"/>
+            </g>
           </g>
+          <text class="part-label" x="20" y="128" id="lbl-batt"></text>
+          <text class="part-sub" x="20" y="356" id="sub-batt"></text>
         </g>
-        <text class="part-label" x="20" y="132" id="lbl-batt"></text>
-        <text class="part-sub" x="20" y="352" id="sub-batt"></text>
-      </g>
 
-      <!-- Motstånd / smalt rör -->
-      <g id="resistor">
-        <rect class="mask" x="320" y="60" width="160" height="40"/>
-        <path class="elec-only wire" id="zigzag" d=""/>
-        <g class="water-only">
-          <path id="narrow" fill="color-mix(in srgb, var(--c-nat) 35%, var(--surface))" stroke="var(--c-nat)" stroke-width="3" d=""/>
+        <g id="resistor">
+          <rect class="mask" x="320" y="60" width="160" height="40"/>
+          <path class="elec-only wire" id="zigzag" d=""/>
+          <g class="water-only"><path id="narrow" fill="color-mix(in srgb, var(--nat) 30%, var(--ark))" stroke="var(--nat)" stroke-width="3" d=""/></g>
+          <text class="part-label" x="400" y="40" text-anchor="middle" id="lbl-res"></text>
+          <text class="part-sub" x="400" y="128" text-anchor="middle" id="sub-res"></text>
         </g>
-        <text class="part-label" x="400" y="40" text-anchor="middle" id="lbl-res"></text>
-        <text class="part-sub" x="400" y="128" text-anchor="middle" id="sub-res"></text>
-      </g>
 
-      <!-- Lampa / vattenhjul -->
-      <g id="bulb">
-        <circle id="glowc" cx="680" cy="230" r="150" fill="url(#glow)" opacity="0"/>
-        <rect class="mask" x="636" y="176" width="88" height="108" rx="40"/>
-        <g class="elec-only">
-          <circle class="glass" cx="680" cy="222" r="42"/>
-          <rect x="664" y="262" width="32" height="20" rx="4" fill="var(--surface-2)" stroke="var(--ink)" stroke-width="3"/>
-          <path class="filament" d="M668 262 V230 l6 -10 l6 10 l6 -10 l6 10 V262"/>
-          <path class="crack" d="M656 200 l14 12 l-8 10 l16 8 M700 196 l-10 16 l12 6"/>
-        </g>
-        <g class="water-only">
-          <circle class="wheel-rim" cx="680" cy="230" r="46"/>
-          <g id="wheel" style="transform-origin:680px 230px">
-            <line class="wheel-spoke" x1="680" y1="188" x2="680" y2="272"/>
-            <line class="wheel-spoke" x1="638" y1="230" x2="722" y2="230"/>
-            <line class="wheel-spoke" x1="650" y1="200" x2="710" y2="260"/>
-            <line class="wheel-spoke" x1="710" y1="200" x2="650" y2="260"/>
+        <g id="bulb">
+          <circle id="glowc" cx="680" cy="230" r="150" fill="url(#glow)" opacity="0"/>
+          <rect class="mask" x="636" y="176" width="88" height="108" rx="40"/>
+          <g class="elec-only">
+            <circle class="glass" cx="680" cy="222" r="42"/>
+            <rect x="664" y="262" width="32" height="20" rx="3" fill="var(--rutnat)" stroke="var(--grafit)" stroke-width="3"/>
+            <path class="filament" d="M668 262 V230 l6 -10 l6 10 l6 -10 l6 10 V262"/>
+            <path class="crack" d="M656 200 l14 12 l-8 10 l16 8 M700 196 l-10 16 l12 6"/>
           </g>
+          <g class="water-only">
+            <circle class="wheel-rim" cx="680" cy="230" r="46"/>
+            <g id="wheel" style="transform-origin:680px 230px">
+              <line class="wheel-spoke" x1="680" y1="188" x2="680" y2="272"/>
+              <line class="wheel-spoke" x1="638" y1="230" x2="722" y2="230"/>
+              <line class="wheel-spoke" x1="650" y1="200" x2="710" y2="260"/>
+              <line class="wheel-spoke" x1="710" y1="200" x2="650" y2="260"/>
+            </g>
+          </g>
+          <text class="part-label" x="780" y="150" text-anchor="end" id="lbl-bulb"></text>
         </g>
-        <text class="part-label" x="780" y="150" text-anchor="end" id="lbl-bulb"></text>
-        <text class="part-sub" x="780" y="320" text-anchor="end" id="sub-bulb"></text>
-      </g>
 
-      <!-- Strömbrytare / kran -->
-      <g id="switch" class="open">
-        <rect class="mask" x="350" y="360" width="100" height="40"/>
-        <circle class="hint-pulse" id="switch-pulse" cx="400" cy="380" r="40"/>
-        <line class="lever" x1="360" y1="380" x2="440" y2="380"/>
-        <circle class="term" cx="360" cy="380" r="8"/>
-        <circle class="term" cx="440" cy="380" r="8"/>
-        <text class="part-label" x="400" y="440" text-anchor="middle" id="lbl-sw"></text>
-        <rect class="switch-hit" id="switch-hit" x="330" y="320" width="140" height="90" tabindex="0" role="button" aria-label="Strömbrytare" data-aria-en="Switch"/>
-      </g>
-    </svg>
+        <g id="switch" class="open">
+          <rect class="mask" x="350" y="360" width="100" height="40"/>
+          <circle class="hint-ring" id="switch-hint" cx="400" cy="380" r="44"/>
+          <line class="lever" x1="360" y1="380" x2="440" y2="380"/>
+          <circle class="term" cx="360" cy="380" r="7"/>
+          <circle class="term" cx="440" cy="380" r="7"/>
+          <text class="part-label" x="400" y="444" text-anchor="middle" id="lbl-sw"></text>
+          <rect class="switch-hit" id="switch-hit" x="330" y="320" width="140" height="90" tabindex="0" role="button" aria-label="Strömbrytare" data-aria-en="Switch"/>
+        </g>
+      </svg>
+    </div>
+    <p class="status" aria-live="polite" role="status"></p>
 
-    <div class="readouts" style="margin-top:8px">
-      <div class="readout"><span class="v" id="r-u">3,0 V</span><span class="k" id="k-u"></span></div>
-      <div class="readout"><span class="v" id="r-i">0,00 A</span><span class="k" id="k-i"></span></div>
-      <div class="readout"><span class="v" id="r-r">10 Ω</span><span class="k" id="k-r"></span></div>
+    <div class="readouts">
+      <div class="readout"><span class="v" id="r-u"></span><span class="k" id="k-u"></span></div>
+      <div class="readout"><span class="v" id="r-i"></span><span class="k" id="k-i"></span></div>
+      <div class="readout"><span class="v" id="r-r"></span><span class="k" id="k-r"></span></div>
     </div>
 
-    <div style="margin-top:14px">
-      <div class="eyebrow" id="k-light"></div>
+    <div>
+      <p class="liten" id="k-light"></p>
       <div class="light-meter" style="margin-top:6px">
-        <div class="needle" id="needle"></div>
-        <div class="zone" id="zone"></div>
-        <div class="danger" id="danger"></div>
+        <div class="needle" id="needle"></div><div class="zone" id="zone"></div><div class="danger" id="danger"></div>
       </div>
-      <div class="meter-labels"><span data-en="dark">mörkt</span><span data-en="just right">lagom</span><span data-en="too much!">för mycket!</span></div>
+      <div class="meter-labels"><span data-en="dark">mörkt</span><span data-en="just right">lagom</span><span data-en="too much">för mycket</span></div>
     </div>
 
     <div class="controls">
-      <div class="control" style="flex:0 1 auto">
-        <label><span id="k-batt"></span><output id="o-batt">2</output></label>
-        <div class="battery-picker">
-          <button class="step" id="minus" type="button" aria-label="Färre" data-aria-en="Fewer">−</button>
-          <div class="cells" id="cell-icons"></div>
-          <button class="step" id="plus" type="button" aria-label="Fler" data-aria-en="More">+</button>
+      <div class="control" style="flex:0 0 auto; min-width:0">
+        <label id="k-batt"></label>
+        <div class="stegare">
+          <button id="minus" type="button" aria-label="Färre batterier" data-aria-en="Fewer batteries">−</button>
+          <output id="o-batt">2</output>
+          <button id="plus" type="button" aria-label="Fler batterier" data-aria-en="More batteries">+</button>
         </div>
       </div>
       <div class="control">
-        <label for="res"><span id="k-res"></span><output id="o-res">10 Ω</output></label>
+        <label for="res"><span id="k-res"></span><output id="o-res"></output></label>
         <input type="range" id="res" min="0.5" max="20" step="0.5" value="10">
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap">
-        <button class="chip" id="water-btn" type="button" aria-pressed="false" data-en="Show as water">Visa som vatten</button>
+        <button class="chip" id="water-btn" type="button" aria-pressed="false" style="min-height:48px" data-en="Show as water">Visa som vatten</button>
         <button class="btn" id="replace" type="button" hidden data-en="New bulb">Ny lampa</button>
       </div>
     </div>
   </section>
 
   <aside class="panel">
-    <div class="card mission" id="mission">
-      <div class="eyebrow" data-en="Basic electricity · ~10 min">Grundläggande ellära · ~10 min</div>
-      <h2 data-en="Make it light">Få det att lysa</h2>
-      <p class="lead" data-en="Tap the switch, add batteries and change the resistance.">Tryck på strömbrytaren, lägg till batterier och ändra motståndet.</p>
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Electricity, about 10 minutes">Ellära, ungefär 10 minuter</p>
+      <h2 data-en="Make it light up">Få det att lysa</h2>
+      <p class="lead" data-en="Flip the switch at the bottom. Then change the batteries and the resistance.">Slå på brytaren längst ner. Ändra sedan batterierna och motståndet.</p>
     </div>
 
-    <details class="card why">
+    <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="<strong>Batteries push.</strong> More batteries means more push (voltage).">
-          <strong>Batterier knuffar.</strong> Fler batterier betyder mer knuff (spänning).</p>
-        <p data-en="<strong>The resistor brakes.</strong> It works like a narrow pipe.">
-          <strong>Motståndet bromsar.</strong> Det fungerar som ett smalt rör.</p>
-        <p data-en="<strong>Current is the flow.</strong> Push and brake together decide how much flows.">
-          <strong>Strömmen är flödet.</strong> Knuff och broms bestämmer tillsammans hur mycket som flödar.</p>
-        <div class="formula" data-en="I = V ÷ R">I = U ÷ R</div>
-        <p data-en="This is called Ohm's law. Try the water view: it is the same idea.">Det kallas Ohms lag. Prova vattenvyn: det är samma idé.</p>
+        <p data-en="The batteries push the current round the loop. More batteries give a bigger push, which is called <b>voltage</b>.">Batterierna knuffar strömmen runt i slingan. Fler batterier ger mer knuff, det som kallas <b>spänning</b>.</p>
+        <p data-en="The resistor brakes the current, like a narrow section of pipe slows water.">Motståndet bromsar strömmen, ungefär som en smal bit rör bromsar vatten.</p>
+        <p class="formula" data-en="I = V ÷ R">I = U ÷ R</p>
+        <p data-en="Current equals push divided by brake. The rule is called Ohm’s law. The water picture stops working for things like magnets and radio, but it holds for this circuit.">Ström är knuff delat med broms. Regeln heter Ohms lag. Vattenbilden slutar fungera för till exempel magneter och radio, men för den här kretsen stämmer den.</p>
       </div>
     </details>
 
-    <p class="mock-note" data-en="Mock-up. In the real version a team could share one circuit and each person controls one part.">Mockup. I en riktig version kan ett lag dela en krets där varje person styr en del.</p>
+    <div id="lada"></div>
+
+    <div class="lag">
+      <h3 style="font-size:var(--fs-r3)" data-en="As a team">I lag</h3>
+      <p class="liten" style="margin-top:6px" data-en="Three people share one circuit. One controls the batteries, one the resistance and one the switch. They have to agree to reach just the right light.">Tre personer delar en krets. En styr batterierna, en motståndet och en brytaren. De måste komma överens för att få lagom ljus.</p>
+    </div>
   </aside>
 </main>
 
 <script src="../shared/kit.js"></script>
 <script>
 (() => {
-  const RB = 3;                 // lampans eget motstånd (Ω)
-  const ZONE = [2.5, 4.5];      // lagom ljus (W)
-  const BREAK = 8;              // lampan går sönder (W)
-  const PMAX = 10;              // mätarens skala
-
-  const svg = document.getElementById("circuit");
-  const loop = document.getElementById("loop");
-  const L = loop.getTotalLength();
+  const RB = 3, ZONE = [2.5, 4.5], BREAK = 8, PMAX = 10;
+  const $ = id => document.getElementById(id);
+  const svg = $("circuit"), loop = $("loop"), L = loop.getTotalLength();
   const state = { n: 2, R: 10, closed: false, broken: false, water: false };
-
   const fmt = (v, d) => v.toFixed(d).replace(".", K.lang === "sv" ? "," : ".");
+  const ohm = r => fmt(r, r % 1 ? 1 : 0) + " Ω";
 
-  const tasks = K.tasks(document.getElementById("mission"), "el-krets", [
-    { id: "tand",    text: { sv: "Tänd lampan", en: "Turn on the bulb" }, hint: { sv: "Tryck på strömbrytaren längst ner.", en: "Tap the switch at the bottom." } },
-    { id: "stark",   text: { sv: "Gör lampan riktigt stark", en: "Make the bulb really bright" }, hint: { sv: "Nå den gröna zonen.", en: "Reach the green zone." } },
-    { id: "lagom",   text: { sv: "Lagom ljus med exakt 4 batterier", en: "Just right with exactly 4 batteries" }, hint: { sv: "Nu får du ändra motståndet.", en: "Now you need to change the resistance." } },
-    { id: "vatten",  text: { sv: "Titta på kretsen som vatten", en: "Look at the circuit as water" } },
-    { id: "sonder",  text: { sv: "Vad händer om det blir för mycket?", en: "What happens if it gets too much?" }, hint: { sv: "Bara på låtsas, lovar.", en: "Only pretend, promise." } }
-  ]);
+  const tasks = K.tasks($("mission"), "el-krets", [
+    { id: "tand",   text: { sv: "Tänd lampan", en: "Turn on the bulb" } },
+    { id: "stark",  text: { sv: "Gör lampan stark", en: "Make the bulb bright" }, hint: { sv: "Visaren ska nå den markerade zonen.", en: "The needle should reach the marked zone." } },
+    { id: "lagom",  text: { sv: "Lagom ljus med exakt 4 batterier", en: "Just right with exactly 4 batteries" }, hint: { sv: "Nu behöver du ändra motståndet.", en: "Now you need to change the resistance." } },
+    { id: "vatten", text: { sv: "Se kretsen som vatten", en: "See the circuit as water" } },
+    { id: "sonder", text: { sv: "Ge lampan för mycket ström", en: "Give the bulb too much current" }, hint: { sv: "Det är bara på skärmen.", en: "It only happens on screen." } }
+  ], { onComplete: () => { const g = $("glowc"); g.classList.remove("blink"); void g.getBBox(); g.classList.add("blink"); } });
 
-  /* --- elektroner längs kretsen --- */
-  const eg = document.getElementById("electrons");
-  const N = 30;
-  const dots = Array.from({ length: N }, () => {
-    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    c.setAttribute("class", "electron"); c.setAttribute("r", 6); eg.append(c); return c;
+  /* låda på bordet: Pico W med lysdiod och potentiometer */
+  const lada = K.lada($("lada"), {
+    nod: "nod-01",
+    delar: { sv: "Pico W, lysdiod, potentiometer 10 kΩ, strömsensor INA219", en: "Pico W, LED, 10 kΩ potentiometer, INA219 current sensor" },
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Kopplingsplatta med Pico W, lysdiod och vridmotstånd">
+      <rect class="hw-platta" x="8" y="10" width="284" height="130" rx="6"/>
+      ${Array.from({ length: 13 }, (_, i) => Array.from({ length: 5 }, (_, j) => `<rect class="hw-hal" x="${20 + i * 21}" y="${86 + j * 10}" width="4" height="4"/>`).join("")).join("")}
+      <rect class="hw-kort" x="20" y="22" width="110" height="44" rx="4"/>
+      <text class="hw-text-ljus" x="32" y="48">PICO W</text>
+      <path class="hw-tråd" d="M130 36 H190 V100"/>
+      <path class="hw-tråd" d="M130 56 H150 V120 H250 V96"/>
+      <circle id="hw-glow" cx="190" cy="88" r="22" fill="var(--el)" opacity="0"/>
+      <circle id="hw-led" class="hw-led" cx="190" cy="88" r="9"/>
+      <g id="hw-pot" style="transform-origin:250px 80px"><circle cx="250" cy="80" r="16" fill="var(--ark)" stroke="var(--grafit)" stroke-width="2.5"/><line x1="250" y1="80" x2="250" y2="66" stroke="var(--grafit)" stroke-width="3" stroke-linecap="round"/></g>
+      <text class="hw-text" x="176" y="134">LED</text><text class="hw-text" x="236" y="134">POT</text>
+    </svg>`
   });
 
-  /* --- ritning av delar --- */
+  const eg = $("electrons"), N = 30;
+  const dots = Array.from({ length: N }, () => { const c = document.createElementNS("http://www.w3.org/2000/svg", "circle"); c.setAttribute("class", "electron"); c.setAttribute("r", 5); eg.append(c); return c; });
+
   function drawCells() {
-    const g = document.getElementById("cells"); g.innerHTML = "";
-    const h = 20, gap = 4, total = state.n * (h + gap) - gap, y0 = 230 - total / 2;
+    const g = $("cells"); g.innerHTML = "";
+    const h = 18, gap = 5, total = state.n * (h + gap) - gap, y0 = 230 - total / 2;
     for (let i = 0; i < state.n; i++) {
-      const r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      r.setAttribute("x", 92); r.setAttribute("y", y0 + i * (h + gap)); r.setAttribute("width", 56); r.setAttribute("height", h); r.setAttribute("rx", 4);
-      r.setAttribute("class", "cell"); g.append(r);
+      g.insertAdjacentHTML("beforeend", `<rect class="cell" x="94" y="${y0 + i * (h + gap)}" width="52" height="${h}" rx="3"/><rect class="cell-plus" x="94" y="${y0 + i * (h + gap)}" width="10" height="${h}" rx="2"/>`);
     }
-    const m = document.getElementById("batt-mask");
-    m.setAttribute("y", y0 - 8); m.setAttribute("height", total + 16);
-    const plus = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    plus.setAttribute("x", 154); plus.setAttribute("y", y0 + 6); plus.setAttribute("class", "part-sub"); plus.textContent = "+"; g.append(plus);
-    const icons = document.getElementById("cell-icons"); icons.innerHTML = "";
-    for (let i = 0; i < 6; i++) { const c = document.createElement("i"); if (i < state.n) c.className = "on"; icons.append(c); }
+    $("batt-mask").setAttribute("y", y0 - 8); $("batt-mask").setAttribute("height", total + 16);
+    $("o-batt").textContent = state.n;
   }
   function drawResistor() {
-    const zigs = Math.round(3 + state.R * 0.7), x0 = 330, x1 = 470, w = (x1 - x0) / zigs, a = 14;
+    const zigs = Math.round(3 + state.R * 0.7), x0 = 330, x1 = 470, w = (x1 - x0) / zigs, a = 13;
     let d = `M${x0 - 10},80 H${x0}`;
     for (let i = 0; i < zigs; i++) d += ` L${x0 + w * (i + .5)},${80 + (i % 2 ? a : -a)}`;
-    d += ` L${x1},80 H${x1 + 10}`;
-    document.getElementById("zigzag").setAttribute("d", d);
+    $("zigzag").setAttribute("d", d + ` L${x1},80 H${x1 + 10}`);
     const gap = Math.max(3, 15 - state.R * 0.6);
-    document.getElementById("narrow").setAttribute("d",
-      `M320,65 C350,65 360,${80 - gap} 380,${80 - gap} H420 C440,${80 - gap} 450,65 480,65 V95 C450,95 440,${80 + gap} 420,${80 + gap} H380 C360,${80 + gap} 350,95 320,95 Z`);
+    $("narrow").setAttribute("d", `M320,66 C350,66 360,${80 - gap} 380,${80 - gap} H420 C440,${80 - gap} 450,66 480,66 V94 C450,94 440,${80 + gap} 420,${80 + gap} H380 C360,${80 + gap} 350,94 320,94 Z`);
   }
 
   function labels() {
-    const w = state.water;
-    const T = (sv, en) => K.t(sv, en);
-    document.getElementById("lbl-batt").textContent = w ? T("Pump", "Pump") : T("Batterier", "Batteries");
-    document.getElementById("sub-batt").textContent = fmt(state.n * 1.5, 1) + " V";
-    document.getElementById("lbl-res").textContent = w ? T("Smalt rör", "Narrow pipe") : T("Motstånd", "Resistor");
-    document.getElementById("sub-res").textContent = fmt(state.R, state.R % 1 ? 1 : 0) + " Ω";
-    document.getElementById("lbl-bulb").textContent = w ? T("Vattenhjul", "Water wheel") : T("Lampa", "Bulb");
-    document.getElementById("lbl-sw").textContent = w ? T("Kran", "Tap") : T("Strömbrytare", "Switch");
-    document.getElementById("k-u").textContent = w ? T("Tryck (spänning)", "Pressure (voltage)") : T("Spänning", "Voltage");
-    document.getElementById("k-i").textContent = w ? T("Flöde (ström)", "Flow (current)") : T("Ström", "Current");
-    document.getElementById("k-r").textContent = w ? T("Rörets trånghet", "Pipe narrowness") : T("Motstånd", "Resistance");
-    document.getElementById("k-batt").textContent = T("Batterier", "Batteries");
-    document.getElementById("k-res").textContent = w ? T("Hur smalt är röret?", "How narrow is the pipe?") : T("Motstånd", "Resistance");
-    document.getElementById("k-light").textContent = w ? T("Hur fort snurrar hjulet?", "How fast does the wheel spin?") : T("Hur mycket lyser lampan?", "How bright is the bulb?");
+    const w = state.water, T = K.t;
+    $("lbl-batt").textContent = w ? T("Pump", "Pump") : T("Batterier", "Batteries");
+    $("sub-batt").textContent = fmt(state.n * 1.5, 1) + " V";
+    $("lbl-res").textContent = w ? T("Smalt rör", "Narrow pipe") : T("Motstånd", "Resistor");
+    $("sub-res").textContent = ohm(state.R);
+    $("lbl-bulb").textContent = w ? T("Vattenhjul", "Water wheel") : T("Lampa", "Bulb");
+    $("lbl-sw").textContent = w ? T("Kran", "Tap") : T("Strömbrytare", "Switch");
+    $("k-u").textContent = w ? T("Tryck (spänning)", "Pressure (voltage)") : T("Spänning", "Voltage");
+    $("k-i").textContent = w ? T("Flöde (ström)", "Flow (current)") : T("Ström", "Current");
+    $("k-r").textContent = w ? T("Hur smalt röret är", "How narrow the pipe is") : T("Motstånd", "Resistance");
+    $("k-batt").textContent = T("Batterier", "Batteries");
+    $("k-res").textContent = w ? T("Hur smalt är röret?", "How narrow is the pipe?") : T("Motstånd", "Resistance");
+    $("k-light").textContent = w ? T("Hur fort hjulet snurrar", "How fast the wheel turns") : T("Hur starkt lampan lyser", "How bright the bulb is");
   }
 
   function physics() {
-    const U = state.n * 1.5;
-    const on = state.closed && !state.broken;
+    const U = state.n * 1.5, on = state.closed && !state.broken;
     const I = on ? U / (state.R + RB) : 0;
-    const P = I * I * RB;
-    return { U, I, P };
+    return { U, I, P: I * I * RB };
+  }
+
+  function describe(I, P) {
+    if (state.broken) return;
+    if (!state.closed) { K.status(K.t("Brytaren är av. Ingen ström går runt.", "The switch is off. No current flows.")); return; }
+    const a = fmt(I, 2) + " A";
+    if (P < 0.5) K.status(K.t(`Lampan glöder svagt. ${a} går genom tråden.`, `The bulb glows faintly. ${a} flows through the wire.`));
+    else if (P < ZONE[0]) K.status(K.t(`Lampan lyser. ${a} går genom tråden.`, `The bulb is on. ${a} flows through the wire.`));
+    else if (P <= ZONE[1]) K.status(K.t(`Lagom ljus. ${a} går genom tråden.`, `Just right. ${a} flows through the wire.`));
+    else K.status(K.t(`Lampan lyser starkt, ${a}. Den tål högst 1,6 A.`, `The bulb is very bright, ${a}. It can take 1.6 A at most.`), "fara");
   }
 
   function update() {
     const { U, I, P } = physics();
-    document.getElementById("r-u").textContent = fmt(U, 1) + " V";
-    document.getElementById("r-i").textContent = fmt(I, 2) + " A";
-    document.getElementById("r-r").textContent = fmt(state.R, state.R % 1 ? 1 : 0) + " Ω";
-    document.getElementById("o-batt").textContent = state.n;
-    document.getElementById("o-res").textContent = fmt(state.R, state.R % 1 ? 1 : 0) + " Ω";
-    document.getElementById("needle").style.width = Math.min(100, P / PMAX * 100) + "%";
-    document.getElementById("glowc").setAttribute("opacity", state.water ? 0 : Math.min(1, P / 4.5));
-    document.getElementById("switch").classList.toggle("open", !state.closed);
-    document.getElementById("switch-pulse").style.display = state.closed || tasks.isDone("tand") ? "none" : "";
-    document.getElementById("bulb").classList.toggle("broken", state.broken);
-    document.getElementById("replace").hidden = !state.broken;
+    $("r-u").textContent = fmt(U, 1) + " V";
+    $("r-i").textContent = fmt(I, 2) + " A";
+    $("r-r").textContent = ohm(state.R);
+    $("o-res").textContent = ohm(state.R);
+    $("needle").style.width = Math.min(100, P / PMAX * 100) + "%";
+    $("glowc").setAttribute("opacity", state.water ? 0 : Math.min(1, P / 4.5));
+    $("switch").classList.toggle("open", !state.closed);
+    $("switch-hint").style.display = state.closed || tasks.isDone("tand") ? "none" : "";
+    $("bulb").classList.toggle("broken", state.broken);
+    $("replace").hidden = !state.broken;
     svg.classList.toggle("water", state.water);
+    // lådan
+    $("hw-led").classList.toggle("pa", P > 0.05);
+    $("hw-glow").setAttribute("opacity", Math.min(.6, P / 6));
+    $("hw-pot").style.transform = `rotate(${(state.R / 20) * 270 - 135}deg)`;
     labels();
 
     if (P > 0.05) tasks.complete("tand");
     if (P >= ZONE[0]) tasks.complete("stark");
     if (state.n === 4 && P >= ZONE[0] && P <= ZONE[1]) tasks.complete("lagom");
+    describe(I, P);
     if (P > BREAK && !state.broken) {
       state.broken = true;
       tasks.complete("sonder");
-      K.toast(K.t("Poff! För mycket ström. Byt lampa och prova igen.", "Pop! Too much current. Get a new bulb and try again."), "!");
       update();
+      K.status(K.t("Poff. Lampan tålde inte strömmen. Byt lampa.", "Pop. The bulb could not take the current. Fit a new one."), "fara");
     }
   }
 
-  /* --- animation --- */
   let offset = 0, angle = 0, last = performance.now();
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     const { I } = physics();
-    offset = (offset + I * 160 * dt) % L;
-    angle = (angle + I * 400 * dt) % 360;
+    if (!still) { offset = (offset + I * 160 * dt) % L; angle = (angle + I * 400 * dt) % 360; }
     for (let i = 0; i < N; i++) {
       const p = loop.getPointAtLength((offset + i * L / N) % L);
-      dots[i].setAttribute("cx", p.x); dots[i].setAttribute("cy", p.y);
-      dots[i].setAttribute("r", state.water ? 8 : 6);
+      dots[i].setAttribute("cx", p.x); dots[i].setAttribute("cy", p.y); dots[i].setAttribute("r", state.water ? 7 : 5);
     }
-    document.getElementById("impeller").style.transform = `rotate(${angle}deg)`;
-    document.getElementById("wheel").style.transform = `rotate(${angle}deg)`;
+    $("impeller").style.transform = `rotate(${angle}deg)`;
+    $("wheel").style.transform = `rotate(${angle}deg)`;
     requestAnimationFrame(frame);
   }
 
-  /* --- händelser --- */
   const toggleSwitch = () => { state.closed = !state.closed; update(); };
-  document.getElementById("switch-hit").addEventListener("click", toggleSwitch);
-  document.getElementById("switch-hit").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSwitch(); } });
-  document.getElementById("plus").addEventListener("click", () => { state.n = Math.min(6, state.n + 1); drawCells(); update(); });
-  document.getElementById("minus").addEventListener("click", () => { state.n = Math.max(1, state.n - 1); drawCells(); update(); });
-  document.getElementById("res").addEventListener("input", e => { state.R = +e.target.value; drawResistor(); update(); });
-  document.getElementById("replace").addEventListener("click", () => { state.broken = false; state.closed = false; update(); });
-  const wb = document.getElementById("water-btn");
-  wb.addEventListener("click", () => {
-    state.water = !state.water; wb.setAttribute("aria-pressed", state.water);
+  $("switch-hit").addEventListener("click", toggleSwitch);
+  $("switch-hit").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSwitch(); } });
+  $("plus").addEventListener("click", () => { state.n = Math.min(6, state.n + 1); drawCells(); update(); });
+  $("minus").addEventListener("click", () => { state.n = Math.max(1, state.n - 1); drawCells(); update(); });
+  $("res").addEventListener("input", e => { state.R = +e.target.value; drawResistor(); update(); });
+  $("replace").addEventListener("click", () => { state.broken = false; state.closed = false; update(); });
+  $("water-btn").addEventListener("click", e => {
+    state.water = !state.water; e.currentTarget.setAttribute("aria-pressed", state.water);
     if (state.water) tasks.complete("vatten");
     update();
   });
   K.onLang(update);
 
-  /* zoner på mätaren */
-  document.getElementById("zone").style.left = ZONE[0] / PMAX * 100 + "%";
-  document.getElementById("zone").style.width = (ZONE[1] - ZONE[0]) / PMAX * 100 + "%";
-  document.getElementById("danger").style.width = (PMAX - BREAK) / PMAX * 100 + "%";
+  $("zone").style.left = ZONE[0] / PMAX * 100 + "%";
+  $("zone").style.width = (ZONE[1] - ZONE[0]) / PMAX * 100 + "%";
+  $("danger").style.width = (PMAX - BREAK) / PMAX * 100 + "%";
 
   drawCells(); drawResistor(); update();
   requestAnimationFrame(frame);

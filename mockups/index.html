@@ -7,91 +7,91 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
 <link rel="stylesheet" href="shared/theme.css">
 <style>
   .wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   .brand { display: flex; align-items: center; gap: 10px; flex: 1; text-decoration: none; }
-  .brand b { font-family: var(--font-display); font-size: 1.45rem; font-weight: 800; letter-spacing: -.02em; }
-  .brand svg { width: 34px; height: 34px; }
+  .brand b { font-size: var(--fs-r3); font-weight: 800; letter-spacing: -.01em; }
+  .brand svg { width: 28px; height: 28px; flex: none; }
 
-  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 28px; align-items: center; padding-block: 36px 20px; }
-  @media (max-width: 920px) { .hero { grid-template-columns: minmax(0, 1fr); } }
-  .hero h1 { font-size: var(--fs-xxl); font-weight: 800; letter-spacing: -.03em; }
-  .hero h1 span { display: block; }
-  .hero h1 span:nth-child(1) { color: var(--c-el); }
-  .hero h1 span:nth-child(2) { color: var(--c-nat); }
-  .hero h1 span:nth-child(3) { color: var(--c-ai); }
-  .hero .lead { font-size: var(--fs-l); color: var(--ink-soft); margin-top: 14px; max-width: 34ch; }
-  .entry { display: grid; gap: 12px; margin-top: 24px; max-width: 460px; }
-  .entry-row { display: flex; gap: 8px; align-items: center; background: var(--surface); border-radius: 999px; padding: 6px 6px 6px 18px; box-shadow: var(--shadow); }
-  .entry-row label { font-size: var(--fs-xs); color: var(--ink-soft); white-space: nowrap; font-family: var(--font-data); text-transform: uppercase; letter-spacing: .06em; }
-  .entry-row input { flex: 1; min-width: 0; border: 0; background: transparent; font-size: var(--fs-m); padding: 8px 4px; }
-  .entry-row input:focus { outline: none; }
-  .entry-row:focus-within { outline: 3px solid var(--c-logik); outline-offset: 2px; }
-  .icon-btn { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--surface-2); display: grid; place-items: center; cursor: pointer; flex: none; }
-  .icon-btn:active { transform: rotate(40deg); }
-  .entry .btn { --domain: var(--ink); color: var(--bg); }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 36px; align-items: start; padding-block: 36px 12px; }
+  @media (max-width: 920px) { .hero { grid-template-columns: minmax(0, 1fr); gap: 20px; } }
+  .hero h1 { font-size: var(--fs-r1); max-width: 16ch; }
+  .hero .lead { font-size: var(--fs-r3); color: var(--blyerts); margin-top: 14px; max-width: 36ch; line-height: 1.45; }
 
-  .map-card { background: var(--surface); border-radius: var(--r-l); box-shadow: var(--shadow); padding: 14px; }
-  .map-card .eyebrow { padding: 4px 8px 0; }
-  #map { width: 100%; height: auto; display: block; }
-  .m-link { fill: none; stroke: var(--line); stroke-width: 3; }
-  .m-label { font-family: var(--font-data); font-size: 11px; fill: var(--ink-soft); paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; }
+  .entry { display: grid; gap: 14px; margin-top: 26px; max-width: 440px; }
+  .falt { display: grid; gap: 4px; }
+  .falt label { font-size: var(--fs-liten); color: var(--blyerts); }
+  .falt .rad { display: flex; gap: 8px; }
+  .falt input { flex: 1; min-width: 0; height: 48px; border-radius: 6px; border: 1px solid var(--grafit); background: var(--ark); padding: 0 12px; font-size: var(--fs-brod); }
+  .falt input.kod { font-family: var(--siffror); text-transform: uppercase; }
+  .tarning { width: 48px; height: 48px; flex: none; border-radius: 6px; border: 1px solid var(--linje); background: var(--ark); display: grid; place-items: center; cursor: pointer; }
+  .tarning:hover { border-color: var(--grafit); }
+
+  .karta { border: 1px solid var(--linje); border-radius: 10px; background: var(--ark); padding: 12px; }
+  .karta .scen { border-color: var(--rutnat); }
+  .karta p { margin-top: 10px; }
+  .m-link { fill: none; stroke: var(--linje); stroke-width: 2; transition: stroke var(--kort); }
+  .m-link.tunn { stroke-dasharray: 2 6; }
+  .m-link.lyser { stroke: var(--grafit); }
+  .m-label { font-family: var(--text); font-size: 12px; fill: var(--blyerts); paint-order: stroke; stroke: var(--ark); stroke-width: 5px; stroke-linejoin: round; }
   .m-node { cursor: pointer; }
-  .m-node circle.bg { transition: transform .4s var(--ease); transform-box: fill-box; transform-origin: center; }
-  .m-node:hover circle.bg, .m-node:focus-visible circle.bg { transform: scale(1.1); }
-  .m-node text { font-family: var(--font-display); font-weight: 700; font-size: 15px; fill: var(--ink); }
-  .m-node .ring { fill: none; stroke-width: 4; stroke-linecap: round; transform: rotate(-90deg); transform-box: fill-box; transform-origin: center; transition: stroke-dashoffset 1s var(--ease); }
-  .spark { r: 4; }
+  .m-node:focus-visible { outline: none; }
+  .m-node .bg { fill: var(--ark); stroke: var(--grafit); stroke-width: 2; }
+  .m-node:hover .bg, .m-node:focus-visible .bg { stroke-width: 3.5; }
+  .m-node .ikon { fill: none; stroke: var(--aktiv); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .m-node .ring { fill: none; stroke: var(--aktiv); stroke-width: 4; transform: rotate(-90deg); transform-box: fill-box; transform-origin: center; }
+  .m-node text { font-family: var(--text); font-weight: 700; font-size: 14px; fill: var(--grafit); paint-order: stroke; stroke: var(--ark); stroke-width: 5px; stroke-linejoin: round; }
 
-  .section-head { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin: 30px 0 14px; }
-  .section-head h2 { font-size: var(--fs-xl); }
-  .section-head p { color: var(--ink-soft); font-size: var(--fs-s); }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .rubrik { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 40px 0 14px; padding-top: 18px; border-top: 1px solid var(--linje); }
+  .rubrik h2 { font-size: var(--fs-r2); }
+  .rubrik p { color: var(--blyerts); font-size: var(--fs-liten); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 14px; }
   .mod {
-    position: relative; display: grid; grid-template-rows: auto 1fr auto; gap: 10px;
-    background: var(--surface); border-radius: var(--r-l); padding: 16px; box-shadow: var(--shadow);
-    text-decoration: none; transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+    display: grid; grid-template-rows: auto auto 1fr auto; gap: 8px;
+    background: var(--ark); border: 1px solid var(--linje); border-radius: 10px; padding: 16px;
+    text-decoration: none; transition: border-color var(--kort) var(--broms);
   }
-  .mod:hover { transform: translateY(-4px); box-shadow: 0 2px 4px rgb(20 34 49 / .08), 0 18px 40px rgb(20 34 49 / .14); }
-  .mod .art { height: 110px; border-radius: var(--r-m); background: color-mix(in srgb, var(--domain) 14%, var(--surface)); display: grid; place-items: center; overflow: hidden; }
-  .mod .art svg { width: 100%; height: 100%; }
-  .mod h3 { font-size: var(--fs-l); }
-  .mod p { color: var(--ink-soft); font-size: var(--fs-s); margin-top: 4px; }
-  .mod .meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: var(--fs-xs); color: var(--ink-soft); }
-  .pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); }
-  .pill.dom { background: color-mix(in srgb, var(--domain) 16%, var(--surface)); color: var(--ink); }
-  .mod .bar { height: 6px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
-  .mod .bar i { display: block; height: 100%; background: var(--domain); width: 0; transition: width .8s var(--ease); }
+  .mod:hover, .mod:focus-visible { border-color: var(--grafit); }
+  .mod .topp { display: flex; align-items: center; gap: 10px; }
+  .mod .topp svg { width: 36px; height: 36px; flex: none; }
+  .mod .topp svg * { fill: none; stroke: var(--aktiv); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .mod .omr { font-size: var(--fs-liten); color: var(--blyerts); }
+  .mod h3 { font-size: var(--fs-r3); }
+  .mod p { color: var(--blyerts); font-size: 16px; }
+  .mod .fot { display: grid; gap: 8px; padding-top: 10px; border-top: 1px solid var(--rutnat); font-size: var(--fs-liten); color: var(--blyerts); }
+  .mod .steg { display: flex; justify-content: space-between; gap: 8px; }
+  .mod .steg b { font-family: var(--siffror); font-weight: 600; color: var(--grafit); }
+  .mod .mätare { height: 4px; border-radius: 2px; background: var(--rutnat); overflow: hidden; }
+  .mod .mätare i { display: block; height: 100%; background: var(--aktiv); }
 
-  .ideas { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-  .idea { border: 2px dashed var(--line); border-radius: var(--r-m); padding: 12px 14px; display: grid; gap: 4px; }
-  .idea b { font-family: var(--font-display); }
-  .idea span { font-size: var(--fs-xs); color: var(--ink-soft); }
-  .idea .eyebrow { color: var(--domain); }
+  .ideer { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 28px; margin: 0; }
+  .ideer div { padding: 12px 0; border-top: 1px solid var(--rutnat); display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 2px 12px; }
+  .ideer i { width: 8px; height: 8px; border-radius: 50%; background: var(--aktiv); margin-top: 8px; grid-row: span 2; }
+  .ideer dt { font-weight: 700; }
+  .ideer dd { margin: 0; font-size: var(--fs-liten); color: var(--blyerts); }
 
-  .room-band { margin-top: 34px; background: var(--ink); color: var(--bg); border-radius: var(--r-l); padding: 22px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; }
-  .room-band h2 { font-size: var(--fs-xl); }
-  .room-band p { opacity: .8; margin-top: 6px; max-width: 60ch; }
-  .room-band .btn { --domain: var(--c-el); color: #142231; }
-  @media (max-width: 640px) { .room-band { grid-template-columns: minmax(0, 1fr); } }
-  footer { padding-block: 30px 40px; color: var(--ink-soft); font-size: var(--fs-xs); }
+  .leda { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: center; }
+  @media (max-width: 640px) { .leda { grid-template-columns: minmax(0, 1fr); } }
+  .leda p { color: var(--blyerts); margin-top: 6px; max-width: 62ch; }
+  .leda .knappar { display: flex; gap: 8px; flex-wrap: wrap; }
+  footer { padding-block: 30px 40px; color: var(--blyerts); font-size: var(--fs-liten); }
 </style>
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="index.html" aria-label="Verkstan">
-    <svg viewBox="0 0 34 34" aria-hidden="true">
-      <rect x="2" y="2" width="30" height="30" rx="10" fill="var(--ink)"/>
-      <circle cx="11" cy="12" r="3.4" fill="var(--c-el)"/><circle cx="23" cy="12" r="3.4" fill="var(--c-nat)"/><circle cx="17" cy="23" r="3.4" fill="var(--c-ai)"/>
-      <path d="M11 12 L23 12 L17 23 Z" fill="none" stroke="var(--bg)" stroke-width="1.6"/>
+  <a class="brand" href="index.html" aria-label="Verkstan, startsidan" data-aria-en="Verkstan, start page">
+    <svg viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="6" fill="var(--grafit)"/>
+      <path d="M7 9.5 14 20l7-10.5" fill="none" stroke="var(--pa-grafit)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <b>Verkstan</b>
   </a>
   <div class="tools">
     <button class="chip" id="lang" type="button" aria-label="Byt språk" data-aria-en="Change language">EN</button>
-    <button class="chip" id="theme" type="button" aria-label="Byt mellan ljust och mörkt" data-aria-en="Toggle light and dark">
+    <button class="chip" id="theme" type="button" aria-label="Byt mellan ljust och mörkt" data-aria-en="Switch between light and dark">
       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5a6.5 6.5 0 1 0 0 13z" fill="currentColor"/><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
     </button>
   </div>
@@ -100,213 +100,184 @@
 <main class="wrap">
   <section class="hero">
     <div>
-      <h1><span data-en="Try.">Prova.</span><span data-en="See.">Se.</span><span data-en="Understand.">Förstå.</span></h1>
-      <p class="lead" data-en="Small hands-on workshops about the technology around you. No prior knowledge needed.">Små verkstäder där du får göra saker med tekniken runt omkring dig. Ingen förkunskap behövs.</p>
+      <h1 data-en="Seven workshops about the technology around you">Sju verkstäder om tekniken omkring dig</h1>
+      <p class="lead" data-en="Each one takes 10–15 minutes and starts with something to try. No prior knowledge needed.">Varje verkstad tar 10–15 minuter och börjar med något att prova. Inga förkunskaper behövs.</p>
       <form class="entry" id="entry">
-        <div class="entry-row">
-          <label for="nick" data-en="I am">Jag heter</label>
-          <input id="nick" maxlength="24" autocomplete="off">
-          <button class="icon-btn" id="dice" type="button" aria-label="Slumpa ett smeknamn" data-aria-en="Pick a random nickname">
-            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="2" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7.5" cy="7.5" r="1.6" fill="currentColor"/><circle cx="14.5" cy="14.5" r="1.6" fill="currentColor"/><circle cx="11" cy="11" r="1.6" fill="currentColor"/></svg>
-          </button>
+        <div class="falt">
+          <label for="nick" data-en="Nickname, shown to others in the room">Smeknamn, syns för andra i rummet</label>
+          <div class="rad">
+            <input id="nick" maxlength="24" autocomplete="off">
+            <button class="tarning" id="dice" type="button" aria-label="Slumpa ett nytt smeknamn" data-aria-en="Pick a new random nickname">
+              <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="2" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="7.5" cy="7.5" r="1.6" fill="currentColor"/><circle cx="14.5" cy="14.5" r="1.6" fill="currentColor"/><circle cx="11" cy="11" r="1.6" fill="currentColor"/></svg>
+            </button>
+          </div>
         </div>
-        <div class="entry-row">
-          <label for="code" data-en="Room code">Rumskod</label>
-          <input id="code" maxlength="7" placeholder="t.ex. VERK-42" data-ph-en="e.g. VERK-42" autocomplete="off" style="text-transform:uppercase; font-family:var(--font-data)">
-          <button class="btn" type="submit" data-en="Join">Gå med</button>
+        <div class="falt">
+          <label for="code" data-en="Room code, if the leader has given you one">Rumskod, om ledaren har gett er en</label>
+          <div class="rad">
+            <input id="code" class="kod" maxlength="7" placeholder="VERK-42" autocomplete="off" spellcheck="false">
+            <button class="btn" type="submit" data-en="Join">Gå med</button>
+          </div>
         </div>
-        <p style="font-size:var(--fs-s); color:var(--ink-soft); padding-left:18px" data-en="No code? Just pick a workshop below and go at your own pace.">Ingen kod? Välj en verkstad nedanför och kör i egen takt.</p>
+        <p class="liten" data-en="Without a code you work on your own, and progress is saved in this browser.">Utan kod kör du på egen hand, och framstegen sparas i den här webbläsaren.</p>
       </form>
     </div>
 
-    <div class="map-card">
-      <div class="eyebrow" data-en="Everything is connected · tap a bubble">Allt hänger ihop · tryck på en bubbla</div>
-      <svg id="map" viewBox="0 0 540 420" role="img" aria-label="Karta över hur ämnena hänger ihop" data-aria-en="Map of how the subjects connect"></svg>
+    <div class="karta">
+      <div class="scen">
+        <svg id="map" viewBox="0 0 540 420" role="img" aria-label="Karta över hur de sju ämnena hänger ihop" data-aria-en="Map of how the seven subjects connect"></svg>
+      </div>
+      <p class="liten" data-en="The ring around each subject shows how far you have come. Point at a subject to see what it connects to.">Ringen runt varje ämne visar hur långt du har kommit. Peka på ett ämne för att se vad det hänger ihop med.</p>
     </div>
   </section>
 
-  <div class="section-head">
-    <div><h2 data-en="Workshops">Verkstäder</h2></div>
-    <p data-en="Each one takes about 10–15 minutes. Do them in any order.">Varje verkstad tar ungefär 10–15 minuter. Gör dem i vilken ordning du vill.</p>
+  <div class="rubrik">
+    <h2 data-en="Workshops">Verkstäder</h2>
+    <p data-en="Do them in any order.">Gör dem i vilken ordning du vill.</p>
   </div>
   <div class="grid" id="mods"></div>
 
-  <div class="section-head">
-    <div><h2 data-en="Coming next">På ritbordet</h2></div>
-    <p data-en="Ideas from the exercise bank. Not built yet.">Idéer ur övningsbanken. Inte byggda än.</p>
+  <div class="rubrik">
+    <h2 data-en="On the drawing board">På ritbordet</h2>
+    <p data-en="Ideas from the exercise bank, not built yet.">Idéer ur övningsbanken, inte byggda än.</p>
   </div>
-  <div class="ideas" id="ideas"></div>
+  <dl class="ideer" id="ideas"></dl>
 
-  <section class="room-band">
-    <div>
-      <div class="eyebrow" style="color:inherit; opacity:.7" data-en="For workshop leaders">För workshopledare</div>
-      <h2 data-en="Run it together in a room">Kör tillsammans i ett rum</h2>
-      <p data-en="Open a room, show the code on the big screen and follow how everyone is doing. Start shared experiments where the whole room contributes.">Öppna ett rum, visa koden på storskärmen och följ hur det går för alla. Starta gemensamma experiment där hela rummet bidrar.</p>
-    </div>
-    <a class="btn" href="rum.html" data-en="See the room demo">Se rumsdemon</a>
-  </section>
+  <div class="rubrik" style="display:block">
+    <section class="leda">
+      <div>
+        <h2 style="font-size:var(--fs-r2)" data-en="Leading a workshop">Leda en workshop</h2>
+        <p data-en="Open a room, show the code on the big screen and follow how the room is doing. From the same view you pair the boxes on the tables with the workshops.">Öppna ett rum, visa koden på storskärmen och följ hur det går. I samma vy kopplar du lådorna på borden till verkstäderna.</p>
+      </div>
+      <div class="knappar">
+        <a class="btn" href="rum.html" data-en="Open the room view">Öppna rumsvyn</a>
+        <a class="btn ghost" href="designmanual.html" data-en="Design manual">Designmanual</a>
+      </div>
+    </section>
+  </div>
 
-  <footer><span data-en="Verkstan · mock-up for discussion · progress is saved only in this browser">Verkstan · mockup för diskussion · framsteg sparas bara i den här webbläsaren</span> · <a href="designmanual.html" data-en="Design manual (draft)">Designmanual (utkast)</a></footer>
+  <footer data-en="Verkstan, mock-up for discussion. Nothing is sent anywhere; progress stays in this browser.">Verkstan, mockup för diskussion. Inget skickas någonstans, framstegen stannar i den här webbläsaren.</footer>
 </main>
 
 <script src="shared/kit.js"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
+  // linjeikoner, ritade med samma tjocklek som resten av gränssnittet
   const ICON = {
-    el: '<path d="M13 2 4 14h7l-2 8 9-12h-7z"/>',
-    logik: '<path d="M4 5h8a7 7 0 0 1 0 14H4z"/>',
-    signal: '<path d="M2 12c2.5-7 5-7 7.5 0s5 7 7.5 0 3.5-5 5-3" fill="none" stroke-width="2.4" stroke-linecap="round"/>',
-    ai: '<circle cx="6" cy="7" r="2.6"/><circle cx="18" cy="7" r="2.6"/><circle cx="12" cy="17" r="2.6"/><path d="M6 7 18 7 12 17Z" fill="none" stroke-width="1.8"/>',
-    nat: '<circle cx="12" cy="12" r="9" fill="none" stroke-width="2"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke-width="1.8"/>',
-    kod: '<rect x="4" y="5" width="16" height="14" rx="4"/><circle cx="9.5" cy="12" r="1.6" fill="var(--surface)"/><circle cx="14.5" cy="12" r="1.6" fill="var(--surface)"/>',
-    matte: '<path d="M3 21V3M3 21h18M5 18 19 5" fill="none" stroke-width="2.2" stroke-linecap="round"/>'
+    el: '<path d="M9 16.5a5 5 0 1 1 6 0V19H9z"/><path d="M9.5 22h5"/>',
+    logik: '<path d="M5 6h6a6 6 0 0 1 0 12H5z"/><path d="M2 9h3M2 15h3M17 12h5"/>',
+    signal: '<path d="M2 12c2-6 4-6 6 0s4 6 6 0 4-6 6 0"/>',
+    ai: '<circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="8" r="2.4"/><circle cx="10" cy="18" r="2.4"/><path d="M8.2 7 15.8 7.6M17 10.2l-5.4 6M7 8.3l2.2 7.4"/>',
+    nat: '<circle cx="5" cy="12" r="2.4"/><circle cx="19" cy="5" r="2.4"/><circle cx="19" cy="19" r="2.4"/><path d="M7.2 11 16.8 6M7.2 13l9.6 5M19 7.4v9.2"/>',
+    kod: '<rect x="4" y="6" width="16" height="13" rx="3"/><path d="M12 6V3M9 12.5h.01M15 12.5h.01"/>',
+    matte: '<path d="M4 3v17h17"/><path d="M7 16 19 6"/>'
   };
   const MODS = [
-    { id: "el-krets", dom: "el", file: "moduler/el-krets.html", tasks: 5, min: 10,
+    { id: "el-krets", dom: "el", file: "moduler/el-krets.html", tasks: 5, min: 10, nod: "nod-01", devices: "all",
       area: { sv: "Ellära", en: "Electricity" }, title: { sv: "Strömkretsen", en: "The circuit" },
-      text: { sv: "Batterier, motstånd och en lampa. Se strömmen som vatten.", en: "Batteries, a resistor and a bulb. See the current as water." },
-      devices: "all", team: true },
-    { id: "logik", dom: "logik", file: "moduler/logik-grindar.html", tasks: 4, min: 10,
+      text: { sv: "Batterier, ett motstånd och en lampa. Hitta läget där lampan lyser utan att gå sönder.", en: "Batteries, a resistor and a bulb. Find the point where the bulb shines without burning out." } },
+    { id: "logik", dom: "logik", file: "moduler/logik-grindar.html", tasks: 4, min: 10, nod: "nod-02", devices: "all",
       area: { sv: "Digital logik", en: "Digital logic" }, title: { sv: "Logikgrindar", en: "Logic gates" },
-      text: { sv: "Ja, nej, och, eller. Så fattar en dator beslut.", en: "Yes, no, and, or. How a computer makes decisions." },
-      devices: "all", team: true },
-    { id: "signal", dom: "signal", file: "moduler/signal-vagor.html", tasks: 4, min: 12,
+      text: { sv: "Två strömbrytare och en lampa. Så fattar en dator sina minsta beslut.", en: "Two switches and a lamp. How a computer makes its smallest decisions." } },
+    { id: "signal", dom: "signal", file: "moduler/signal-vagor.html", tasks: 4, min: 12, nod: "nod-03", devices: "desktop",
       area: { sv: "Signalteknik", en: "Signals" }, title: { sv: "Ljudvågor", en: "Sound waves" },
-      text: { sv: "Se ljudet, blanda vågor och släck brus som hörlurar gör.", en: "See sound, mix waves and cancel noise like headphones do." },
-      devices: "desktop", team: true },
-    { id: "ai", dom: "ai", file: "moduler/ai-sortera.html", tasks: 4, min: 12,
-      area: { sv: "AI & ML", en: "AI & ML" }, title: { sv: "Fruktsorteraren", en: "The fruit sorter" },
-      text: { sv: "Lär en maskin skilja frukter åt. Och lura den.", en: "Teach a machine to tell fruits apart. Then fool it." },
-      devices: "all", team: true },
-    { id: "natverk", dom: "nat", file: "moduler/natverk-paket.html", tasks: 4, min: 10,
-      area: { sv: "Nätverk", en: "Networks" }, title: { sv: "Paketresan", en: "The packet journey" },
-      text: { sv: "Skicka meddelanden, klipp kablar och se paketen ta omvägar.", en: "Send messages, cut cables and watch packets take detours." },
-      devices: "all", team: true },
-    { id: "robot", dom: "kod", file: "moduler/robot-kod.html", tasks: 4, min: 15,
+      text: { sv: "Se ljudet som en linje, blanda två vågor och släck en ton med en motvåg.", en: "See sound as a line, mix two waves and cancel a note with a counter-wave." } },
+    { id: "ai", dom: "ai", file: "moduler/ai-sortera.html", tasks: 4, min: 12, nod: "nod-04", devices: "all",
+      area: { sv: "AI och maskininlärning", en: "AI and machine learning" }, title: { sv: "Fruktsorteraren", en: "The fruit sorter" },
+      text: { sv: "Lär en maskin att skilja citroner från äpplen, och se vad som händer med skeva exempel.", en: "Teach a machine to tell lemons from apples, and see what lopsided examples do." } },
+    { id: "natverk", dom: "nat", file: "moduler/natverk-paket.html", tasks: 4, min: 10, nod: "nod-05", devices: "all",
+      area: { sv: "Nätverk", en: "Networks" }, title: { sv: "Paketresan", en: "Packet tour" },
+      text: { sv: "Skicka ett meddelande genom sju hus, klipp kablar och se paketen hitta nya vägar.", en: "Send a message through seven houses, cut cables and watch the packets find new ways." } },
+    { id: "robot", dom: "kod", file: "moduler/robot-kod.html", tasks: 4, min: 15, nod: "nod-06", devices: "all",
       area: { sv: "Mjukvara", en: "Software" }, title: { sv: "Robotens väg", en: "The robot's path" },
-      text: { sv: "Programmera en robot med block. Hitta buggen.", en: "Program a robot with blocks. Find the bug." },
-      devices: "all", team: true },
-    { id: "matte", dom: "matte", file: "moduler/matte-maskin.html", tasks: 4, min: 10,
+      text: { sv: "Lägg block i rätt ordning så att roboten når stjärnan. Leta upp blocket där det går fel.", en: "Put blocks in the right order so the robot reaches the star. Find the block where it goes wrong." } },
+    { id: "matte", dom: "matte", file: "moduler/matte-maskin.html", tasks: 4, min: 10, nod: "nod-07", devices: "all",
       area: { sv: "Matematik", en: "Mathematics" }, title: { sv: "Funktionsmaskinen", en: "The function machine" },
-      text: { sv: "Stoppa in tal, se vad som kommer ut och knäck regeln.", en: "Put numbers in, see what comes out and crack the rule." },
-      devices: "all", team: true }
+      text: { sv: "Stoppa in tal, se vad som kommer ut och lista ut regeln i maskinen.", en: "Put numbers in, see what comes out and work out the rule inside." } }
   ];
   const IDEAS = [
-    { dom: "el", t: { sv: "Bygg en ficklampa", en: "Build a torch" }, d: { sv: "Seriellt och parallellt med dra-och-släpp", en: "Series and parallel by drag and drop" } },
-    { dom: "logik", t: { sv: "Rummet räknar binärt", en: "The room counts in binary" }, d: { sv: "Alla håller upp mobilen som en lampa", en: "Everyone holds up their phone as a bulb" } },
+    { dom: "el", t: { sv: "Bygg en ficklampa", en: "Build a torch" }, d: { sv: "Seriellt och parallellt, med riktiga batterihållare på bordet", en: "Series and parallel, with real battery holders on the table" } },
+    { dom: "logik", t: { sv: "Rummet räknar binärt", en: "The room counts in binary" }, d: { sv: "Åtta personer håller upp mobilen som var sin lampa", en: "Eight people hold up their phones as one lamp each" } },
     { dom: "signal", t: { sv: "Pixlar och färger", en: "Pixels and colours" }, d: { sv: "Zooma in en bild tills den blir siffror", en: "Zoom into a picture until it turns into numbers" } },
-    { dom: "ai", t: { sv: "Rita så AI:n gissar", en: "Draw for the AI" }, d: { sv: "Klassens ritningar tränar en modell", en: "The class's drawings train a model" } },
-    { dom: "nat", t: { sv: "Hemliga meddelanden", en: "Secret messages" }, d: { sv: "Kryptering med färgblandning", en: "Encryption by mixing colours" } },
-    { dom: "kod", t: { sv: "Sortera som en dator", en: "Sort like a computer" }, d: { sv: "Lag tävlar mot olika algoritmer", en: "Teams race different algorithms" } },
-    { dom: "matte", t: { sv: "Sannolikhetens rum", en: "The room of chance" }, d: { sv: "75 tärningskast blir en kurva live", en: "75 dice rolls become a curve live" } },
-    { dom: "ai", t: { sv: "Vad är en språkmodell?", en: "What is a language model?" }, d: { sv: "Gissa nästa ord tillsammans", en: "Guess the next word together" } }
+    { dom: "ai", t: { sv: "Vad är en språkmodell?", en: "What is a language model?" }, d: { sv: "Rummet gissar nästa ord i en mening, ett ord i taget", en: "The room guesses the next word in a sentence, one word at a time" } },
+    { dom: "nat", t: { sv: "Hemliga meddelanden", en: "Secret messages" }, d: { sv: "Kryptering förklarad med färger som blandas", en: "Encryption explained with mixing colours" } },
+    { dom: "kod", t: { sv: "Sortera som en dator", en: "Sort like a computer" }, d: { sv: "Lag sorterar kort med olika metoder och tar tid", en: "Teams sort cards with different methods and time it" } },
+    { dom: "matte", t: { sv: "Sannolikhetens rum", en: "The room of chance" }, d: { sv: "75 tärningskast blir en kurva på storskärmen", en: "75 dice rolls become a curve on the big screen" } },
+    { dom: "el", t: { sv: "Vad drar mest ström?", en: "What uses the most power?" }, d: { sv: "Mät laddare, lampor och en vattenkokare med en energimätare", en: "Measure chargers, lamps and a kettle with an energy meter" } }
   ];
+  const NS = "http://www.w3.org/2000/svg";
 
-  /* --- moduler --- */
-  function art(m) {
-    // stort, mjukt ikonmotiv per ämne
-    return `<svg viewBox="0 0 240 110" aria-hidden="true">
-      <circle cx="200" cy="20" r="60" fill="var(--domain)" opacity=".12"/>
-      <circle cx="40" cy="100" r="44" fill="var(--domain)" opacity=".1"/>
-      <g transform="translate(96 31) scale(2)" fill="var(--domain)" stroke="var(--domain)">${ICON[m.dom]}</g>
-    </svg>`;
-  }
   function renderMods() {
     const g = $("mods"); g.innerHTML = "";
     MODS.forEach(m => {
       const done = K.progress(m.id).length;
       const a = document.createElement("a");
       a.className = "mod"; a.href = m.file; a.dataset.domain = m.dom;
-      a.innerHTML = `<div class="art">${art(m)}</div>
-        <div><span class="pill dom">${K.t(m.area)}</span><h3 style="margin-top:8px">${K.t(m.title)}</h3><p>${K.t(m.text)}</p></div>
-        <div style="display:grid; gap:8px">
-          <div class="meta">
-            <span class="pill">${m.min} min</span>
-            <span class="pill">${K.t("Solo", "Solo")} · ${K.t("Lag", "Team")}</span>
-            <span class="pill">${m.devices === "all" ? K.t("Mobil & dator", "Phone & computer") : K.t("Bäst på dator", "Best on computer")}</span>
-          </div>
-          <div class="bar" aria-label="${done} / ${m.tasks}"><i style="width:${done / m.tasks * 100}%"></i></div>
+      a.innerHTML = `<div class="topp"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[m.dom]}</svg><span class="omr">${K.t(m.area)}</span></div>
+        <h3>${K.t(m.title)}</h3>
+        <p>${K.t(m.text)}</p>
+        <div class="fot">
+          <span>${m.min} min · ${m.devices === "all" ? K.t("mobil eller dator", "phone or computer") : K.t("bäst på dator", "best on a computer")} · ${K.t("låda", "box")} ${m.nod}</span>
+          <div class="steg"><span>${done ? K.t("Påbörjad", "Started") : K.t("Inte påbörjad", "Not started")}</span><b>${done}/${m.tasks}</b></div>
+          <div class="mätare" aria-hidden="true"><i style="width:${done / m.tasks * 100}%"></i></div>
         </div>`;
+      a.setAttribute("aria-label", `${K.t(m.title)}. ${K.t(m.area)}. ${K.t(`${done} av ${m.tasks} steg klara`, `${done} of ${m.tasks} steps done`)}.`);
       g.append(a);
     });
   }
   function renderIdeas() {
-    const g = $("ideas"); g.innerHTML = "";
-    IDEAS.forEach(i => {
-      const d = document.createElement("div"); d.className = "idea"; d.dataset.domain = i.dom;
-      const area = MODS.find(m => m.dom === i.dom).area;
-      d.innerHTML = `<span class="eyebrow">${K.t(area)}</span><b>${K.t(i.t)}</b><span>${K.t(i.d)}</span>`;
-      g.append(d);
-    });
+    $("ideas").innerHTML = IDEAS.map(i => `<div data-domain="${i.dom}"><i aria-hidden="true"></i><dt>${K.t(i.t)}</dt><dd>${K.t(i.d)}</dd></div>`).join("");
   }
 
-  /* --- karta: allt hänger ihop --- */
+  /* ---- kartan ---- */
   const POS = { el: [95, 95], logik: [270, 62], kod: [445, 115], ai: [440, 310], nat: [265, 362], signal: [95, 305], matte: [268, 212] };
   const LINKS = [
-    ["el", "logik", { sv: "ström → 1 och 0", en: "current → 1 and 0" }],
+    ["el", "logik", { sv: "ström blir 1 och 0", en: "current becomes 1 and 0" }],
     ["logik", "kod", { sv: "kör program", en: "runs programs" }],
-    ["kod", "ai", { sv: "lär sig", en: "learns" }],
+    ["kod", "ai", { sv: "program som lär sig", en: "programs that learn" }],
     ["el", "signal", { sv: "blir signaler", en: "becomes signals" }],
     ["signal", "nat", { sv: "signaler reser", en: "signals travel" }],
     ["nat", "ai", { sv: "data", en: "data" }],
     ["matte", "logik"], ["matte", "ai"], ["matte", "signal"], ["matte", "kod"], ["matte", "nat"]
   ];
-  const NS = "http://www.w3.org/2000/svg";
-  let sparks = [];
   function renderMap() {
     const svg = $("map"); svg.innerHTML = "";
-    sparks = [];
-    LINKS.forEach(([a, b, label], i) => {
+    const paths = [];
+    LINKS.forEach(([a, b, label]) => {
       const [x1, y1] = POS[a], [x2, y2] = POS[b];
       const mx = (x1 + x2) / 2 + (y2 - y1) * .12, my = (y1 + y2) / 2 - (x2 - x1) * .12;
       const p = document.createElementNS(NS, "path");
       p.setAttribute("d", `M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
-      p.setAttribute("class", "m-link");
-      if (!label) p.setAttribute("stroke-dasharray", "3 7");
-      p.id = "lk" + i; svg.append(p);
+      p.setAttribute("class", "m-link" + (label ? "" : " tunn"));
+      svg.append(p); paths.push({ p, a, b });
       if (label) {
         const t = document.createElementNS(NS, "text");
         t.setAttribute("class", "m-label"); t.setAttribute("x", (x1 + 2 * mx + x2) / 4); t.setAttribute("y", (y1 + 2 * my + y2) / 4 - 6);
         t.setAttribute("text-anchor", "middle"); t.textContent = K.t(label); svg.append(t);
-        const c = document.createElementNS(NS, "circle");
-        c.setAttribute("r", 4); c.setAttribute("fill", `var(--c-${b})`); svg.append(c);
-        sparks.push({ path: p, dot: c, off: Math.random() });
       }
     });
     MODS.forEach(m => {
-      const [x, y] = POS[m.dom];
-      const pr = K.progress(m.id).length / m.tasks;
+      const [x, y] = POS[m.dom], pr = K.progress(m.id).length / m.tasks, r = 30, R = 37, C = 2 * Math.PI * R;
       const g = document.createElementNS(NS, "a");
-      g.setAttribute("href", m.file); g.setAttribute("class", "m-node"); g.setAttribute("aria-label", K.t(m.title));
-      const C = 2 * Math.PI * 40;
-      const r = m.dom === "matte" ? 38 : 34;
-      g.innerHTML = `
-        <circle class="bg" cx="${x}" cy="${y}" r="${r}" fill="var(--c-${m.dom})"/>
-        <circle class="ring" cx="${x}" cy="${y}" r="40" stroke="var(--c-${m.dom})" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - pr)}" opacity=".45"/>
-        <g transform="translate(${x - 14} ${y - 14}) scale(1.17)" fill="#fff" stroke="#fff">${ICON[m.dom].replace(/var\(--surface\)/g, `var(--c-${m.dom})`)}</g>
-        <text x="${x}" y="${y + r + 20}" text-anchor="middle">${K.t(m.area)}</text>`;
+      g.setAttribute("href", m.file); g.setAttribute("class", "m-node"); g.dataset.domain = m.dom;
+      g.setAttribute("aria-label", `${K.t(m.title)}, ${K.t(m.area)}`);
+      g.innerHTML = `<circle class="bg" cx="${x}" cy="${y}" r="${r}"/>
+        ${pr > 0 ? `<circle class="ring" cx="${x}" cy="${y}" r="${R}" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - pr)}"/>` : ""}
+        <g class="ikon" transform="translate(${x - 15} ${y - 15}) scale(1.25)">${ICON[m.dom]}</g>
+        <text x="${x}" y="${y + r + 22}" text-anchor="middle">${m.dom === "ai" ? "AI" : K.t(m.area)}</text>`;
+      const lys = on => paths.forEach(({ p, a, b }) => p.classList.toggle("lyser", on && (a === m.dom || b === m.dom)));
+      g.addEventListener("pointerenter", () => lys(true)); g.addEventListener("pointerleave", () => lys(false));
+      g.addEventListener("focus", () => lys(true)); g.addEventListener("blur", () => lys(false));
       svg.append(g);
     });
   }
-  function animateSparks(now) {
-    sparks.forEach(s => {
-      const L = s.path.getTotalLength();
-      const pt = s.path.getPointAtLength(((now / 4000 + s.off) % 1) * L);
-      s.dot.setAttribute("cx", pt.x); s.dot.setAttribute("cy", pt.y);
-    });
-    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) requestAnimationFrame(animateSparks);
-  }
 
-  /* --- inmatning --- */
+  /* ---- inmatning ---- */
   $("nick").value = K.nick();
   $("nick").addEventListener("change", e => K.setNick(e.target.value));
   $("dice").addEventListener("click", () => { const n = K.randomNick(); $("nick").value = n; K.setNick(n); });
-  $("entry").addEventListener("submit", e => {
-    e.preventDefault();
-    K.setNick($("nick").value);
-    location.href = "rum.html#deltagare";
-  });
+  $("entry").addEventListener("submit", e => { e.preventDefault(); K.setNick($("nick").value); location.href = "rum.html#deltagare"; });
   const paintLang = () => { $("lang").textContent = K.lang === "sv" ? "EN" : "SV"; };
   $("lang").addEventListener("click", () => { K.setLang(K.lang === "sv" ? "en" : "sv"); paintLang(); });
   $("theme").addEventListener("click", K.toggleTheme);
@@ -314,7 +285,6 @@
   function renderAll() { renderMods(); renderIdeas(); renderMap(); paintLang(); }
   K.onLang(renderAll);
   renderAll();
-  requestAnimationFrame(animateSparks);
 })();
 </script>
 </body>

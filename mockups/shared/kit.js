@@ -1,8 +1,8 @@
 /* ==========================================================================
-   Verkstan kit – liten gemensam verktygslåda för mockuparna.
-   - Språk (sv/en) via data-en="..." på element, eller K.t({sv, en}) i kod
+   Verkstan kit – gemensam verktygslåda för mockuparna.
+   - Språk (sv/en) via data-en="..." på element, eller K.t(sv, en) i kod
    - Smeknamn, framsteg och tema sparas lokalt i webbläsaren
-   - Toppfält, uppdragslista, toast och konfetti
+   - Toppfält, protokoll (uppdragen), statusrad i scenen och lådpanel
    Ingen server, inga beroenden.
    ========================================================================== */
 (function () {
@@ -39,18 +39,11 @@
       el.setAttribute("aria-label", lang === "en" ? el.dataset.ariaEn : el.dataset.ariaSv);
     });
   }
-
-  function setLang(l) {
-    lang = l; store.set("lang", l);
-    applyLang();
-    listeners.forEach(fn => fn(lang));
-  }
+  function setLang(l) { lang = l; store.set("lang", l); applyLang(); listeners.forEach(fn => fn(lang)); }
+  function onLang(fn) { listeners.push(fn); }
 
   /* ---------- Tema ---------- */
-  function applyTheme() {
-    const th = store.get("theme", null);
-    if (th) document.documentElement.setAttribute("data-theme", th);
-  }
+  function applyTheme() { const th = store.get("theme", null); if (th) document.documentElement.setAttribute("data-theme", th); }
   function toggleTheme() {
     const cur = document.documentElement.getAttribute("data-theme")
       || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
@@ -60,64 +53,43 @@
   }
 
   /* ---------- Smeknamn ---------- */
-  const ADJ = ["Snabba", "Kloka", "Modiga", "Lugna", "Glada", "Nyfikna", "Listiga", "Starka", "Pigga", "Smarta"];
-  const DJUR = ["Uttern", "Räven", "Ugglan", "Bävern", "Igelkotten", "Lodjuret", "Älgen", "Tranan", "Säln", "Haren"];
-  function randomNick() {
-    return ADJ[Math.floor(Math.random() * ADJ.length)] + " " + DJUR[Math.floor(Math.random() * DJUR.length)];
-  }
-  function nick() {
-    let n = store.get("nick", null);
-    if (!n) { n = randomNick(); store.set("nick", n); }
-    return n;
-  }
+  const ADJ = ["Snabba", "Kloka", "Modiga", "Lugna", "Glada", "Nyfikna", "Listiga", "Starka", "Pigga", "Envisa"];
+  const DJUR = ["Uttern", "Räven", "Ugglan", "Bävern", "Igelkotten", "Lodjuret", "Älgen", "Tranan", "Sälen", "Haren"];
+  const randomNick = () => ADJ[Math.floor(Math.random() * ADJ.length)] + " " + DJUR[Math.floor(Math.random() * DJUR.length)];
+  function nick() { let n = store.get("nick", null); if (!n) { n = randomNick(); store.set("nick", n); } return n; }
   function setNick(n) { store.set("nick", n.trim().slice(0, 24) || randomNick()); }
-  function initials(n) { return n.split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase(); }
+  const initials = n => n.split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
 
   /* ---------- Framsteg ---------- */
   function progress(mod) { return store.get("progress", {})[mod] || []; }
   function markDone(mod, id) {
     const all = store.get("progress", {});
-    const list = new Set(all[mod] || []);
-    const isNew = !list.has(id);
-    list.add(id); all[mod] = [...list]; store.set("progress", all);
-    return isNew;
+    const list = new Set(all[mod] || []); list.add(id); all[mod] = [...list]; store.set("progress", all);
   }
-  function resetProgress(mod) {
-    const all = store.get("progress", {}); delete all[mod]; store.set("progress", all);
-  }
+  function resetProgress(mod) { const all = store.get("progress", {}); delete all[mod]; store.set("progress", all); }
 
-  /* ---------- Toast + konfetti ---------- */
-  let toastWrap;
-  function toast(msg, badge = "✓") {
-    if (!toastWrap) { toastWrap = document.createElement("div"); toastWrap.className = "toast-wrap"; toastWrap.setAttribute("aria-live", "polite"); document.body.append(toastWrap); }
-    const el = document.createElement("div");
-    el.className = "toast";
-    el.innerHTML = `<span class="badge">${badge}</span><span></span>`;
-    el.lastChild.textContent = msg;
-    toastWrap.append(el);
-    setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 400); }, 2600);
-  }
-
-  function confetti(x, y) {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const box = document.createElement("div"); box.className = "confetti";
-    const cs = getComputedStyle(document.documentElement);
-    const colors = ["--c-el", "--c-logik", "--c-signal", "--c-ai", "--c-nat", "--c-kod", "--c-matte"].map(v => cs.getPropertyValue(v).trim());
-    x = x ?? innerWidth / 2; y = y ?? innerHeight / 3;
-    for (let i = 0; i < 40; i++) {
-      const p = document.createElement("i");
-      const a = Math.random() * Math.PI * 2, d = 80 + Math.random() * 220;
-      p.style.left = x + "px"; p.style.top = y + "px";
-      p.style.background = colors[i % colors.length];
-      p.style.setProperty("--dx", Math.cos(a) * d + "px");
-      p.style.setProperty("--dy", Math.sin(a) * d + 160 + "px");
-      p.style.setProperty("--rot", (Math.random() * 720 - 360) + "deg");
-      p.style.animationDelay = Math.random() * 0.1 + "s";
-      box.append(p);
+  /* ---------- Statusrad i scenen ---------- */
+  const CHECK = '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7" fill="none" stroke="var(--aktiv)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function statusEl() {
+    let el = document.querySelector(".status");
+    if (!el) {
+      const stage = document.querySelector(".stage"); if (!stage) return null;
+      el = document.createElement("p"); el.className = "status"; el.setAttribute("aria-live", "polite"); el.setAttribute("role", "status");
+      const scen = stage.querySelector(".scen");
+      scen ? scen.after(el) : stage.prepend(el);
     }
-    document.body.append(box);
-    setTimeout(() => box.remove(), 1700);
+    return el;
   }
+  let senast = { msg: "", kind: "info", tid: -1e9 };
+  function status(msg, kind = "info") {
+    const el = statusEl(); if (!el) return;
+    senast = { msg, kind, tid: performance.now() };
+    el.className = "status" + (kind === "fara" ? " fara" : "");
+    el.innerHTML = (kind === "klar" ? CHECK : "") + '<span class="ny"></span>';
+    el.lastChild.textContent = msg;
+  }
+  // äldre anrop: toast(text, "!") blir fara, "✓" blir klar
+  const toast = (msg, badge) => status(msg, badge === "!" ? "fara" : badge === "✓" ? "klar" : "info");
 
   /* ---------- Toppfält ---------- */
   function topbar() {
@@ -126,50 +98,49 @@
     const back = bar.dataset.back || "../index.html";
     const titleSv = bar.dataset.titleSv || "", titleEn = bar.dataset.titleEn || titleSv;
     bar.innerHTML = `
-      <a class="back" href="${back}" aria-label="Tillbaka till kartan" data-aria-en="Back to the map">
-        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 6.5 10l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <a class="back" href="${back}" aria-label="Tillbaka till startsidan" data-aria-en="Back to the start page">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3.5 5.5 9l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
       <div class="title"><span class="dot" aria-hidden="true"></span><h1 data-en="${titleEn}">${titleSv}</h1></div>
       <div class="tools">
         <button class="chip lang-chip" type="button" aria-label="Byt språk" data-aria-en="Change language"></button>
-        <button class="chip theme-chip" type="button" aria-label="Byt mellan ljust och mörkt" data-aria-en="Toggle light and dark">
+        <button class="chip theme-chip" type="button" aria-label="Byt mellan ljust och mörkt" data-aria-en="Switch between light and dark">
           <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5a6.5 6.5 0 1 0 0 13z" fill="currentColor"/><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
         </button>
-        <span class="chip nick-chip" title=""><span class="avatar"></span><span class="nm"></span></span>
+        <span class="nick"></span>
       </div>`;
     const langChip = bar.querySelector(".lang-chip");
-    const paintLang = () => { langChip.textContent = lang === "sv" ? "EN" : "SV"; };
-    langChip.addEventListener("click", () => { setLang(lang === "sv" ? "en" : "sv"); paintLang(); });
-    paintLang();
+    const paint = () => { langChip.textContent = lang === "sv" ? "EN" : "SV"; };
+    langChip.addEventListener("click", () => { setLang(lang === "sv" ? "en" : "sv"); paint(); });
+    paint();
     bar.querySelector(".theme-chip").addEventListener("click", toggleTheme);
-    const n = nick();
-    bar.querySelector(".nick-chip .avatar").textContent = initials(n);
-    bar.querySelector(".nick-chip .nm").textContent = n;
-    if (innerWidth < 520) bar.querySelector(".nick-chip .nm").hidden = true;
+    const nk = bar.querySelector(".nick"); nk.textContent = nick();
+    if (innerWidth < 560) nk.hidden = true;
   }
 
-  /* ---------- Uppdrag ---------- */
+  /* ---------- Protokoll ---------- */
+  const BOCK = '<svg class="bock" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg>';
   function tasks(container, mod, list, opts = {}) {
-    const ul = document.createElement("ol"); ul.className = "tasks";
-    const meter = document.createElement("div"); meter.className = "meter"; meter.innerHTML = "<i></i>";
-    container.append(ul, meter);
-    const done = new Set(progress(mod));
+    const ol = document.createElement("ol"); ol.className = "tasks";
+    container.append(ol);
+    const done = new Set(progress(mod).filter(id => list.some(x => x.id === id)));
+    let justDone = null;
 
     function render() {
-      ul.innerHTML = "";
+      ol.innerHTML = "";
       let currentSet = false;
-      list.forEach(task => {
+      list.forEach((task, i) => {
         const li = document.createElement("li");
         const isDone = done.has(task.id);
-        li.className = "task" + (isDone ? " done" : "");
+        li.className = "task" + (isDone ? " done" : "") + (task.id === justDone ? " ritas" : "");
         if (!isDone && !currentSet) { li.classList.add("current"); currentSet = true; }
-        li.innerHTML = `<span class="tick" aria-hidden="true">✓</span><div><p></p>${task.hint ? '<p class="hint"></p>' : ""}</div>`;
+        li.innerHTML = `<span class="nr">${i + 1}</span><div><p></p>${task.hint ? '<p class="hint"></p>' : ""}</div>${isDone ? BOCK : "<span></span>"}`;
         li.querySelector("p").textContent = t(task.text);
         if (task.hint) li.querySelector(".hint").textContent = t(task.hint);
-        li.setAttribute("aria-label", t(task.text) + (isDone ? " – " + t("klart", "done") : ""));
-        ul.append(li);
+        if (isDone) li.setAttribute("aria-label", t(task.text) + ". " + t("Klart.", "Done."));
+        ol.append(li);
       });
-      meter.firstChild.style.width = (done.size / list.length * 100) + "%";
+      justDone = null;
     }
     render();
     onLang(render);
@@ -177,13 +148,14 @@
     return {
       complete(id) {
         if (done.has(id)) return false;
-        done.add(id); markDone(mod, id); render();
-        const task = list.find(x => x.id === id);
-        toast(t(task.text), "✓");
-        const li = [...ul.children][list.indexOf(task)];
-        const r = li ? li.getBoundingClientRect() : null;
-        confetti(r ? r.left + 20 : undefined, r ? r.top + 10 : undefined);
-        if (done.size === list.length && opts.onAllDone) setTimeout(opts.onAllDone, 900);
+        done.add(id); markDone(mod, id); justDone = id; render();
+        const i = list.findIndex(x => x.id === id);
+        // har sidan just skrivit en egen mening behålls den, och steget läggs till efter
+        const steg = t(`Steg ${i + 1} av ${list.length} klart.`, `Step ${i + 1} of ${list.length} done.`);
+        const nyss = performance.now() - senast.tid < 60 && senast.msg && !/^(Steg|Step) \d/.test(senast.msg);
+        status(nyss ? senast.msg + " " + steg : steg, nyss && senast.kind === "fara" ? "fara" : "klar");
+        if (opts.onComplete) opts.onComplete(id);
+        if (done.size === list.length && opts.onAllDone) setTimeout(opts.onAllDone, 600);
         return true;
       },
       isDone: id => done.has(id),
@@ -191,10 +163,38 @@
     };
   }
 
-  function onLang(fn) { listeners.push(fn); }
+  /* ---------- På bordet: den fysiska lådan ---------- */
+  function lada(container, o) {
+    const nod = o.nod || "nod-01";
+    container.classList.add("lada");
+    container.innerHTML = `
+      <h3>${t("På bordet", "On the table")}</h3>
+      <p class="lada-status"><i aria-hidden="true"></i><span></span></p>
+      <div class="ritning">${o.svg}</div>
+      <p class="delar"></p>
+      <button class="btn ghost" type="button"></button>`;
+    const st = container.querySelector(".lada-status span"), btn = container.querySelector(".btn");
+    let on = false;
+    function paint() {
+      container.classList.toggle("ansluten", on);
+      st.textContent = on
+        ? t(`${nod} ansluten via wifi (simulerat)`, `${nod} connected over wifi (simulated)`)
+        : t("Ingen låda ansluten. Ritningen visar hur den skulle reagera.", "No box connected. The drawing shows how it would react.");
+      btn.textContent = on ? t("Koppla från", "Disconnect") : t("Anslut låda", "Connect box");
+      container.querySelector(".delar").textContent = t(o.delar);
+      container.querySelector("h3").textContent = t("På bordet", "On the table");
+    }
+    btn.addEventListener("click", () => { on = !on; paint(); if (o.onConnect) o.onConnect(on); });
+    onLang(paint); paint();
+    return { root: container, svg: container.querySelector("svg"), connected: () => on };
+  }
 
   applyTheme();
   document.addEventListener("DOMContentLoaded", () => { topbar(); applyLang(); });
 
-  window.K = { t, setLang, get lang() { return lang; }, onLang, applyLang, nick, setNick, randomNick, initials, progress, markDone, toast, confetti, tasks, store, toggleTheme };
+  window.K = {
+    t, setLang, get lang() { return lang; }, onLang, applyLang,
+    nick, setNick, randomNick, initials, progress, markDone, store, toggleTheme,
+    status, toast, confetti() {}, tasks, lada
+  };
 })();

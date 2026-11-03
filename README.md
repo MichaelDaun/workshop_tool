@@ -16,21 +16,23 @@ cd mockups && python3 -m http.server 8000
 
 och gå till <http://localhost:8000>.
 
-| Mockup | Område | Vad man gör |
-|---|---|---|
-| [Startsidan](mockups/index.html) | – | Smeknamn, rumskod, kartan "Allt hänger ihop", alla verkstäder |
-| [Strömkretsen](mockups/moduler/el-krets.html) | Ellära | Batterier, motstånd, lampa. Växla till vattenvy |
-| [Logikgrindar](mockups/moduler/logik-grindar.html) | Digital logik | Brytare, grindar, sanningstabell, gåtor |
-| [Ljudvågor](mockups/moduler/signal-vagor.html) | Signalteknik | Riktigt ljud, blanda vågor, släck ljud med motvåg |
-| [Fruktsorteraren](mockups/moduler/ai-sortera.html) | AI/ML | Lär upp en AI, upptäck bias, lura den |
-| [Paketresan](mockups/moduler/natverk-paket.html) | Nätverk | Skicka paket, klipp kablar, se omvägar |
-| [Robotens väg](mockups/moduler/robot-kod.html) | Mjukvara | Blockprogrammering, buggar, upprepning |
-| [Funktionsmaskinen](mockups/moduler/matte-maskin.html) | Matematik | Hitta den hemliga regeln, se linjen i grafen |
-| [Rumsläge](mockups/rum.html) | – | Storskärm för ledaren + deltagarmobil (simulerad) |
-| [Designmanual](mockups/designmanual.html) | – | Den nya visuella riktningen med levande komponenter (utkast) |
+| Mockup | Område | Vad man gör | Låda på bordet |
+|---|---|---|---|
+| [Startsidan](mockups/index.html) | – | Smeknamn, rumskod, karta över hur ämnena hänger ihop, alla verkstäder | – |
+| [Strömkretsen](mockups/moduler/el-krets.html) | Ellära | Batterier, motstånd och lampa. Växla till vattenvy | Lysdiod, ratt och strömsensor |
+| [Logikgrindar](mockups/moduler/logik-grindar.html) | Digital logik | Brytare, grindar, sanningstabell, gåtor | Två arkadknappar och en lampa |
+| [Ljudvågor](mockups/moduler/signal-vagor.html) | Signalteknik | Riktigt ljud, blanda vågor, släck en ton med motvåg | Högtalare, mikrofon, lysdiodsstapel |
+| [Fruktsorteraren](mockups/moduler/ai-sortera.html) | AI och ML | Lär en maskin att sortera, se skevheten, lura den | Våg, färgsensor och en lucka |
+| [Paketresan](mockups/moduler/natverk-paket.html) | Nätverk | Skicka paket, klipp kablar, se omvägar | Ljusslingor som kablar mellan sju hus |
+| [Robotens väg](mockups/moduler/robot-kod.html) | Mjukvara | Blockprogram, buggar, upprepning | Robot med stegmotorer på golvmatta |
+| [Funktionsmaskinen](mockups/moduler/matte-maskin.html) | Matematik | Hitta den hemliga regeln, se linjen i grafen | Vred, två displayer och ett lock |
+| [Rumsvyn](mockups/rum.html) | – | Storskärm för ledaren, deltagarmobil, ihopparning av lådor (simulerat) | Alla |
+| [Designmanual](mockups/designmanual.html) | – | Färger, typografi och komponenter med levande exempel | – |
 
-Alla mockupar är ren HTML/CSS/JS utan byggsteg. De delar `mockups/shared/theme.css`
-(färger, typsnitt, komponenter) och `mockups/shared/kit.js` (språk, smeknamn, uppdrag, firande).
+Alla mockupar är ren HTML/CSS/JS utan byggsteg och följer designmanualen (dokument 6).
+De delar `mockups/shared/theme.css` (färger, typsnitt, komponenter) och `mockups/shared/kit.js`
+(språk, smeknamn, protokoll, statusrad och lådpanelen ”På bordet”). Lådorna är simulerade i
+mockuparna. Firmware-utkastet finns i [`firmware/`](firmware/).
 
 ## Dokument
 
@@ -38,8 +40,11 @@ Alla mockupar är ren HTML/CSS/JS utan byggsteg. De delar `mockups/shared/theme.
 2. [Övningsbank](docs/02-ovningsbank.md): ~45 övningsidéer per område och samarbetsmönster för 5–75 personer
 3. [Samarbete och arkitektur](docs/03-samarbete-och-arkitektur.md): egen server eller GitHub Pages, offline på plats, GDPR, protokoll
 4. [Moduler skrivna av AI](docs/04-ai-forfattade-moduler.md): byggsats, modulformat, kvalitetskontroller, arbetsflöde
-5. [Fysiska enheter](docs/05-fysiska-enheter.md): mikrokontroller per modul, Verkstan-noden, hur den pratar med appen
+5. [Fysiska enheter](docs/05-fysiska-enheter.md): idéer per modul, Verkstan-noden med Pico W, MQTT över wifi
 6. [Designmanual](docs/06-designmanual.md): granskning av AI-drag i mockuparna, färg, typografi, komponenter och språk
+7. [Modulplaner](docs/07-modulplaner.md): mål, steg och låda för alla sju verkstäder, med delar, kopplingar, meddelanden och budget
+
+Den som låter en AI skriva eller ändra moduler ska peka den till [AGENTS.md](AGENTS.md).
 
 ## GitHub Pages
 

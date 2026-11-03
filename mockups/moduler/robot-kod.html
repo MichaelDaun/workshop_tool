@@ -6,46 +6,45 @@
 <title>Robotens väg – Verkstan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
 <link rel="stylesheet" href="../shared/theme.css">
 <style>
-  .levels { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-  .levels .chip[aria-pressed="true"] { background: var(--domain); border-color: var(--domain); color: #fff; }
-  .levels .chip .ok { color: var(--ok); font-weight: 800; }
-  .levels .chip[aria-pressed="true"] .ok { color: #fff; }
-  #world { border-radius: var(--r-m); background: color-mix(in srgb, var(--c-kod) 8%, var(--surface-2)); }
-  .cell { fill: none; stroke: color-mix(in srgb, var(--c-kod) 18%, var(--line)); stroke-width: 1.5; }
-  .tree-top { fill: color-mix(in srgb, var(--c-kod) 70%, var(--ink)); }
-  .tree-trunk { fill: color-mix(in srgb, var(--c-matte) 50%, var(--ink)); }
-  .star { fill: var(--c-el); stroke: color-mix(in srgb, var(--c-el) 60%, var(--ink)); stroke-width: 3; stroke-linejoin: round; transform-box: fill-box; transform-origin: center; animation: twinkle 2.4s ease-in-out infinite; }
-  @keyframes twinkle { 50% { transform: scale(1.12) rotate(8deg); } }
-  #robot { transition: transform .42s var(--ease); }
-  #robot .body { fill: var(--surface); stroke: var(--ink); stroke-width: 4; }
-  #robot .eye { fill: var(--ink); }
-  #robot .nose { fill: var(--domain); }
-  #robot.bump .inner { animation: bump .4s var(--ease); }
-  @keyframes bump { 30% { transform: translateX(10px); } 60% { transform: translateX(-4px); } }
-  .trail { fill: var(--domain); opacity: .25; }
+  .rad { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .rad.mellan { justify-content: space-between; }
+  .chip .bock { width: 16px; height: 16px; }
+  .chip .bock path { fill: none; stroke: var(--aktiv); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .cell { fill: none; stroke: var(--linje); stroke-width: 1.5; }
+  .trad-krona { fill: var(--rutnat); stroke: var(--grafit); stroke-width: 2.5; }
+  .trad-stam { stroke: var(--grafit); stroke-width: 3; stroke-linecap: round; }
+  .stjarna { fill: var(--aktiv); stroke: var(--grafit); stroke-width: 2.5; stroke-linejoin: round; }
+  #robot { transition: transform .42s var(--broms); }
+  #robot .kropp { fill: var(--ark); stroke: var(--grafit); stroke-width: 3; }
+  #robot .hjul { fill: var(--grafit); }
+  #robot .nos { fill: var(--aktiv); stroke: var(--grafit); stroke-width: 2; stroke-linejoin: round; }
+  #robot.stot .inre { animation: stot .4s var(--broms); }
+  @keyframes stot { 30% { transform: translateX(10px); } 60% { transform: translateX(-4px); } }
+  .spar { fill: var(--aktiv); opacity: .35; }
+  .krock { fill: none; stroke: var(--grafit); stroke-width: 3; stroke-linecap: round; }
 
-  .palette, .program { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .blk {
-    display: inline-flex; align-items: center; gap: 8px; height: 52px; padding: 0 14px 0 10px;
-    border-radius: 12px; border: 0; color: #fff; font-weight: 700; cursor: pointer;
-    box-shadow: inset 0 -4px 0 rgb(0 0 0 / .18); transition: transform .15s var(--ease), box-shadow .2s;
+    display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 12px 0 10px;
+    border-radius: 6px; border: 1px solid var(--grafit); background: var(--ark); color: var(--grafit);
+    font-weight: 700; cursor: pointer; transition: transform var(--kort) var(--broms), background var(--kort);
   }
-  .blk:active { transform: translateY(2px); box-shadow: inset 0 -2px 0 rgb(0 0 0 / .18); }
-  .blk svg { width: 26px; height: 26px; flex: none; }
-  .blk.fwd { background: var(--c-kod); }
-  .blk.left { background: var(--c-nat); }
-  .blk.right { background: var(--c-signal); }
-  .blk .times { font-family: var(--font-data); background: rgb(255 255 255 / .25); border-radius: 6px; padding: 0 6px; }
-  .blk .x { margin-left: 4px; width: 22px; height: 22px; border-radius: 50%; background: rgb(0 0 0 / .2); display: grid; place-items: center; font-size: 13px; }
-  .blk.running { outline: 4px solid var(--ink); outline-offset: 2px; transform: scale(1.06); }
-  .program-box { margin-top: 12px; padding: 12px; border-radius: var(--r-m); border: 2px dashed var(--line); min-height: 78px; display: grid; gap: 8px; }
-  .program-box .empty { color: var(--ink-soft); font-size: var(--fs-s); }
-  .run-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-top: 12px; }
-  .count { font-family: var(--font-data); font-size: var(--fs-s); color: var(--ink-soft); }
-  .count.over { color: var(--bad); font-weight: 600; }
+  .blk:active { transform: translateY(1px); }
+  .blk svg { width: 24px; height: 24px; flex: none; }
+  .blk svg path { fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .blk .ganger { font-family: var(--siffror); font-weight: 600; padding-left: 8px; border-left: 1px solid var(--linje); }
+  .blk .ta-bort { width: 20px; height: 20px; margin-left: 2px; display: grid; place-items: center; color: var(--blyerts); }
+  .blk .ta-bort svg { width: 12px; height: 12px; }
+  .blk.kors { border: 2px solid var(--grafit); background: color-mix(in srgb, var(--aktiv) 16%, var(--ark)); }
+  .blk.fel { border: 2px solid var(--grafit); position: relative; overflow: hidden; padding-left: 22px; }
+  .blk.fel::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 12px; background: var(--tejp-monster); }
+  .program-box { padding: 12px; border-radius: 6px; border: 1px solid var(--linje); min-height: 76px; display: grid; gap: 8px; }
+  .program .nr { font-family: var(--siffror); font-weight: 400; color: var(--blyerts); font-size: 14px; }
+  .tom { color: var(--blyerts); font-size: var(--fs-liten); border: 1px dashed var(--linje); border-radius: 6px; padding: 12px; }
+  .antal { font-family: var(--siffror); font-size: var(--fs-liten); color: var(--blyerts); }
+  .antal.over { color: var(--grafit); font-weight: 600; }
 </style>
 </head>
 <body data-domain="kod">
@@ -53,27 +52,29 @@
 
 <main class="module">
   <section class="stage">
-    <div class="levels" id="levels"></div>
-    <svg id="world" viewBox="0 0 560 400" role="img" aria-label="Ett rutnät med en robot, träd och en stjärna" data-aria-en="A grid with a robot, trees and a star">
-      <g id="grid"></g><g id="trail"></g><g id="things"></g>
-      <g id="robot"><g class="inner">
-        <rect class="body" x="-28" y="-28" width="56" height="56" rx="16"/>
-        <circle class="eye" cx="10" cy="-10" r="5"/><circle class="eye" cx="10" cy="10" r="5"/>
-        <path class="nose" d="M22 -7 L34 0 L22 7 Z"/>
-      </g></g>
-    </svg>
+    <div class="rad" id="levels"></div>
+    <div class="scen">
+      <svg id="world" viewBox="0 0 560 400" role="img" aria-label="Ett rutnät med en robot, träd och en stjärna" data-aria-en="A grid with a robot, trees and a star">
+        <g id="grid"></g><g id="trail"></g><g id="things"></g>
+        <g id="robot"><g class="inre">
+          <rect class="hjul" x="-20" y="-32" width="26" height="9" rx="2"/><rect class="hjul" x="-20" y="23" width="26" height="9" rx="2"/>
+          <rect class="kropp" x="-26" y="-25" width="50" height="50" rx="8"/>
+          <path class="nos" d="M10 -9 L24 0 L10 9 Z"/>
+        </g></g>
+        <g id="krock"></g>
+      </svg>
+    </div>
+    <p class="status" aria-live="polite" role="status"></p>
 
-    <div style="margin-top:14px">
-      <div class="eyebrow" style="margin-bottom:8px" data-en="Tap a block to add it to the program">Tryck på ett block för att lägga till det i programmet</div>
-      <div class="palette" id="palette"></div>
-    </div>
+    <span class="liten" data-en="Tap a block to add it to the end of the program">Tryck på ett block för att lägga det sist i programmet</span>
+    <div class="rad" id="palette"></div>
     <div class="program-box">
-      <div class="eyebrow" data-en="Your program · tap a green block to repeat it">Ditt program · tryck på ett grönt block för att upprepa det</div>
-      <div class="program" id="program"></div>
+      <span class="liten" data-en="Program. Tap a Forward block to make it repeat.">Program. Tryck på ett Framåt-block för att få det att upprepas.</span>
+      <div class="rad program" id="program"></div>
     </div>
-    <div class="run-row">
-      <span class="count" id="count"></span>
-      <div style="display:flex; gap:8px">
+    <div class="rad mellan">
+      <span class="antal" id="count"></span>
+      <div class="rad">
         <button class="btn ghost" id="clear" type="button" data-en="Clear">Rensa</button>
         <button class="btn" id="run" type="button">
           <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2v12L14 8z" fill="currentColor"/></svg>
@@ -83,23 +84,27 @@
   </section>
 
   <aside class="panel">
-    <div class="card mission" id="mission">
-      <div class="eyebrow" data-en="Software · ~15 min">Mjukvara · ~15 min</div>
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Software, about 15 minutes">Mjukvara, ungefär 15 minuter</p>
       <h2 data-en="Give the robot instructions">Ge roboten instruktioner</h2>
-      <p class="lead" data-en="The robot does exactly what you say. Nothing more, nothing less.">Roboten gör exakt det du säger. Inget mer, inget mindre.</p>
+      <p class="lead" data-en="The robot follows the list from start to end and does exactly what it says.">Roboten följer listan från början till slut och gör exakt det som står.</p>
     </div>
-    <details class="card why">
+
+    <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="<strong>A program is a list of instructions</strong> that run in order, one at a time.">
-          <strong>Ett program är en lista med instruktioner</strong> som körs i tur och ordning, en i taget.</p>
-        <p data-en="<strong>A bug</strong> is when the program does something you did not mean. Finding and fixing bugs is a big part of every programmer's day.">
-          <strong>En bugg</strong> är när programmet gör något du inte menade. Att hitta och laga buggar är en stor del av varje programmerares dag.</p>
-        <p data-en="<strong>Repeat</strong> (a loop) lets you say the same thing many times with one block. Short programs are easier to read and fix.">
-          <strong>Upprepa</strong> (en loop) låter dig säga samma sak många gånger med ett block. Korta program är lättare att läsa och laga.</p>
+        <p data-en="A <b>program</b> is a list of instructions that run in order, one at a time.">Ett <b>program</b> är en lista med instruktioner som körs i ordning, en i taget.</p>
+        <p data-en="A <b>bug</b> is when the program does something you did not mean. Finding the block where it went wrong is called <b>debugging</b>.">En <b>bugg</b> är när programmet gör något du inte menade. Att leta upp blocket där det gick fel kallas att <b>felsöka</b>.</p>
+        <p data-en="A <b>loop</b> says the same thing many times with one block. Forward ×4 is a small loop.">En <b>loop</b> säger samma sak många gånger med ett block. Framåt ×4 är en liten loop.</p>
       </div>
     </details>
-    <p class="mock-note" data-en="Mock-up. Pair version: one person sees the map, the other writes the program without seeing it. They must talk.">Mockup. Parversion: en person ser kartan, den andra skriver programmet utan att se den. De måste prata med varandra.</p>
+
+    <div id="lada"></div>
+
+    <div>
+      <h3 style="font-size:var(--fs-r3)" data-en="In pairs">I par</h3>
+      <p class="liten" style="margin-top:6px" data-en="One person sees the map, the other writes the program without seeing it. Then the robot on the floor runs what they agreed on.">En person ser kartan, den andra skriver programmet utan att se den. Sedan kör roboten på golvet det de kommit överens om.</p>
+    </div>
   </aside>
 </main>
 
@@ -116,19 +121,37 @@
     { id: "n3", start: [0, 4, 0], star: [6, 0], trees: [[1, 2], [2, 0], [2, 3], [6, 2], [5, 3], [6, 4], [3, 1]], max: 5 }
   ];
   const ICON = {
-    fwd: '<path d="M13 22V5M6 11l7-7 7 7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>',
-    left: '<path d="M19 21v-7a5 5 0 0 0-5-5H6M10 4 5 9l5 5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>',
-    right: '<path d="M7 21v-7a5 5 0 0 1 5-5h8M16 4l5 5-5 5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'
+    fwd: '<path d="M12 20V5M6 10.5 12 4.5l6 6"/>',
+    left: '<path d="M18 20v-6a5 5 0 0 0-5-5H6M10 5 6 9l4 4"/>',
+    right: '<path d="M6 20v-6a5 5 0 0 1 5-5h7M14 5l4 4-4 4"/>'
   };
   const NAME = { fwd: { sv: "Framåt", en: "Forward" }, left: { sv: "Sväng vänster", en: "Turn left" }, right: { sv: "Sväng höger", en: "Turn right" } };
+  const BOCK = '<svg class="bock" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg>';
+  const KRYSS = '<svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
 
-  const s = { lvl: 0, prog: [], running: false, pos: null };
+  const s = { lvl: 0, prog: [], running: false, pos: null, felAt: -1 };
   const tasks = K.tasks($("mission"), "robot", [
     { id: "n1",   text: { sv: "Nivå 1: nå stjärnan", en: "Level 1: reach the star" } },
-    { id: "bugg", text: { sv: "Hitta en bugg: kör in i ett träd", en: "Find a bug: drive into a tree" }, hint: { sv: "Det är okej. Alla programmerare gör det.", en: "That is fine. Every programmer does it." } },
-    { id: "n2",   text: { sv: "Nivå 2: svänga rätt", en: "Level 2: turn the right way" } },
-    { id: "n3",   text: { sv: "Nivå 3: max 5 block", en: "Level 3: 5 blocks at most" }, hint: { sv: "Tryck på Framåt-block för att upprepa.", en: "Tap Forward blocks to repeat them." } }
+    { id: "bugg", text: { sv: "Kör in i ett träd med flit", en: "Drive into a tree on purpose" }, hint: { sv: "Se vilket block som markeras när det går fel.", en: "See which block is marked when it goes wrong." } },
+    { id: "n2",   text: { sv: "Nivå 2: sväng åt rätt håll", en: "Level 2: turn the right way" } },
+    { id: "n3",   text: { sv: "Nivå 3: högst fem block", en: "Level 3: five blocks at most" }, hint: { sv: "Ett Framåt-block kan upprepas.", en: "A Forward block can repeat." } }
   ]);
+
+  /* ---- lådan: en liten robot på en golvmatta ---- */
+  K.lada($("lada"), {
+    nod: "nod-06",
+    delar: { sv: "Pico W, två stegmotorer 28BYJ-48 med drivkort, powerbank, golvmatta med 7 × 5 rutor à 15 cm", en: "Pico W, two 28BYJ-48 stepper motors with driver boards, power bank, floor mat with 7 × 5 squares of 15 cm" },
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Robot sedd uppifrån på en golvmatta">
+      <rect class="hw-platta" x="8" y="6" width="284" height="138" rx="6"/>
+      ${Array.from({ length: 8 }, (_, i) => `<line x1="${24 + i * 36}" y1="16" x2="${24 + i * 36}" y2="134" stroke="var(--linje)" stroke-width="1.5"/>`).join("")}
+      ${Array.from({ length: 6 }, (_, i) => `<line x1="24" y1="${16 + i * 23.6}" x2="276" y2="${16 + i * 23.6}" stroke="var(--linje)" stroke-width="1.5"/>`).join("")}
+      <g id="hw-robot" style="transition:transform .42s var(--broms)">
+        <rect x="-11" y="-13" width="12" height="4" rx="1" fill="var(--grafit)"/><rect x="-11" y="9" width="12" height="4" rx="1" fill="var(--grafit)"/>
+        <rect class="hw-kort" x="-12" y="-9" width="22" height="18" rx="3"/>
+        <circle id="hw-led" class="hw-led" cx="5" cy="0" r="3"/>
+      </g>
+    </svg>`
+  });
 
   const L = () => LEVELS[s.lvl];
   const isTree = (x, y) => L().trees.some(([a, b]) => a === x && b === y);
@@ -143,13 +166,13 @@
     }
     const t = $("things"); t.innerHTML = "";
     L().trees.forEach(([x, y]) => {
-      t.insertAdjacentHTML("beforeend", `<g><rect class="tree-trunk" x="${px(x) - 5}" y="${px(y) + 8}" width="10" height="20" rx="3"/>
-        <circle class="tree-top" cx="${px(x)}" cy="${px(y) - 4}" r="22"/><circle class="tree-top" cx="${px(x) - 12}" cy="${px(y) + 6}" r="14"/><circle class="tree-top" cx="${px(x) + 12}" cy="${px(y) + 6}" r="14"/></g>`);
+      t.insertAdjacentHTML("beforeend", `<g><line class="trad-stam" x1="${px(x)}" y1="${px(y) + 4}" x2="${px(x)}" y2="${px(y) + 28}"/>
+        <circle class="trad-krona" cx="${px(x)}" cy="${px(y) - 4}" r="22"/></g>`);
     });
     const [sx, sy] = L().star, cx = px(sx), cy = px(sy);
-    const pts = Array.from({ length: 10 }, (_, i) => { const r = i % 2 ? 12 : 28, a = -Math.PI / 2 + i * Math.PI / 5; return (cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a)).toFixed(1); }).join(" ");
-    t.insertAdjacentHTML("beforeend", `<polygon class="star" points="${pts}"/>`);
-    $("trail").innerHTML = "";
+    const pts = Array.from({ length: 10 }, (_, i) => { const r = i % 2 ? 11 : 26, a = -Math.PI / 2 + i * Math.PI / 5; return (cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a)).toFixed(1); }).join(" ");
+    t.insertAdjacentHTML("beforeend", `<polygon class="stjarna" points="${pts}"/>`);
+    $("trail").innerHTML = ""; $("krock").innerHTML = "";
     resetRobot();
   }
   function resetRobot() {
@@ -157,10 +180,11 @@
     placeRobot(true);
   }
   function placeRobot(instant) {
-    const r = $("robot");
-    if (instant) r.style.transition = "none";
-    r.style.transform = `translate(${px(s.pos.x)}px, ${px(s.pos.y)}px) rotate(${s.pos.rot}deg)`;
-    if (instant) { r.getBoundingClientRect(); r.style.transition = ""; }
+    const els = [$("robot"), $("hw-robot")];
+    if (instant) els.forEach(el => el.style.transition = "none");
+    els[0].style.transform = `translate(${px(s.pos.x)}px, ${px(s.pos.y)}px) rotate(${s.pos.rot}deg)`;
+    els[1].style.transform = `translate(${42 + s.pos.x * 36}px, ${27.8 + s.pos.y * 23.6}px) rotate(${s.pos.rot}deg)`;
+    if (instant) { els[0].getBoundingClientRect(); els.forEach(el => el.style.transition = ""); }
   }
 
   function renderLevels() {
@@ -168,81 +192,104 @@
     LEVELS.forEach((lv, i) => {
       const b = document.createElement("button"); b.type = "button"; b.className = "chip";
       b.setAttribute("aria-pressed", i === s.lvl);
-      b.innerHTML = `${K.t("Nivå", "Level")} ${i + 1} ${tasks.isDone(lv.id) ? '<span class="ok">✓</span>' : ""}`;
-      b.addEventListener("click", () => { if (s.running) return; s.lvl = i; s.prog = []; renderAll(); });
+      b.innerHTML = `${K.t("Nivå", "Level")} ${i + 1}${tasks.isDone(lv.id) ? BOCK : ""}`;
+      b.addEventListener("click", () => { if (s.running) return; s.lvl = i; s.prog = []; s.felAt = -1; renderAll(); describeIdle(); });
       w.append(b);
     });
   }
-  function block(type, times, onClick, removable) {
-    const b = document.createElement("button"); b.type = "button"; b.className = "blk " + type;
-    b.innerHTML = `<svg viewBox="0 0 26 26" aria-hidden="true">${ICON[type]}</svg><span>${K.t(NAME[type])}</span>${times > 1 ? `<span class="times">×${times}</span>` : ""}${removable ? '<span class="x" aria-hidden="true">✕</span>' : ""}`;
+  function block(type, times, onClick, nr) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "blk";
+    b.innerHTML = `${nr ? `<span class="nr">${nr}</span>` : ""}<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[type]}</svg><span>${K.t(NAME[type])}</span>${times > 1 ? `<span class="ganger">×${times}</span>` : ""}${nr ? `<span class="ta-bort" aria-hidden="true">${KRYSS}</span>` : ""}`;
+    if (nr) b.setAttribute("aria-label", `${nr}. ${K.t(NAME[type])}${times > 1 ? " ×" + times : ""}`);
     b.addEventListener("click", onClick);
     return b;
   }
   function renderPalette() {
     const p = $("palette"); p.innerHTML = "";
-    ["fwd", "left", "right"].forEach(t => p.append(block(t, 1, () => { if (s.running) return; s.prog.push({ t, n: 1 }); renderProgram(); }, false)));
+    ["fwd", "left", "right"].forEach(t => p.append(block(t, 1, () => { if (s.running) return; s.prog.push({ t, n: 1 }); s.felAt = -1; renderProgram(); })));
   }
   function renderProgram() {
     const p = $("program"); p.innerHTML = "";
-    if (!s.prog.length) p.innerHTML = `<span class="empty">${K.t("Tomt. Lägg till block ovanför.", "Empty. Add blocks above.")}</span>`;
+    if (!s.prog.length) p.innerHTML = `<span class="tom">${K.t("Inga block än.", "No blocks yet.")}</span>`;
     s.prog.forEach((b, i) => {
       const el = block(b.t, b.n, e => {
         if (s.running) return;
-        if (e.target.closest(".x")) { s.prog.splice(i, 1); }
-        else if (b.t === "fwd") { b.n = b.n % 5 + 1; }
-        renderProgram();
-      }, true);
+        if (e.target.closest(".ta-bort")) s.prog.splice(i, 1);
+        else if (b.t === "fwd") b.n = b.n % 5 + 1;
+        s.felAt = -1; renderProgram();
+      }, i + 1);
       el.dataset.i = i;
+      if (i === s.felAt) el.classList.add("fel");
       p.append(el);
     });
     const max = L().max, n = s.prog.length;
-    $("count").textContent = max ? `${n} / ${max} ${K.t("block", "blocks")}` : `${n} ${K.t("block", "blocks")}`;
+    $("count").textContent = max ? K.t(`${n} av högst ${max} block`, `${n} of at most ${max} blocks`) : K.t(`${n} block`, `${n} blocks`);
     $("count").classList.toggle("over", !!max && n > max);
   }
   function renderAll() { renderLevels(); drawWorld(); renderPalette(); renderProgram(); }
+  function describeIdle() {
+    const max = L().max;
+    K.status(max
+      ? K.t(`Nivå ${s.lvl + 1}. Nå stjärnan med högst ${max} block.`, `Level ${s.lvl + 1}. Reach the star with ${max} blocks at most.`)
+      : K.t(`Nivå ${s.lvl + 1}. Roboten står still och pekar åt höger.`, `Level ${s.lvl + 1}. The robot is standing still, pointing right.`));
+  }
 
   const wait = ms => new Promise(r => setTimeout(r, ms));
   async function run() {
     if (s.running || !s.prog.length) return;
-    s.running = true; resetRobot(); $("trail").innerHTML = ""; await wait(250);
-    let crashed = false;
+    s.running = true; s.felAt = -1; renderProgram(); resetRobot(); $("trail").innerHTML = ""; $("krock").innerHTML = "";
+    K.status(K.t("Programmet körs.", "The program is running."));
+    $("hw-led").classList.add("pa");
+    await wait(250);
+    let crash = null;
     outer: for (let i = 0; i < s.prog.length; i++) {
       const b = s.prog[i];
-      const el = $("program").querySelector(`[data-i="${i}"]`); el && el.classList.add("running");
+      const el = $("program").querySelector(`[data-i="${i}"]`); el && el.classList.add("kors");
       for (let k = 0; k < b.n; k++) {
         if (b.t === "left") { s.pos.d = (s.pos.d + 3) % 4; s.pos.rot -= 90; }
         else if (b.t === "right") { s.pos.d = (s.pos.d + 1) % 4; s.pos.rot += 90; }
         else {
           const [dx, dy] = DIRS[s.pos.d], nx = s.pos.x + dx, ny = s.pos.y + dy;
-          if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS || isTree(nx, ny)) {
-            $("robot").classList.remove("bump"); void $("robot").offsetWidth; $("robot").classList.add("bump");
-            crashed = true; el && el.classList.remove("running"); break outer;
+          const edge = nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS;
+          if (edge || isTree(nx, ny)) {
+            $("robot").classList.remove("stot"); void $("robot").getBoundingClientRect(); $("robot").classList.add("stot");
+            const kx = (px(s.pos.x) + px(nx)) / 2, ky = (px(s.pos.y) + px(ny)) / 2;
+            $("krock").innerHTML = [0, 60, 120].map(a => `<path class="krock" transform="rotate(${a} ${kx} ${ky})" d="M${kx - 10} ${ky}h20"/>`).join("");
+            crash = { i, edge }; el && el.classList.remove("kors"); break outer;
           }
-          $("trail").insertAdjacentHTML("beforeend", `<circle class="trail" cx="${px(s.pos.x)}" cy="${px(s.pos.y)}" r="9"/>`);
+          $("trail").insertAdjacentHTML("beforeend", `<circle class="spar" cx="${px(s.pos.x)}" cy="${px(s.pos.y)}" r="8"/>`);
           s.pos.x = nx; s.pos.y = ny;
         }
         placeRobot(); await wait(460);
       }
-      el && el.classList.remove("running");
+      el && el.classList.remove("kors");
     }
-    const [sx, sy] = L().star;
-    const atStar = s.pos.x === sx && s.pos.y === sy;
-    const max = L().max;
-    if (crashed) { tasks.complete("bugg"); K.toast(K.t("Aj! Där var en bugg. Ändra programmet och prova igen.", "Ouch! There was a bug. Change the program and try again."), "!"); }
-    else if (atStar && max && s.prog.length > max) K.toast(K.t(`Framme! Men använd högst ${max} block.`, `You made it! But use ${max} blocks at most.`), "i");
-    else if (atStar) { tasks.complete(L().id); renderLevels(); }
-    else K.toast(K.t("Roboten stannade innan stjärnan.", "The robot stopped before the star."), "i");
+    $("hw-led").classList.remove("pa");
+    const [sx, sy] = L().star, atStar = s.pos.x === sx && s.pos.y === sy, max = L().max;
+    if (crash) {
+      s.felAt = crash.i; renderProgram();
+      K.status(crash.edge
+        ? K.t(`Roboten körde mot kanten. Programmet stannade vid block ${crash.i + 1}.`, `The robot drove into the edge. The program stopped at block ${crash.i + 1}.`)
+        : K.t(`Roboten körde in i ett träd. Programmet stannade vid block ${crash.i + 1}.`, `The robot drove into a tree. The program stopped at block ${crash.i + 1}.`), "fara");
+      tasks.complete("bugg");
+    } else if (atStar && max && s.prog.length > max) {
+      K.status(K.t(`Roboten nådde stjärnan med ${s.prog.length} block. Det går med ${max}.`, `The robot reached the star with ${s.prog.length} blocks. It can be done with ${max}.`));
+    } else if (atStar) {
+      K.status(K.t(`Roboten står på stjärnan. Programmet hade ${s.prog.length} block.`, `The robot is on the star. The program had ${s.prog.length} blocks.`), "klar");
+      tasks.complete(L().id); renderLevels();
+    } else {
+      K.status(K.t("Programmet tog slut innan roboten var framme.", "The program ran out before the robot got there."));
+    }
     s.running = false;
   }
 
   $("run").addEventListener("click", run);
-  $("clear").addEventListener("click", () => { if (s.running) return; s.prog = []; renderProgram(); resetRobot(); $("trail").innerHTML = ""; });
-  K.onLang(() => { renderLevels(); renderPalette(); renderProgram(); });
+  $("clear").addEventListener("click", () => { if (s.running) return; s.prog = []; s.felAt = -1; renderProgram(); resetRobot(); $("trail").innerHTML = ""; $("krock").innerHTML = ""; describeIdle(); });
+  K.onLang(() => { renderLevels(); renderPalette(); renderProgram(); if (!s.running) describeIdle(); });
 
-  // Start med ett exempelprogram så att man ser idén direkt
+  // ett första block så att idén syns direkt
   s.prog = [{ t: "fwd", n: 2 }];
-  renderAll();
+  renderAll(); describeIdle();
 })();
 </script>
 </body>

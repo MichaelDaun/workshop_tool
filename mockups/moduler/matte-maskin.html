@@ -6,54 +6,58 @@
 <title>Funktionsmaskinen – Verkstan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
 <link rel="stylesheet" href="../shared/theme.css">
 <style>
-  .split { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
-  @media (max-width: 700px) { .split { grid-template-columns: minmax(0, 1fr); } }
-  .machine-body { fill: var(--domain); }
-  .machine-face { fill: color-mix(in srgb, var(--domain) 70%, var(--ink)); }
-  .lid { fill: color-mix(in srgb, var(--domain) 80%, var(--surface)); transition: transform .8s var(--ease); transform-origin: 300px 80px; }
-  .open .lid { transform: rotate(-24deg) translateY(-14px); }
-  .gear { fill: none; stroke: #fff; stroke-width: 6; stroke-dasharray: 9 7; transform-box: fill-box; transform-origin: center; }
-  .spin .gear { animation: spin .8s linear infinite; }
-  .spin .gear.rev { animation-direction: reverse; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .chute { fill: var(--surface-2); stroke: var(--line); stroke-width: 3; }
-  .ball circle { stroke-width: 4; }
-  .ball text { font-family: var(--font-data); font-weight: 600; font-size: 26px; text-anchor: middle; }
-  .ball.in circle { fill: var(--surface); stroke: var(--ink); }
-  .ball.in text { fill: var(--ink); }
-  .ball.out circle { fill: var(--c-el); stroke: color-mix(in srgb, var(--c-el) 60%, var(--ink)); }
-  .ball.out text { fill: var(--ink); }
-  .rule-reveal { font-family: var(--font-data); font-size: 26px; font-weight: 600; fill: #fff; opacity: 0; transition: opacity .6s .3s; }
-  .open .rule-reveal { opacity: 1; }
-  .qmark { font-family: var(--font-display); font-weight: 800; font-size: 54px; fill: #fff; transition: opacity .4s; }
-  .open .qmark { opacity: 0; }
+  .rad { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .chip .bock { width: 16px; height: 16px; }
+  .chip .bock path { fill: none; stroke: var(--aktiv); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
-  .keypad { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
-  .key { height: 52px; border-radius: 14px; border: 0; background: var(--surface-2); font-family: var(--font-data); font-size: 1.3rem; font-weight: 600; cursor: pointer; transition: background .2s, transform .1s; }
-  .key:hover { background: color-mix(in srgb, var(--domain) 18%, var(--surface-2)); }
-  .key:active { transform: scale(.95); }
-  .key.used { background: color-mix(in srgb, var(--domain) 25%, var(--surface-2)); }
+  .ranna { fill: var(--ark); stroke: var(--grafit); stroke-width: 2.5; }
+  .kropp { fill: var(--ark); stroke: var(--grafit); stroke-width: 3; }
+  .lock { fill: var(--rutnat); stroke: var(--grafit); stroke-width: 3; transition: transform .8s var(--broms); transform-origin: 196px 76px; }
+  .open .lock { transform: rotate(-9deg) translateY(-6px); }
+  .kugge { fill: none; stroke: var(--grafit); stroke-width: 5; stroke-dasharray: 8 6; transform-box: fill-box; transform-origin: center; }
+  .snurrar .kugge { animation: snurra .8s linear infinite; }
+  .snurrar .kugge.mot { animation-direction: reverse; }
+  @keyframes snurra { to { transform: rotate(360deg); } }
+  .navel { fill: var(--grafit); }
+  .regel { font-family: var(--siffror); font-size: 19px; font-weight: 600; fill: var(--grafit); opacity: 0; transition: opacity .5s .3s; }
+  .open .regel { opacity: 1; }
+  .open .kugge, .open .navel { opacity: .15; }
+  .ett-ord { font-family: var(--text); font-size: 15px; fill: var(--blyerts); }
+  .kula circle { stroke-width: 2.5; stroke: var(--grafit); }
+  .kula text { font-family: var(--siffror); font-weight: 600; font-size: 24px; text-anchor: middle; fill: var(--grafit); }
+  .kula.in circle { fill: var(--ark); }
+  .kula.ut circle { fill: var(--aktiv); }
+  .kula.ut text { fill: var(--ark); }
 
-  .log { width: 100%; border-collapse: collapse; font-family: var(--font-data); }
-  .log th { font-family: var(--font-body); font-size: var(--fs-xs); color: var(--ink-soft); font-weight: 400; text-align: center; padding-bottom: 4px; }
-  .log td { text-align: center; padding: 4px; border-top: 1px solid var(--line); }
-  .log td.bad { color: var(--bad); }
-  .log td.good { color: var(--ok); }
-  .graph .ax { stroke: var(--ink-soft); stroke-width: 1.5; }
-  .graph .gl { stroke: var(--line); stroke-width: 1; }
-  .graph text { font-family: var(--font-data); font-size: 11px; fill: var(--ink-soft); }
-  .graph .pt { fill: var(--domain); stroke: var(--surface); stroke-width: 2; animation: pop .4s var(--ease); transform-box: fill-box; transform-origin: center; }
-  @keyframes pop { from { transform: scale(0); } }
-  .graph .guess { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 6 5; fill: none; }
-  .graph .truth { stroke: var(--domain); stroke-width: 3; fill: none; }
+  .knappsats { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; }
+  @media (max-width: 560px) { .knappsats { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+  .key { height: 48px; border-radius: 6px; border: 1px solid var(--linje); background: var(--ark); font-family: var(--siffror); font-size: 20px; font-weight: 600; cursor: pointer; transition: border-color var(--kort); }
+  .key:hover { border-color: var(--grafit); }
+  .key:active { transform: translateY(1px); }
+  .key.used { border-color: var(--grafit); background: color-mix(in srgb, var(--aktiv) 12%, var(--ark)); }
 
-  .rule-builder { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-family: var(--font-data); font-size: 1.2rem; margin-top: 8px; }
-  .stepper { display: inline-flex; align-items: center; border-radius: 999px; background: var(--surface-2); }
-  .stepper button { width: 38px; height: 42px; border: 0; background: transparent; font-size: 1.2rem; cursor: pointer; border-radius: 999px; }
-  .stepper output { min-width: 2.2ch; text-align: center; font-weight: 600; }
+  .tva { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 700px) { .tva { grid-template-columns: minmax(0, 1fr); } }
+  .ruta { border: 1px solid var(--linje); border-radius: 6px; padding: 10px 12px; display: grid; gap: 6px; }
+  .log { width: 100%; border-collapse: collapse; font-family: var(--siffror); font-size: 16px; }
+  .log th { font-family: var(--text); font-size: var(--fs-liten); color: var(--blyerts); font-weight: 400; text-align: center; padding-bottom: 4px; }
+  .log td { text-align: center; padding: 5px 4px; border-top: 1px solid var(--rutnat); }
+  .log td.miss { color: var(--blyerts); }
+  .graph .ax { stroke: var(--grafit); stroke-width: 1.5; }
+  .graph .gl { stroke: var(--rutnat); stroke-width: 1; }
+  .graph text { font-family: var(--siffror); font-size: 11px; fill: var(--blyerts); }
+  .graph .pt { fill: var(--aktiv); stroke: var(--grafit); stroke-width: 1.5; }
+  .graph .ny { animation: ut .35s var(--broms); transform-box: fill-box; transform-origin: center; }
+  @keyframes ut { from { transform: scale(0); } }
+  .graph .gissning { stroke: var(--grafit); stroke-width: 2; stroke-dasharray: 6 5; fill: none; }
+  .graph .sann { stroke: var(--aktiv); stroke-width: 3; fill: none; }
+
+  .regelbygge { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-family: var(--siffror); font-size: 20px; }
+  .regelbygge .btn { font-family: var(--text); margin-left: auto; }
+  @media (max-width: 560px) { .regelbygge .btn { margin-left: 0; width: 100%; } }
 </style>
 </head>
 <body data-domain="matte">
@@ -61,68 +65,74 @@
 
 <main class="module">
   <section class="stage">
-    <div class="levels" id="levels" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px"></div>
-    <svg id="machine" viewBox="0 0 600 230" role="img" aria-label="En maskin som gör om tal enligt en hemlig regel" data-aria-en="A machine that turns numbers into other numbers with a secret rule">
-      <rect class="chute" x="10" y="120" width="170" height="60" rx="30"/>
-      <rect class="chute" x="420" y="120" width="170" height="60" rx="30"/>
-      <rect class="machine-body" x="190" y="80" width="220" height="140" rx="22"/>
-      <rect class="lid" x="180" y="60" width="240" height="34" rx="12"/>
-      <rect class="machine-face" x="215" y="105" width="170" height="90" rx="14"/>
-      <g id="gears">
-        <circle class="gear" cx="255" cy="150" r="24"/>
-        <circle class="gear rev" cx="345" cy="150" r="24"/>
-      </g>
-      <text class="qmark" x="300" y="168" text-anchor="middle">?</text>
-      <text class="rule-reveal" id="reveal" x="300" y="160" text-anchor="middle"></text>
-      <g id="balls"></g>
-      <text x="95" y="210" text-anchor="middle" style="font-family:var(--font-data); font-size:14px; fill:var(--ink-soft)" data-en="IN">IN</text>
-      <text x="505" y="210" text-anchor="middle" style="font-family:var(--font-data); font-size:14px; fill:var(--ink-soft)" data-en="OUT">UT</text>
-    </svg>
+    <div class="rad" id="levels"></div>
+    <div class="scen">
+      <svg id="machine" viewBox="0 0 600 230" role="img" aria-label="En maskin som gör om tal enligt en hemlig regel" data-aria-en="A machine that turns numbers into other numbers with a secret rule">
+        <rect class="ranna" x="16" y="128" width="164" height="44" rx="4"/>
+        <rect class="ranna" x="420" y="128" width="164" height="44" rx="4"/>
+        <rect class="kropp" x="190" y="80" width="220" height="130" rx="10"/>
+        <rect class="lock" x="180" y="62" width="240" height="26" rx="6"/>
+        <g id="kuggar">
+          <circle class="kugge" cx="262" cy="146" r="26"/><circle class="navel" cx="262" cy="146" r="5"/>
+          <circle class="kugge mot" cx="338" cy="146" r="26"/><circle class="navel" cx="338" cy="146" r="5"/>
+        </g>
+        <text class="regel" id="reveal" x="300" y="154" text-anchor="middle"></text>
+        <g id="balls"></g>
+        <text class="ett-ord" x="98" y="200" text-anchor="middle" data-en="in">in</text>
+        <text class="ett-ord" x="502" y="200" text-anchor="middle" data-en="out">ut</text>
+      </svg>
+    </div>
+    <p class="status" aria-live="polite" role="status"></p>
 
-    <div class="eyebrow" style="margin-top:6px" data-en="Feed the machine a number">Mata maskinen med ett tal</div>
-    <div class="keypad" id="keypad"></div>
+    <span class="liten" data-en="Feed the machine a number">Mata maskinen med ett tal</span>
+    <div class="knappsats" id="keypad"></div>
 
-    <div class="split" style="margin-top:16px">
-      <div class="card" style="box-shadow:none; background:var(--surface-2)">
-        <div class="eyebrow" data-en="Graph: every test becomes a dot">Graf: varje test blir en prick</div>
-        <svg class="graph" id="graph" viewBox="0 0 320 240" role="img" aria-label="Graf över in- och ut-värden" data-aria-en="Graph of in and out values"></svg>
+    <div class="tva">
+      <div class="ruta">
+        <span class="liten" data-en="Every test becomes a dot">Varje test blir en prick</span>
+        <svg class="graph" id="graph" viewBox="0 0 320 240" role="img" aria-label="Graf över in- och utvärden" data-aria-en="Graph of in and out values"></svg>
       </div>
-      <div class="card" style="box-shadow:none; background:var(--surface-2)">
-        <div class="eyebrow" data-en="Log">Logg</div>
-        <table class="log" id="log"><thead><tr><th data-en="in">in</th><th data-en="out">ut</th><th data-en="your rule">din regel</th></tr></thead><tbody></tbody></table>
+      <div class="ruta">
+        <span class="liten" data-en="Tests so far">Test hittills</span>
+        <table class="log" id="log"><thead><tr><th data-en="in">in</th><th data-en="out">ut</th><th data-en="your rule gives">din regel ger</th></tr></thead><tbody></tbody></table>
       </div>
     </div>
 
-    <div class="card" style="margin-top:16px; box-shadow:none; border:2px solid var(--domain)">
-      <div class="eyebrow" data-en="Crack the rule">Knäck regeln</div>
-      <div class="rule-builder">
-        <span data-en="out =">ut =</span> <span data-en="in">in</span> ×
-        <span class="stepper"><button type="button" id="a-" aria-label="minska">−</button><output id="a">1</output><button type="button" id="a+" aria-label="öka">+</button></span>
-        +
-        <span class="stepper"><button type="button" id="b-" aria-label="minska">−</button><output id="b">0</output><button type="button" id="b+" aria-label="öka">+</button></span>
-        <button class="btn" id="check" type="button" style="margin-left:auto; font-family:var(--font-body)" data-en="Open the machine">Öppna maskinen</button>
+    <div class="ruta">
+      <span class="liten" data-en="Your guess at the rule">Din gissning på regeln</span>
+      <div class="regelbygge">
+        <span data-en="out = in ×">ut = in ×</span>
+        <span class="stegare"><button type="button" id="a-" aria-label="Minska gånger-talet" data-aria-en="Decrease the times number">−</button><output id="a">1</output><button type="button" id="a+" aria-label="Öka gånger-talet" data-aria-en="Increase the times number">+</button></span>
+        <span>+</span>
+        <span class="stegare"><button type="button" id="b-" aria-label="Minska plus-talet" data-aria-en="Decrease the plus number">−</button><output id="b">0</output><button type="button" id="b+" aria-label="Öka plus-talet" data-aria-en="Increase the plus number">+</button></span>
+        <button class="btn" id="check" type="button" data-en="Open the machine">Öppna maskinen</button>
       </div>
     </div>
   </section>
 
   <aside class="panel">
-    <div class="card mission" id="mission">
-      <div class="eyebrow" data-en="Mathematics · ~10 min">Matematik · ~10 min</div>
-      <h2 data-en="What is the machine doing?">Vad gör maskinen?</h2>
-      <p class="lead" data-en="Put numbers in, see what comes out, find the pattern.">Stoppa in tal, se vad som kommer ut, hitta mönstret.</p>
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Mathematics, about 10 minutes">Matematik, ungefär 10 minuter</p>
+      <h2 data-en="What does the machine do?">Vad gör maskinen?</h2>
+      <p class="lead" data-en="Put numbers in, watch what comes out and work out the rule inside.">Stoppa in tal, se vad som kommer ut och lista ut regeln där inne.</p>
     </div>
-    <details class="card why">
+
+    <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="<strong>The machine is a function.</strong> A function is a rule that turns one number into another.">
-          <strong>Maskinen är en funktion.</strong> En funktion är en regel som gör om ett tal till ett annat.</p>
-        <p data-en="<strong>The dots form a line.</strong> Times decides how steep it is, plus decides where it starts.">
-          <strong>Prickarna bildar en linje.</strong> Gånger bestämmer hur brant den är, plus bestämmer var den börjar.</p>
-        <p data-en="Your phone's map, the price of a taxi ride and the AI in the fruit sorter are all built from functions.">
-          Kartan i mobilen, priset på en taxiresa och AI:n i fruktsorteraren bygger alla på funktioner.</p>
+        <p data-en="The machine is a <b>function</b>: a rule that turns one number into another.">Maskinen är en <b>funktion</b>: en regel som gör om ett tal till ett annat.</p>
+        <p data-en="The dots lie on a straight line. The times number decides how steep it is. The plus number decides where it crosses the left edge.">Prickarna ligger på en rak linje. Gånger-talet bestämmer hur brant den är. Plus-talet bestämmer var den korsar vänsterkanten.</p>
+        <div class="formula">ut = in × 2 + 1</div>
+        <p data-en="A taxi fare works the same way: a price per kilometre times the distance, plus a start fee.">En taxiresa fungerar likadant: ett pris per kilometer gånger sträckan, plus en startavgift.</p>
       </div>
     </details>
-    <p class="mock-note" data-en="Mock-up. Team version: one team builds a secret machine, the other team cracks it with as few tests as possible.">Mockup. Lagversion: ett lag bygger en hemlig maskin, det andra laget knäcker den med så få test som möjligt.</p>
+
+    <div id="lada"></div>
+
+    <div>
+      <h3 style="font-size:var(--fs-r3)" data-en="Team against team">Lag mot lag</h3>
+      <p class="liten" style="margin-top:6px" data-en="One team sets a secret rule in the box on the table. The other team cracks it with as few tests as they can. Then they swap.">Ett lag ställer in en hemlig regel i lådan på bordet. Det andra laget knäcker den med så få test som möjligt. Sedan byter de.</p>
+    </div>
   </aside>
 </main>
 
@@ -132,26 +142,55 @@
   const $ = id => document.getElementById(id);
   const NS = "http://www.w3.org/2000/svg";
   const RULES = [{ id: "r1", a: 1, b: 3 }, { id: "r2", a: 2, b: 0 }, { id: "r3", a: 2, b: 1 }, { id: "r4", a: 3, b: -2 }];
-  const s = { lvl: 0, tests: [], ga: 1, gb: 0, busy: false, fed: 0 };
+  const s = { lvl: 0, tests: [], ga: 1, gb: 0, busy: false, fed: 0, nyX: null };
+  const BOCK = '<svg class="bock" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg>';
 
   const tasks = K.tasks($("mission"), "matte", [
-    { id: "mata", text: { sv: "Mata maskinen med 3 tal", en: "Feed the machine 3 numbers" } },
+    { id: "mata", text: { sv: "Mata maskinen med tre tal", en: "Feed the machine three numbers" } },
     { id: "r1",   text: { sv: "Knäck maskin 1", en: "Crack machine 1" } },
     { id: "r2",   text: { sv: "Knäck maskin 2", en: "Crack machine 2" } },
-    { id: "alla", text: { sv: "Knäck alla fyra maskinerna", en: "Crack all four machines" }, hint: { sv: "De två sista är kluriga.", en: "The last two are tricky." } }
+    { id: "alla", text: { sv: "Knäck alla fyra", en: "Crack all four" }, hint: { sv: "I de två sista används både gånger och plus.", en: "The last two use both times and plus." } }
   ]);
   const R = () => RULES[s.lvl];
   const solved = () => K.store.get("matte-solved", []);
   const f = (x, r = R()) => r.a * x + r.b;
+  const minus = n => n < 0 ? "−" + Math.abs(n) : String(n);
   const ruleText = (a, b) => `${K.t("ut", "out")} = ${K.t("in", "in")} × ${a} ${b < 0 ? "−" : "+"} ${Math.abs(b)}`;
+  const open = () => $("machine").classList.contains("open");
+
+  /* ---- lådan: vred in, två displayer, ett lock som servot lyfter ---- */
+  K.lada($("lada"), {
+    nod: "nod-07",
+    delar: { sv: "Pico W, vridomkopplare KY-040, två 4-siffriga displayer TM1637, servo SG90 som lyfter locket, en hemlig regel som ställs in från ledarvyn", en: "Pico W, KY-040 rotary encoder, two 4-digit TM1637 displays, SG90 servo that lifts the lid, a secret rule set from the leader view" },
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Låda med vred och två sifferdisplayer">
+      <rect class="hw-platta" x="8" y="8" width="284" height="134" rx="6"/>
+      <g id="hw-lock" style="transform-origin:60px 36px;transition:transform .8s var(--broms)"><rect x="56" y="28" width="188" height="12" rx="3" fill="var(--rutnat)" stroke="var(--grafit)" stroke-width="2"/></g>
+      <rect x="60" y="40" width="180" height="92" rx="4" fill="var(--ark)" stroke="var(--grafit)" stroke-width="2"/>
+      <circle cx="96" cy="88" r="20" fill="var(--ark)" stroke="var(--grafit)" stroke-width="2.5"/>
+      <line id="hw-vred" x1="96" y1="88" x2="96" y2="72" stroke="var(--grafit)" stroke-width="3" stroke-linecap="round" style="transform-origin:96px 88px;transition:transform .3s var(--broms)"/>
+      <rect class="hw-kort" x="134" y="56" width="78" height="26" rx="3"/><text id="hw-in" class="hw-text-ljus" x="204" y="74" text-anchor="end" style="font-size:15px">----</text>
+      <rect class="hw-kort" x="134" y="94" width="78" height="26" rx="3"/><text id="hw-ut" class="hw-text-ljus" x="204" y="112" text-anchor="end" style="font-size:15px">----</text>
+      <text class="hw-text" x="217" y="73">IN</text><text class="hw-text" x="217" y="111">${K.t("UT", "OUT")}</text>
+    </svg>`
+  });
+  function paintBox(x, y, baraLock) {
+    if (baraLock) { $("hw-lock").style.transform = open() ? "rotate(-12deg)" : "none"; return; }
+    if (x != null) { $("hw-in").textContent = String(x).padStart(4, " "); $("hw-vred").style.transform = `rotate(${x * 32}deg)`; }
+    $("hw-ut").textContent = y == null ? "----" : String(y).padStart(4, " ");
+    $("hw-lock").style.transform = open() ? "rotate(-12deg)" : "none";
+  }
 
   function renderLevels() {
     const w = $("levels"); w.innerHTML = "";
     RULES.forEach((r, i) => {
       const b = document.createElement("button"); b.type = "button"; b.className = "chip";
       b.setAttribute("aria-pressed", i === s.lvl);
-      b.innerHTML = `${K.t("Maskin", "Machine")} ${i + 1}${solved().includes(r.id) ? " ✓" : ""}`;
-      b.addEventListener("click", () => { if (s.busy) return; s.lvl = i; s.tests = []; $("machine").classList.remove("open"); render(); });
+      b.innerHTML = `${K.t("Maskin", "Machine")} ${i + 1}${solved().includes(r.id) ? BOCK : ""}`;
+      b.addEventListener("click", () => {
+        if (s.busy) return;
+        s.lvl = i; s.tests = []; $("machine").classList.remove("open"); $("balls").innerHTML = "";
+        paintBox(null, null); render(); describeIdle();
+      });
       w.append(b);
     });
   }
@@ -166,9 +205,9 @@
     const tb = $("log").querySelector("tbody"); tb.innerHTML = "";
     s.tests.slice(-6).forEach(t => {
       const g = s.ga * t.x + s.gb, ok = g === t.y;
-      tb.insertAdjacentHTML("beforeend", `<tr><td>${t.x}</td><td>${t.y}</td><td class="${ok ? "good" : "bad"}">${g} ${ok ? "✓" : "✕"}</td></tr>`);
+      tb.insertAdjacentHTML("beforeend", `<tr><td>${t.x}</td><td>${minus(t.y)}</td><td class="${ok ? "" : "miss"}">${minus(g)} ${ok ? "=" : "≠"} ${minus(t.y)}</td></tr>`);
     });
-    if (!s.tests.length) tb.innerHTML = `<tr><td colspan="3" style="font-family:var(--font-body); color:var(--ink-soft); font-size:var(--fs-s)">${K.t("Inga test än.", "No tests yet.")}</td></tr>`;
+    if (!s.tests.length) tb.innerHTML = `<tr><td colspan="3" style="font-family:var(--text); color:var(--blyerts); font-size:var(--fs-liten)">${K.t("Inga test än.", "No tests yet.")}</td></tr>`;
   }
   function renderGraph() {
     const g = $("graph"); g.innerHTML = "";
@@ -179,60 +218,69 @@
     const [, y0] = P(0, 0);
     g.insertAdjacentHTML("beforeend", `<line class="ax" x1="${X0}" x2="${X0 + 9 * sx}" y1="${y0}" y2="${y0}"/><line class="ax" x1="${X0}" x2="${X0}" y1="15" y2="${Y0}"/>`);
     const clip = (a, b) => { const pts = [0, 9].map(x => P(x, Math.max(ymin, Math.min(ymax, a * x + b)))); return `M${pts[0]} L${pts[1]}`; };
-    if (s.tests.length >= 2) g.insertAdjacentHTML("beforeend", `<path class="guess" d="${clip(s.ga, s.gb)}"/>`);
-    if ($("machine").classList.contains("open")) g.insertAdjacentHTML("beforeend", `<path class="truth" d="${clip(R().a, R().b)}"/>`);
-    s.tests.forEach(t => { const [px, py] = P(t.x, t.y); g.insertAdjacentHTML("beforeend", `<circle class="pt" cx="${px}" cy="${py}" r="6"/>`); });
+    if (s.tests.length >= 2) g.insertAdjacentHTML("beforeend", `<path class="gissning" d="${clip(s.ga, s.gb)}"/>`);
+    if (open()) g.insertAdjacentHTML("beforeend", `<path class="sann" d="${clip(R().a, R().b)}"/>`);
+    s.tests.forEach(t => { const [px, py] = P(t.x, t.y); g.insertAdjacentHTML("beforeend", `<circle class="pt${t.x === s.nyX ? " ny" : ""}" cx="${px}" cy="${py}" r="6"/>`); });
+    s.nyX = null;
   }
   function render() {
-    $("a").textContent = s.ga; $("b").textContent = s.gb;
+    $("a").textContent = minus(s.ga); $("b").textContent = minus(s.gb);
     $("reveal").textContent = ruleText(R().a, R().b);
     renderLevels(); renderKeypad(); renderLog(); renderGraph();
+  }
+  function describeIdle() {
+    K.status(K.t(`Maskin ${s.lvl + 1} är stängd. Tryck på en siffra för att mata in ett tal.`, `Machine ${s.lvl + 1} is closed. Tap a digit to feed it a number.`));
   }
 
   const wait = ms => new Promise(r => setTimeout(r, ms));
   function ball(cls, x, val) {
-    const g = document.createElementNS(NS, "g"); g.setAttribute("class", "ball " + cls);
-    g.innerHTML = `<circle r="24"/><text y="9">${val}</text>`;
-    g.style.transition = "transform .7s cubic-bezier(.2,.8,.2,1), opacity .3s";
+    const g = document.createElementNS(NS, "g"); g.setAttribute("class", "kula " + cls);
+    g.innerHTML = `<circle r="22"/><text y="8">${minus(val)}</text>`;
+    g.style.transition = "transform .7s var(--broms), opacity .3s";
     g.style.transform = `translate(${x}px,150px)`; $("balls").append(g); return g;
   }
   async function feed(x) {
     if (s.busy) return; s.busy = true;
     const y = f(x);
     $("balls").innerHTML = "";
-    const bi = ball("in", 40, x); await wait(30);
-    bi.style.transform = "translate(230px,150px)"; await wait(650);
+    paintBox(x, null);
+    K.status(K.t(`${x} går in i maskinen.`, `${x} goes into the machine.`));
+    const bi = ball("in", 44, x); await wait(30);
+    bi.style.transform = "translate(222px,150px)"; await wait(650);
     bi.style.opacity = 0;
-    $("gears").parentNode.classList.add("spin"); await wait(700);
-    $("gears").parentNode.classList.remove("spin");
-    const bo = ball("out", 370, y); await wait(30);
+    $("kuggar").classList.add("snurrar"); await wait(700);
+    $("kuggar").classList.remove("snurrar");
+    const bo = ball("ut", 378, y); await wait(30);
     bo.style.transform = "translate(540px,150px)"; await wait(600);
-    if (!s.tests.some(t => t.x === x)) s.tests.push({ x, y });
-    s.fed++; if (s.fed >= 3) tasks.complete("mata");
+    paintBox(x, y);
+    if (!s.tests.some(t => t.x === x)) { s.tests.push({ x, y }); s.nyX = x; }
+    s.fed++;
     s.busy = false; render();
+    K.status(K.t(`In ${x}, ut ${minus(y)}.`, `In ${x}, out ${minus(y)}.`));
+    if (s.fed >= 3) tasks.complete("mata");
   }
 
   function step(id, prop, d, lo, hi) { $(id).addEventListener("click", () => { s[prop] = Math.max(lo, Math.min(hi, s[prop] + d)); render(); }); }
   step("a-", "ga", -1, -3, 5); step("a+", "ga", 1, -3, 5); step("b-", "gb", -1, -9, 9); step("b+", "gb", 1, -9, 9);
 
   $("check").addEventListener("click", () => {
+    if (s.busy) return;
+    if (!s.tests.length) { K.status(K.t("Maskinen har inte fått några tal än. Mata in några först.", "The machine has not had any numbers yet. Feed it some first.")); return; }
     if (s.ga === R().a && s.gb === R().b) {
-      $("machine").classList.add("open");
+      $("machine").classList.add("open"); paintBox(0, 0, true);
       K.store.set("matte-solved", [...new Set([...solved(), R().id])]);
-      if (R().id === "r1" || R().id === "r2") tasks.complete(R().id);
-      else K.toast(K.t("Maskinen knäckt!", "Machine cracked!"));
-      if (RULES.every(r => solved().includes(r.id))) tasks.complete("alla");
       render();
+      K.status(K.t(`Locket lyfts. Regeln var ${ruleText(R().a, R().b)}.`, `The lid lifts. The rule was ${ruleText(R().a, R().b)}.`), "klar");
+      if (R().id === "r1" || R().id === "r2") tasks.complete(R().id);
+      if (RULES.every(r => solved().includes(r.id))) tasks.complete("alla");
     } else {
-      const wrong = s.tests.filter(t => s.ga * t.x + s.gb !== t.y).length;
-      K.toast(s.tests.length
-        ? K.t(`Inte riktigt. ${wrong} av ${s.tests.length} test stämmer inte.`, `Not quite. ${wrong} of ${s.tests.length} tests do not match.`)
-        : K.t("Testa några tal först.", "Try some numbers first."), "i");
-      $("machine").animate([{ transform: "translateX(0)" }, { transform: "translateX(-8px)" }, { transform: "translateX(6px)" }, { transform: "translateX(0)" }], { duration: 350 });
+      const ok = s.tests.filter(t => s.ga * t.x + s.gb === t.y).length;
+      K.status(K.t(`Din regel stämmer för ${ok} av ${s.tests.length} test. Locket sitter kvar.`, `Your rule matches ${ok} of ${s.tests.length} tests. The lid stays shut.`));
+      $("machine").animate([{ transform: "translateX(0)" }, { transform: "translateX(-6px)" }, { transform: "translateX(4px)" }, { transform: "translateX(0)" }], { duration: 300 });
     }
   });
-  K.onLang(render);
-  render();
+  K.onLang(() => { render(); describeIdle(); });
+  render(); describeIdle();
 })();
 </script>
 </body>

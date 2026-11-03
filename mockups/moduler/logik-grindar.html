@@ -6,57 +6,48 @@
 <title>Logikgrindar – Verkstan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
 <link rel="stylesheet" href="../shared/theme.css">
 <style>
   .board { user-select: none; touch-action: manipulation; }
-  .w { fill: none; stroke: var(--line); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; transition: stroke .3s var(--ease); }
-  .w.on { stroke: var(--domain); stroke-dasharray: 14 10; animation: flow .7s linear infinite; }
-  @keyframes flow { to { stroke-dashoffset: -24; } }
-  .gate { fill: var(--surface); stroke: var(--ink); stroke-width: 4; stroke-linejoin: round; transition: d .4s var(--ease); }
-  .gate-name { font-family: var(--font-display); font-weight: 800; font-size: 22px; fill: var(--ink); }
-  .sw-hit { cursor: pointer; outline: none; }
-  .sw-hit:focus-visible .sw-track { stroke: var(--ink); stroke-width: 4; }
-  .sw-track { fill: var(--surface-2); stroke: var(--line); stroke-width: 2; transition: fill .3s var(--ease); }
-  .sw.on .sw-track { fill: var(--domain); stroke: var(--domain); }
-  .sw-knob { fill: var(--surface); stroke: var(--ink); stroke-width: 2; transition: transform .3s var(--ease); }
-  .sw.on .sw-knob { transform: translateX(52px); }
-  .sw.disabled { opacity: .3; }
-  .sw-label { font-family: var(--font-display); font-weight: 800; font-size: 28px; fill: var(--ink); }
-  .bit { font-family: var(--font-data); font-size: 18px; fill: var(--ink-soft); }
-  .lamp { fill: var(--surface-2); stroke: var(--ink); stroke-width: 3; transition: fill .3s var(--ease); }
-  .lamp.on { fill: var(--c-el); }
-  .lamp-glow { fill: var(--c-el); opacity: 0; transition: opacity .4s var(--ease); }
-  .lamp-glow.on { opacity: .35; }
+  .w { fill: none; stroke: var(--linje); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; transition: stroke var(--lugn); }
+  .w.on { stroke: var(--aktiv); stroke-dasharray: 12 9; animation: flow .7s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -21; } }
+  .gate { fill: var(--ark); stroke: var(--grafit); stroke-width: 3.5; stroke-linejoin: round; }
+  .gate-name { font-family: var(--text); font-weight: 800; font-size: 22px; fill: var(--grafit); }
+  .sw { cursor: pointer; outline: none; }
+  .sw:focus-visible .sw-hus { stroke-width: 4; }
+  .sw-hus { fill: var(--ark); stroke: var(--grafit); stroke-width: 2.5; }
+  .sw-arm { fill: var(--grafit); transition: transform var(--lugn) var(--broms); transform-box: fill-box; transform-origin: center; transform: rotate(-12deg); }
+  .sw.on .sw-arm { fill: var(--aktiv); transform: rotate(12deg); }
+  .sw.disabled { opacity: .3; cursor: default; }
+  .sw-label { font-family: var(--text); font-weight: 800; font-size: 28px; fill: var(--grafit); }
+  .bit { font-family: var(--siffror); font-size: 18px; fill: var(--blyerts); }
+  .lamp { fill: var(--ark); stroke: var(--grafit); stroke-width: 3; transition: fill var(--lugn); }
+  .lamp.on { fill: var(--aktiv); }
+  .lamp-glow { fill: var(--aktiv); opacity: 0; transition: opacity var(--lugn); }
+  .lamp-glow.on { opacity: .22; }
+  .lamp-glow.blink { animation: blink .6s var(--broms); }
+  @keyframes blink { 40% { opacity: .6; } }
 
-  .gates { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+  .gates { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
   @media (max-width: 560px) { .gates { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  .gate-btn {
-    display: grid; justify-items: center; gap: 4px; padding: 10px 6px 8px; cursor: pointer;
-    border-radius: var(--r-m); border: 2px solid var(--line); background: var(--surface);
-    transition: border-color .3s var(--ease), background .3s var(--ease), transform .15s;
-  }
-  .gate-btn:active { transform: scale(.97); }
-  .gate-btn svg { width: 64px; height: 40px; }
-  .gate-btn path, .gate-btn circle { fill: none; stroke: var(--ink); stroke-width: 3; }
-  .gate-btn b { font-family: var(--font-display); font-size: var(--fs-s); }
-  .gate-btn small { font-size: var(--fs-xs); color: var(--ink-soft); }
-  .gate-btn[aria-pressed="true"] { border-color: var(--domain); background: color-mix(in srgb, var(--domain) 10%, var(--surface)); }
+  .gate-btn { display: grid; justify-items: center; gap: 2px; padding: 10px 6px; cursor: pointer; border-radius: 6px; border: 1px solid var(--linje); background: var(--ark); }
+  .gate-btn:hover { border-color: var(--grafit); }
+  .gate-btn svg { width: 56px; height: 36px; }
+  .gate-btn path, .gate-btn circle { fill: none; stroke: var(--grafit); stroke-width: 2.5; }
+  .gate-btn b { font-size: 16px; }
+  .gate-btn small { font-size: var(--fs-liten); color: var(--blyerts); }
+  .gate-btn[aria-pressed="true"] { border: 2px solid var(--grafit); background: color-mix(in srgb, var(--aktiv) 10%, var(--ark)); }
 
-  .truth { width: 100%; border-collapse: separate; border-spacing: 0 6px; }
-  .truth th { font-size: var(--fs-xs); color: var(--ink-soft); font-weight: 400; text-align: center; }
-  .truth td { text-align: center; padding: 6px; background: var(--surface-2); transition: background .4s var(--ease); }
-  .truth td:first-child { border-radius: var(--r-s) 0 0 var(--r-s); }
-  .truth td:last-child { border-radius: 0 var(--r-s) var(--r-s) 0; }
-  .truth tr.now td { background: color-mix(in srgb, var(--domain) 18%, var(--surface)); }
-  .led { display: inline-block; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); vertical-align: middle; }
-  .led.on { background: var(--domain); border-color: var(--domain); }
-  .led.lamp-on { background: var(--c-el); border-color: var(--c-el); box-shadow: 0 0 10px var(--c-el); }
-  .unknown { font-family: var(--font-data); color: var(--ink-soft); }
-  .riddle { border: 2px solid var(--domain); }
-  .riddle h3 { font-size: var(--fs-m); margin: 4px 0 6px; }
-  .riddle p { font-size: var(--fs-s); color: var(--ink-soft); }
-  .riddle .solved { color: var(--ok); font-weight: 700; margin-top: 8px; }
+  .truth { width: 100%; border-collapse: collapse; }
+  .truth th { font-size: var(--fs-liten); color: var(--blyerts); font-weight: 400; padding: 4px; }
+  .truth td { text-align: center; padding: 7px 4px; border-top: 1px solid var(--rutnat); }
+  .truth tr.now td { background: color-mix(in srgb, var(--aktiv) 10%, var(--ark)); }
+  .led { display: inline-block; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--grafit); vertical-align: -2px; margin-right: 6px; }
+  .led.on { background: var(--aktiv); border-color: var(--aktiv); }
+  .unknown { font-family: var(--siffror); color: var(--blyerts); }
+  #hw-a, #hw-b { cursor: pointer; }
 </style>
 </head>
 <body data-domain="logik">
@@ -64,39 +55,42 @@
 
 <main class="module">
   <section class="stage">
-    <svg class="board" viewBox="0 0 800 400" role="img" aria-label="Två brytare kopplade via en logikgrind till en lampa" data-aria-en="Two switches connected through a logic gate to a lamp">
-      <path id="wa" class="w" d=""/>
-      <path id="wb" class="w" d=""/>
-      <path id="wo" class="w" d="M462,200 H650"/>
+    <div class="scen">
+      <svg class="board" viewBox="0 0 800 400" role="img" aria-label="Två brytare kopplade via en logikgrind till en lampa" data-aria-en="Two switches connected through a logic gate to a lamp">
+        <path id="wa" class="w" d=""/>
+        <path id="wb" class="w" d=""/>
+        <path id="wo" class="w" d="M462,200 H650"/>
+        <g id="swA" class="sw" tabindex="0" role="switch" aria-checked="false" aria-label="Brytare A" data-aria-en="Switch A">
+          <text class="sw-label" x="40" y="125">A</text>
+          <rect class="sw-hus" x="80" y="88" width="110" height="54" rx="8"/>
+          <rect class="sw-arm" x="100" y="102" width="70" height="26" rx="5"/>
+          <text class="bit" id="bitA" x="135" y="170" text-anchor="middle">0</text>
+        </g>
+        <g id="swB" class="sw" tabindex="0" role="switch" aria-checked="false" aria-label="Brytare B" data-aria-en="Switch B">
+          <text class="sw-label" x="40" y="305">B</text>
+          <rect class="sw-hus" x="80" y="268" width="110" height="54" rx="8"/>
+          <rect class="sw-arm" x="100" y="282" width="70" height="26" rx="5"/>
+          <text class="bit" id="bitB" x="135" y="350" text-anchor="middle">0</text>
+        </g>
+        <path id="gate" class="gate" d=""/>
+        <path id="gate-extra" class="gate" d="" style="fill:none"/>
+        <circle id="gate-bubble" class="gate" cx="452" cy="200" r="8" style="display:none"/>
+        <text id="gate-name" class="gate-name" x="395" y="305" text-anchor="middle"></text>
+        <circle id="glow" class="lamp-glow" cx="690" cy="200" r="78"/>
+        <circle id="lamp" class="lamp" cx="690" cy="200" r="38"/>
+        <path d="M676 200 l7 -10 l7 10 l7 -10" fill="none" stroke="var(--grafit)" stroke-width="2.5"/>
+        <text class="bit" id="bitO" x="690" y="272" text-anchor="middle">0</text>
+      </svg>
+    </div>
+    <p class="status" aria-live="polite" role="status"></p>
 
-      <g id="swA" class="sw sw-hit" tabindex="0" role="switch" aria-checked="false" aria-label="Brytare A" data-aria-en="Switch A">
-        <text class="sw-label" x="40" y="120">A</text>
-        <rect class="sw-track" x="80" y="90" width="110" height="50" rx="25"/>
-        <circle class="sw-knob" cx="110" cy="115" r="19"/>
-        <text class="bit" id="bitA" x="135" y="168" text-anchor="middle">0</text>
-      </g>
-      <g id="swB" class="sw sw-hit" tabindex="0" role="switch" aria-checked="false" aria-label="Brytare B" data-aria-en="Switch B">
-        <text class="sw-label" x="40" y="300">B</text>
-        <rect class="sw-track" x="80" y="270" width="110" height="50" rx="25"/>
-        <circle class="sw-knob" cx="110" cy="295" r="19"/>
-        <text class="bit" id="bitB" x="135" y="348" text-anchor="middle">0</text>
-      </g>
+    <div>
+      <p class="liten" style="margin-bottom:6px" data-en="Choose a gate">Välj grind</p>
+      <div class="gates" id="gates"></div>
+    </div>
 
-      <path id="gate" class="gate" d=""/>
-      <path id="gate-extra" class="gate" d="" style="fill:none"/>
-      <circle id="gate-bubble" class="gate" cx="452" cy="200" r="8" style="display:none"/>
-      <text id="gate-name" class="gate-name" x="395" y="305" text-anchor="middle"></text>
-
-      <circle id="glow" class="lamp-glow" cx="690" cy="200" r="80"/>
-      <circle id="lamp" class="lamp" cx="690" cy="200" r="40"/>
-      <path d="M676 200 l7 -10 l7 10 l7 -10" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
-      <text class="bit" id="bitO" x="690" y="275" text-anchor="middle">0</text>
-    </svg>
-
-    <div class="gates" id="gates"></div>
-
-    <div class="card" style="margin-top:14px; box-shadow:none; background:var(--surface-2)">
-      <div class="eyebrow" style="margin-bottom:4px" data-en="Truth table · fills in as you test">Sanningstabell · fylls i när du testar</div>
+    <div>
+      <p class="liten" data-en="Truth table. It fills in as you test.">Sanningstabell. Den fylls i när du testar.</p>
       <table class="truth" id="truth">
         <thead><tr><th>A</th><th>B</th><th data-en="Lamp">Lampa</th></tr></thead>
         <tbody></tbody>
@@ -105,76 +99,84 @@
   </section>
 
   <aside class="panel">
-    <div class="card mission" id="mission">
-      <div class="eyebrow" data-en="Digital logic · ~10 min">Digital logik · ~10 min</div>
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Digital logic, about 10 minutes">Digital logik, ungefär 10 minuter</p>
       <h2 data-en="Yes, no and the lamp">Ja, nej och lampan</h2>
-      <p class="lead" data-en="Flip the switches. Pick a gate. Watch the lamp.">Slå på brytarna. Välj en grind. Titta på lampan.</p>
+      <p class="lead" data-en="Flip the switches and choose a gate. The lamp shows the answer.">Slå på brytarna och välj en grind. Lampan visar svaret.</p>
     </div>
 
-    <div class="card riddle" id="riddle"></div>
+    <div id="riddle"></div>
 
-    <details class="card why">
+    <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="<strong>A gate is a tiny decision.</strong> It looks at its inputs and answers yes (1) or no (0).">
-          <strong>En grind är ett litet beslut.</strong> Den tittar på det som kommer in och svarar ja (1) eller nej (0).</p>
-        <p data-en="<strong>AND</strong> needs both. <strong>OR</strong> needs at least one. <strong>XOR</strong> needs exactly one. <strong>NOT</strong> flips.">
-          <strong>OCH</strong> kräver båda. <strong>ELLER</strong> räcker med en. <strong>ANTINGEN</strong> kräver exakt en. <strong>INTE</strong> vänder på svaret.</p>
-        <p data-en="Your phone holds billions of gates like these. Together they can add numbers, show pictures and play music.">
-          Din mobil innehåller miljarder sådana grindar. Tillsammans kan de räkna, visa bilder och spela musik.</p>
+        <p data-en="A gate is a tiny decision. It looks at what comes in and answers yes (1) or no (0).">En grind är ett litet beslut. Den tittar på det som kommer in och svarar ja (1) eller nej (0).</p>
+        <p data-en="AND needs both. OR needs at least one. XOR needs exactly one. NOT flips the answer.">OCH kräver båda. ELLER räcker med en. ANTINGEN kräver exakt en. INTE vänder på svaret.</p>
+        <p data-en="A phone holds billions of gates like these. Put together in the right order they add numbers and draw pictures.">En mobil innehåller miljarder sådana grindar. Kopplade i rätt ordning räknar de och ritar bilder.</p>
       </div>
     </details>
-    <p class="mock-note" data-en="Mock-up. A whole-room version: every participant is one gate on their phone, and the room computes 1 + 1 together.">Mockup. En helrumsversion: varje deltagare är en grind i sin mobil, och rummet räknar ut 1 + 1 tillsammans.</p>
+
+    <div id="lada"></div>
+
+    <div>
+      <h3 style="font-size:var(--fs-r3)" data-en="With the whole room">Med hela rummet</h3>
+      <p class="liten" style="margin-top:6px" data-en="Every participant is one gate on their phone. The arrows on the big screen are the wires, and together the room adds 1 + 1.">Varje deltagare är en grind i sin mobil. Pilarna på storskärmen är sladdarna, och tillsammans räknar rummet ut 1 + 1.</p>
+    </div>
   </aside>
 </main>
 
 <script src="../shared/kit.js"></script>
 <script>
 (() => {
+  const $ = id => document.getElementById(id);
   const GATES = {
-    and: { sv: "OCH", en: "AND", fn: (a, b) => a && b, two: true,
-           desc: { sv: "båda", en: "both" },
-           d: "M340,140 H400 A60,60 0 0 1 400,260 H340 Z" },
-    or:  { sv: "ELLER", en: "OR", fn: (a, b) => a || b, two: true,
-           desc: { sv: "minst en", en: "at least one" },
-           d: "M332,140 Q368,200 332,260 Q420,260 462,200 Q420,140 332,140 Z" },
-    xor: { sv: "ANTINGEN", en: "XOR", fn: (a, b) => a !== b, two: true,
-           desc: { sv: "exakt en", en: "exactly one" },
-           d: "M340,140 Q376,200 340,260 Q428,260 462,200 Q428,140 340,140 Z", extra: "M322,140 Q358,200 322,260" },
-    not: { sv: "INTE", en: "NOT", fn: a => !a, two: false,
-           desc: { sv: "vänder", en: "flips" },
-           d: "M345,150 L440,200 L345,250 Z", bubble: true }
+    and: { sv: "OCH", en: "AND", fn: (a, b) => a && b, two: true, desc: { sv: "båda", en: "both" }, d: "M340,140 H400 A60,60 0 0 1 400,260 H340 Z" },
+    or:  { sv: "ELLER", en: "OR", fn: (a, b) => a || b, two: true, desc: { sv: "minst en", en: "at least one" }, d: "M332,140 Q368,200 332,260 Q420,260 462,200 Q420,140 332,140 Z" },
+    xor: { sv: "ANTINGEN", en: "XOR", fn: (a, b) => a !== b, two: true, desc: { sv: "exakt en", en: "exactly one" }, d: "M340,140 Q376,200 340,260 Q428,260 462,200 Q428,140 340,140 Z", extra: "M322,140 Q358,200 322,260" },
+    not: { sv: "INTE", en: "NOT", fn: a => !a, two: false, desc: { sv: "vänder", en: "flips" }, d: "M345,150 L440,200 L345,250 Z", bubble: true }
   };
   const ICONS = {
-    and: '<path d="M10,6 H32 A14,14 0 0 1 32,34 H10 Z"/>',
-    or:  '<path d="M8,6 Q18,20 8,34 Q38,34 54,20 Q38,6 8,6 Z"/>',
-    xor: '<path d="M12,6 Q22,20 12,34 Q42,34 56,20 Q42,6 12,6 Z"/><path d="M5,6 Q15,20 5,34"/>',
-    not: '<path d="M14,6 L46,20 L14,34 Z"/><circle cx="51" cy="20" r="4"/>'
+    and: '<path d="M10,5 H30 A15,15 0 0 1 30,35 H10 Z"/>',
+    or:  '<path d="M8,5 Q18,20 8,35 Q36,35 52,20 Q36,5 8,5 Z"/>',
+    xor: '<path d="M12,5 Q22,20 12,35 Q40,35 54,20 Q40,5 12,5 Z"/><path d="M5,5 Q15,20 5,35"/>',
+    not: '<path d="M14,5 L44,20 L14,35 Z"/><circle cx="49" cy="20" r="4"/>'
   };
   const RIDDLES = [
-    { id: "kassa", gate: "and",
-      title: { sv: "Kassaskåpet", en: "The safe" },
-      text: { sv: "Två vakter har var sin nyckel. Skåpet ska bara öppnas när båda vrider om.", en: "Two guards have one key each. The safe should open only when both turn their key." } },
-    { id: "trappa", gate: "xor",
-      title: { sv: "Trappljuset", en: "The stair light" },
-      text: { sv: "En brytare längst ner och en högst upp. Lampan ska lysa när exakt en är på.", en: "One switch downstairs and one upstairs. The lamp should be on when exactly one is on." } }
+    { id: "kassa", gate: "and", title: { sv: "Kassaskåpet", en: "The safe" },
+      text: { sv: "Två vakter har varsin nyckel. Skåpet ska bara gå upp när båda vrider om.", en: "Two guards have one key each. The safe should only open when both keys are turned." } },
+    { id: "trappa", gate: "xor", title: { sv: "Trappljuset", en: "The stair light" },
+      text: { sv: "En brytare nere och en uppe. Lampan ska lysa när exakt en av dem är på.", en: "One switch downstairs and one upstairs. The lamp should be on when exactly one of them is on." } }
   ];
 
   const state = { a: false, b: false, gate: "and", seen: new Set() };
-  const tasks = K.tasks(document.getElementById("mission"), "logik", [
+  const tasks = K.tasks($("mission"), "logik", [
     { id: "tand",   text: { sv: "Tänd lampan", en: "Turn on the lamp" } },
     { id: "tabell", text: { sv: "Fyll hela sanningstabellen", en: "Fill the whole truth table" }, hint: { sv: "Prova alla fyra lägen.", en: "Try all four combinations." } },
     { id: "kassa",  text: { sv: "Lös gåtan om kassaskåpet", en: "Solve the safe riddle" } },
     { id: "trappa", text: { sv: "Lös gåtan om trappljuset", en: "Solve the stair light riddle" } }
-  ]);
+  ], { onComplete: () => { const g = $("glow"); g.classList.remove("blink"); void g.getBBox(); g.classList.add("blink"); } });
 
-  const $ = id => document.getElementById(id);
+  /* låda: Pico W med två stora knappar och en lysdiod. Knapparna på ritningen går att trycka på. */
+  K.lada($("lada"), {
+    nod: "nod-02",
+    delar: { sv: "Pico W, två arkadknappar, en lysdiod. Tryck på knapparna i ritningen.", en: "Pico W, two arcade buttons, one LED. Press the buttons in the drawing." },
+    svg: `<svg viewBox="0 0 300 140" role="img" aria-label="Låda med knapparna A och B och en lampa">
+      <rect x="10" y="14" width="280" height="116" rx="10" fill="var(--logik)"/>
+      <rect x="18" y="8" width="264" height="108" rx="8" fill="var(--grafit)"/>
+      <g id="hw-a"><circle cx="70" cy="58" r="24" fill="var(--pa-grafit)"/><circle id="hw-a-in" cx="70" cy="58" r="16" fill="var(--rutnat)"/></g>
+      <g id="hw-b"><circle cx="140" cy="58" r="24" fill="var(--pa-grafit)"/><circle id="hw-b-in" cx="140" cy="58" r="16" fill="var(--rutnat)"/></g>
+      <circle id="hw-glow" cx="228" cy="58" r="30" fill="var(--logik)" opacity="0"/>
+      <circle id="hw-led" class="hw-led" cx="228" cy="58" r="14"/>
+      <text class="hw-text-ljus" x="66" y="104">A</text><text class="hw-text-ljus" x="136" y="104">B</text>
+      <text class="hw-text-ljus" x="250" y="104" text-anchor="end">02</text>
+    </svg>`
+  });
+
   const out = () => GATES[state.gate].fn(state.a, state.b);
   const key = (a, b) => (a ? 1 : 0) + "" + (b ? 1 : 0);
 
   function wires() {
-    const g = GATES[state.gate];
-    if (g.two) {
+    if (GATES[state.gate].two) {
       $("wa").setAttribute("d", "M190,115 H290 Q300,115 300,125 V170 Q300,175 310,175 H345");
       $("wb").setAttribute("d", "M190,295 H290 Q300,295 300,285 V230 Q300,225 310,225 H345");
     } else {
@@ -182,7 +184,6 @@
       $("wb").setAttribute("d", "M190,295 H240");
     }
   }
-
   function renderGatePicker() {
     const wrap = $("gates"); wrap.innerHTML = "";
     Object.entries(GATES).forEach(([k, g]) => {
@@ -193,20 +194,16 @@
       wrap.append(b);
     });
   }
-
   function renderTruth() {
     const g = GATES[state.gate];
     const tb = $("truth").querySelector("tbody"); tb.innerHTML = "";
-    const rows = g.two ? [[0,0],[0,1],[1,0],[1,1]] : [[0,null],[1,null]];
+    const rows = g.two ? [[0, 0], [0, 1], [1, 0], [1, 1]] : [[0, null], [1, null]];
     rows.forEach(([a, b]) => {
-      const tr = document.createElement("tr");
       const k = g.two ? key(a, b) : key(a, false);
-      const isNow = (!!a === state.a) && (b === null || !!b === state.b);
-      if (isNow) tr.className = "now";
-      const known = state.seen.has(k);
-      const o = g.fn(!!a, !!b);
-      const led = (v, cls = "on") => `<span class="led ${v ? cls : ""}"></span> <span class="mono">${v ? 1 : 0}</span>`;
-      tr.innerHTML = `<td>${led(a)}</td><td>${b === null ? "–" : led(b)}</td><td>${known ? led(o, "lamp-on") : '<span class="unknown">?</span>'}</td>`;
+      const tr = document.createElement("tr");
+      if (!!a === state.a && (b === null || !!b === state.b)) tr.className = "now";
+      const led = v => `<span class="led ${v ? "on" : ""}"></span><span class="siffra">${v ? 1 : 0}</span>`;
+      tr.innerHTML = `<td>${led(a)}</td><td>${b === null ? "–" : led(b)}</td><td>${state.seen.has(k) ? led(g.fn(!!a, !!b)) : '<span class="unknown">?</span>'}</td>`;
       tb.append(tr);
     });
     return rows.every(([a, b]) => state.seen.has(g.two ? key(a, b) : key(a, false)));
@@ -217,19 +214,22 @@
     while (riddleIdx < RIDDLES.length && tasks.isDone(RIDDLES[riddleIdx].id)) riddleIdx++;
     const box = $("riddle");
     if (riddleIdx >= RIDDLES.length) {
-      box.innerHTML = `<div class="eyebrow">${K.t("Gåtor", "Riddles")}</div><h3>${K.t("Alla gåtor lösta!", "All riddles solved!")}</h3><p>${K.t("Du tänker redan som en datorkonstruktör.", "You already think like a chip designer.")}</p>`;
+      box.innerHTML = `<h3 style="font-size:var(--fs-r3)">${K.t("Båda gåtorna är lösta", "Both riddles are solved")}</h3><p class="liten" style="margin-top:6px">${K.t("OCH öppnar kassaskåpet och ANTINGEN styr trappljuset.", "AND opens the safe and XOR runs the stair light.")}</p>`;
       return;
     }
     const r = RIDDLES[riddleIdx];
-    const right = state.gate === r.gate;
-    box.innerHTML = `<div class="eyebrow">${K.t("Gåta", "Riddle")} ${riddleIdx + 1}/${RIDDLES.length}</div>
-      <h3>${K.t(r.title)}</h3><p>${K.t(r.text)}</p>
-      <p class="hint" style="margin-top:8px">${K.t("Välj en grind och testa alla lägen för att bevisa det.", "Pick a gate and test every combination to prove it.")}</p>`;
-    if (right && complete) {
-      tasks.complete(r.id);
-      riddleIdx++;
-      setTimeout(() => renderRiddle(false), 1200);
-    }
+    box.innerHTML = `<p class="liten">${K.t("Gåta", "Riddle")} ${riddleIdx + 1} ${K.t("av", "of")} ${RIDDLES.length}</p>
+      <h3 style="font-size:var(--fs-r3); margin-top:2px">${K.t(r.title)}</h3><p style="margin-top:6px">${K.t(r.text)}</p>
+      <p class="liten" style="margin-top:8px">${K.t("Välj en grind och testa alla fyra lägen för att visa att den stämmer.", "Choose a gate and test all four combinations to show it fits.")}</p>`;
+    if (state.gate === r.gate && complete) { tasks.complete(r.id); riddleIdx++; setTimeout(() => renderRiddle(false), 1000); }
+  }
+
+  function describe(o) {
+    const g = GATES[state.gate];
+    const A = state.a ? K.t("på", "on") : K.t("av", "off"), B = state.b ? K.t("på", "on") : K.t("av", "off");
+    const L = o ? K.t("Lampan lyser.", "The lamp is on.") : K.t("Lampan är släckt.", "The lamp is off.");
+    K.status(g.two ? K.t(`A är ${A}, B är ${B}. ${K.t(g)} ger ${o ? 1 : 0}. ${L}`, `A is ${A}, B is ${B}. ${K.t(g)} gives ${o ? 1 : 0}. ${L}`)
+                   : K.t(`A är ${A}. INTE ger ${o ? 1 : 0}. ${L}`, `A is ${A}. NOT gives ${o ? 1 : 0}. ${L}`));
   }
 
   function render() {
@@ -249,20 +249,24 @@
     $("gate-bubble").style.display = g.bubble ? "" : "none";
     $("wo").setAttribute("d", g.bubble ? "M460,200 H650" : "M462,200 H650");
     $("gate-name").textContent = K.t(g);
+    // lådan
+    $("hw-a-in").setAttribute("fill", state.a ? "var(--logik)" : "var(--rutnat)");
+    $("hw-b-in").setAttribute("fill", state.b && g.two ? "var(--logik)" : "var(--rutnat)");
+    $("hw-led").classList.toggle("pa", o); $("hw-glow").setAttribute("opacity", o ? .35 : 0);
     renderGatePicker();
     const complete = renderTruth();
+    describe(o);
     if (o) tasks.complete("tand");
     if (complete && g.two) tasks.complete("tabell");
     renderRiddle(complete && g.two);
   }
 
-  function bindSwitch(id, prop) {
+  function flip(prop) { if (prop === "b" && !GATES[state.gate].two) return; state[prop] = !state[prop]; render(); }
+  [["swA", "a"], ["swB", "b"], ["hw-a", "a"], ["hw-b", "b"]].forEach(([id, prop]) => {
     const el = $(id);
-    const flip = () => { if (prop === "b" && !GATES[state.gate].two) return; state[prop] = !state[prop]; render(); };
-    el.addEventListener("click", flip);
-    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
-  }
-  bindSwitch("swA", "a"); bindSwitch("swB", "b");
+    el.addEventListener("click", () => flip(prop));
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(prop); } });
+  });
   K.onLang(render);
   render();
 })();
