@@ -67,11 +67,6 @@
   .mod .mätare { height: 4px; border-radius: 2px; background: var(--rutnat); overflow: hidden; }
   .mod .mätare i { display: block; height: 100%; background: var(--aktiv); }
 
-  .ideer { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 28px; margin: 0; }
-  .ideer div { padding: 12px 0; border-top: 1px solid var(--rutnat); display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 2px 12px; }
-  .ideer i { width: 8px; height: 8px; border-radius: 50%; background: var(--aktiv); margin-top: 8px; grid-row: span 2; }
-  .ideer dt { font-weight: 700; }
-  .ideer dd { margin: 0; font-size: var(--fs-liten); color: var(--blyerts); }
 
   .leda { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: center; }
   @media (max-width: 640px) { .leda { grid-template-columns: minmax(0, 1fr); } }
@@ -100,11 +95,11 @@
 <main class="wrap">
   <section class="hero">
     <div>
-      <h1 data-en="Seven workshops about the technology around you">Sju verkstäder om tekniken omkring dig</h1>
-      <p class="lead" data-en="Each one takes 10–15 minutes and starts with something to try. No prior knowledge needed.">Varje verkstad tar 10–15 minuter och börjar med något att prova. Inga förkunskaper behövs.</p>
+      <h1 data-en="Workshops about the technology around you">Verkstäder om tekniken omkring dig</h1>
+      <p class="lead" data-en="10–15 minutes each. No prior knowledge needed.">10–15 minuter var. Inga förkunskaper behövs.</p>
       <form class="entry" id="entry">
         <div class="falt">
-          <label for="nick" data-en="Nickname, shown to others in the room">Smeknamn, syns för andra i rummet</label>
+          <label for="nick" data-en="Nickname">Smeknamn</label>
           <div class="rad">
             <input id="nick" maxlength="24" autocomplete="off">
             <button class="tarning" id="dice" type="button" aria-label="Slumpa ett nytt smeknamn" data-aria-en="Pick a new random nickname">
@@ -113,41 +108,33 @@
           </div>
         </div>
         <div class="falt">
-          <label for="code" data-en="Room code, if the leader has given you one">Rumskod, om ledaren har gett er en</label>
+          <label for="code" data-en="Room code">Rumskod</label>
           <div class="rad">
             <input id="code" class="kod" maxlength="7" placeholder="VERK-42" autocomplete="off" spellcheck="false">
             <button class="btn" type="submit" data-en="Join">Gå med</button>
           </div>
         </div>
-        <p class="liten" data-en="Without a code you work on your own, and progress is saved in this browser.">Utan kod kör du på egen hand, och framstegen sparas i den här webbläsaren.</p>
       </form>
     </div>
 
     <div class="karta">
       <div class="scen">
-        <svg id="map" viewBox="0 0 540 420" role="img" aria-label="Karta över hur de sju ämnena hänger ihop" data-aria-en="Map of how the seven subjects connect"></svg>
+        <svg id="map" viewBox="0 0 540 420" role="img" aria-label="Karta över hur ämnena hänger ihop" data-aria-en="Map of how the subjects connect"></svg>
       </div>
-      <p class="liten" data-en="The ring around each subject shows how far you have come. Point at a subject to see what it connects to.">Ringen runt varje ämne visar hur långt du har kommit. Peka på ett ämne för att se vad det hänger ihop med.</p>
+      <p class="liten" data-en="The ring shows how far you have come.">Ringen visar hur långt du har kommit.</p>
     </div>
   </section>
 
   <div class="rubrik">
     <h2 data-en="Workshops">Verkstäder</h2>
-    <p data-en="Do them in any order.">Gör dem i vilken ordning du vill.</p>
   </div>
   <div class="grid" id="mods"></div>
-
-  <div class="rubrik">
-    <h2 data-en="On the drawing board">På ritbordet</h2>
-    <p data-en="Ideas from the exercise bank, not built yet.">Idéer ur övningsbanken, inte byggda än.</p>
-  </div>
-  <dl class="ideer" id="ideas"></dl>
 
   <div class="rubrik" style="display:block">
     <section class="leda">
       <div>
         <h2 style="font-size:var(--fs-r2)" data-en="Leading a workshop">Leda en workshop</h2>
-        <p data-en="Open a room, show the code on the big screen and follow how the room is doing. From the same view you pair the boxes on the tables with the workshops.">Öppna ett rum, visa koden på storskärmen och följ hur det går. I samma vy kopplar du lådorna på borden till verkstäderna.</p>
+        <p data-en="Open a room, show the code and follow how it goes.">Öppna ett rum, visa koden och följ hur det går.</p>
       </div>
       <div class="knappar">
         <a class="btn" href="rum.html" data-en="Open the room view">Öppna rumsvyn</a>
@@ -156,14 +143,13 @@
     </section>
   </div>
 
-  <footer data-en="Verkstan, mock-up for discussion. Nothing is sent anywhere; progress stays in this browser.">Verkstan, mockup för diskussion. Inget skickas någonstans, framstegen stannar i den här webbläsaren.</footer>
+  <footer data-en="Mock-up. Progress is saved in this browser only.">Mockup. Framstegen sparas bara i den här webbläsaren.</footer>
 </main>
 
 <script src="shared/kit.js"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
-  // linjeikoner, ritade med samma tjocklek som resten av gränssnittet
   const ICON = {
     el: '<path d="M9 16.5a5 5 0 1 1 6 0V19H9z"/><path d="M9.5 22h5"/>',
     logik: '<path d="M5 6h6a6 6 0 0 1 0 12H5z"/><path d="M2 9h3M2 15h3M17 12h5"/>',
@@ -173,38 +159,27 @@
     kod: '<rect x="4" y="6" width="16" height="13" rx="3"/><path d="M12 6V3M9 12.5h.01M15 12.5h.01"/>',
     matte: '<path d="M4 3v17h17"/><path d="M7 16 19 6"/>'
   };
+  const M = (id, dom, file, tasks, min, nod, area, title, text, desktop) => ({ id, dom, file: "moduler/" + file + ".html", tasks, min, nod, area, title, text, desktop });
+  const OMR = {
+    el: { sv: "Ellära", en: "Electricity" }, logik: { sv: "Digital logik", en: "Digital logic" }, signal: { sv: "Signalteknik", en: "Signals" },
+    ai: { sv: "AI", en: "AI" }, nat: { sv: "Nätverk", en: "Networks" }, kod: { sv: "Mjukvara", en: "Software" }, matte: { sv: "Matematik", en: "Mathematics" }
+  };
   const MODS = [
-    { id: "el-krets", dom: "el", file: "moduler/el-krets.html", tasks: 5, min: 10, nod: "nod-01", devices: "all",
-      area: { sv: "Ellära", en: "Electricity" }, title: { sv: "Strömkretsen", en: "The circuit" },
-      text: { sv: "Batterier, ett motstånd och en lampa. Hitta läget där lampan lyser utan att gå sönder.", en: "Batteries, a resistor and a bulb. Find the point where the bulb shines without burning out." } },
-    { id: "logik", dom: "logik", file: "moduler/logik-grindar.html", tasks: 4, min: 10, nod: "nod-02", devices: "all",
-      area: { sv: "Digital logik", en: "Digital logic" }, title: { sv: "Logikgrindar", en: "Logic gates" },
-      text: { sv: "Två strömbrytare och en lampa. Så fattar en dator sina minsta beslut.", en: "Two switches and a lamp. How a computer makes its smallest decisions." } },
-    { id: "signal", dom: "signal", file: "moduler/signal-vagor.html", tasks: 4, min: 12, nod: "nod-03", devices: "desktop",
-      area: { sv: "Signalteknik", en: "Signals" }, title: { sv: "Ljudvågor", en: "Sound waves" },
-      text: { sv: "Se ljudet som en linje, blanda två vågor och släck en ton med en motvåg.", en: "See sound as a line, mix two waves and cancel a note with a counter-wave." } },
-    { id: "ai", dom: "ai", file: "moduler/ai-sortera.html", tasks: 4, min: 12, nod: "nod-04", devices: "all",
-      area: { sv: "AI och maskininlärning", en: "AI and machine learning" }, title: { sv: "Fruktsorteraren", en: "The fruit sorter" },
-      text: { sv: "Lär en maskin att skilja citroner från äpplen, och se vad som händer med skeva exempel.", en: "Teach a machine to tell lemons from apples, and see what lopsided examples do." } },
-    { id: "natverk", dom: "nat", file: "moduler/natverk-paket.html", tasks: 4, min: 10, nod: "nod-05", devices: "all",
-      area: { sv: "Nätverk", en: "Networks" }, title: { sv: "Paketresan", en: "Packet tour" },
-      text: { sv: "Skicka ett meddelande genom sju hus, klipp kablar och se paketen hitta nya vägar.", en: "Send a message through seven houses, cut cables and watch the packets find new ways." } },
-    { id: "robot", dom: "kod", file: "moduler/robot-kod.html", tasks: 4, min: 15, nod: "nod-06", devices: "all",
-      area: { sv: "Mjukvara", en: "Software" }, title: { sv: "Robotens väg", en: "The robot's path" },
-      text: { sv: "Lägg block i rätt ordning så att roboten når stjärnan. Leta upp blocket där det går fel.", en: "Put blocks in the right order so the robot reaches the star. Find the block where it goes wrong." } },
-    { id: "matte", dom: "matte", file: "moduler/matte-maskin.html", tasks: 4, min: 10, nod: "nod-07", devices: "all",
-      area: { sv: "Matematik", en: "Mathematics" }, title: { sv: "Funktionsmaskinen", en: "The function machine" },
-      text: { sv: "Stoppa in tal, se vad som kommer ut och lista ut regeln i maskinen.", en: "Put numbers in, see what comes out and work out the rule inside." } }
-  ];
-  const IDEAS = [
-    { dom: "el", t: { sv: "Bygg en ficklampa", en: "Build a torch" }, d: { sv: "Seriellt och parallellt, med riktiga batterihållare på bordet", en: "Series and parallel, with real battery holders on the table" } },
-    { dom: "logik", t: { sv: "Rummet räknar binärt", en: "The room counts in binary" }, d: { sv: "Åtta personer håller upp mobilen som var sin lampa", en: "Eight people hold up their phones as one lamp each" } },
-    { dom: "signal", t: { sv: "Pixlar och färger", en: "Pixels and colours" }, d: { sv: "Zooma in en bild tills den blir siffror", en: "Zoom into a picture until it turns into numbers" } },
-    { dom: "ai", t: { sv: "Vad är en språkmodell?", en: "What is a language model?" }, d: { sv: "Rummet gissar nästa ord i en mening, ett ord i taget", en: "The room guesses the next word in a sentence, one word at a time" } },
-    { dom: "nat", t: { sv: "Hemliga meddelanden", en: "Secret messages" }, d: { sv: "Kryptering förklarad med färger som blandas", en: "Encryption explained with mixing colours" } },
-    { dom: "kod", t: { sv: "Sortera som en dator", en: "Sort like a computer" }, d: { sv: "Lag sorterar kort med olika metoder och tar tid", en: "Teams sort cards with different methods and time it" } },
-    { dom: "matte", t: { sv: "Sannolikhetens rum", en: "The room of chance" }, d: { sv: "75 tärningskast blir en kurva på storskärmen", en: "75 dice rolls become a curve on the big screen" } },
-    { dom: "el", t: { sv: "Vad drar mest ström?", en: "What uses the most power?" }, d: { sv: "Mät laddare, lampor och en vattenkokare med en energimätare", en: "Measure chargers, lamps and a kettle with an energy meter" } }
+    M("el-krets", "el", "el-krets", 5, 10, "nod-01", OMR.el, { sv: "Strömkretsen", en: "The circuit" }, { sv: "Få lampan att lysa utan att den går sönder.", en: "Light the bulb without burning it out." }),
+    M("ficklampa", "el", "el-ficklampa", 4, 10, null, OMR.el, { sv: "Ficklampan", en: "The torch" }, { sv: "Batterier och lampor i rad eller bredvid.", en: "Batteries and bulbs in a row or side by side." }),
+    M("energi", "el", "el-energi", 4, 10, null, OMR.el, { sv: "Vad drar mest?", en: "What uses most?" }, { sv: "Mät saker hemma och se vad de kostar.", en: "Measure household things and see what they cost." }),
+    M("logik", "logik", "logik-grindar", 4, 10, "nod-02", OMR.logik, { sv: "Logikgrindar", en: "Logic gates" }, { sv: "Två brytare och en lampa.", en: "Two switches and a lamp." }),
+    M("binart", "logik", "logik-binart", 4, 10, "nod-08", OMR.logik, { sv: "Åtta lampor", en: "Eight lamps" }, { sv: "Rummet räknar binärt med mobilerna.", en: "The room counts in binary with phones." }),
+    M("signal", "signal", "signal-vagor", 4, 12, "nod-03", OMR.signal, { sv: "Ljudvågor", en: "Sound waves" }, { sv: "Blanda vågor och släck en ton.", en: "Mix waves and cancel a note." }, true),
+    M("pixlar", "signal", "signal-pixlar", 4, 10, "nod-09", OMR.signal, { sv: "Pixlar", en: "Pixels" }, { sv: "Zooma tills bilden blir siffror.", en: "Zoom until the picture turns into numbers." }),
+    M("ai", "ai", "ai-sortera", 4, 12, "nod-04", OMR.ai, { sv: "Fruktsorteraren", en: "The fruit sorter" }, { sv: "Lär en maskin skilja citroner från äpplen.", en: "Teach a machine to tell lemons from apples." }),
+    M("sprakmodell", "ai", "ai-sprakmodell", 4, 10, null, OMR.ai, { sv: "Nästa ord", en: "Next word" }, { sv: "Så gissar en språkmodell.", en: "How a language model guesses." }),
+    M("natverk", "nat", "natverk-paket", 4, 10, "nod-05", OMR.nat, { sv: "Paketresan", en: "Packet tour" }, { sv: "Klipp kablar och se paketen ta nya vägar.", en: "Cut cables and watch packets find new ways." }),
+    M("hemligt", "nat", "nat-hemligt", 4, 10, null, OMR.nat, { sv: "Hemliga färger", en: "Secret colours" }, { sv: "Dela en hemlighet över en öppen linje.", en: "Share a secret over an open line." }),
+    M("robot", "kod", "robot-kod", 4, 15, "nod-06", OMR.kod, { sv: "Robotens väg", en: "The robot's path" }, { sv: "Lägg block så att roboten når stjärnan.", en: "Place blocks so the robot reaches the star." }),
+    M("sortera", "kod", "kod-sortera", 4, 12, null, OMR.kod, { sv: "Sortera", en: "Sorting" }, { sv: "Du mot två algoritmer.", en: "You against two algorithms." }),
+    M("matte", "matte", "matte-maskin", 4, 10, "nod-07", OMR.matte, { sv: "Funktionsmaskinen", en: "The function machine" }, { sv: "Lista ut regeln i maskinen.", en: "Work out the rule inside." }),
+    M("tarning", "matte", "matte-tarning", 4, 10, "nod-10", OMR.matte, { sv: "Tärningar", en: "Dice" }, { sv: "Slumpen blir en kurva.", en: "Chance becomes a curve." })
   ];
   const NS = "http://www.w3.org/2000/svg";
 
@@ -214,23 +189,19 @@
       const done = K.progress(m.id).length;
       const a = document.createElement("a");
       a.className = "mod"; a.href = m.file; a.dataset.domain = m.dom;
+      if (!document.getElementById(m.dom)) a.id = m.dom;
       a.innerHTML = `<div class="topp"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[m.dom]}</svg><span class="omr">${K.t(m.area)}</span></div>
         <h3>${K.t(m.title)}</h3>
         <p>${K.t(m.text)}</p>
         <div class="fot">
-          <span>${m.min} min · ${m.devices === "all" ? K.t("mobil eller dator", "phone or computer") : K.t("bäst på dator", "best on a computer")} · ${K.t("låda", "box")} ${m.nod}</span>
-          <div class="steg"><span>${done ? K.t("Påbörjad", "Started") : K.t("Inte påbörjad", "Not started")}</span><b>${done}/${m.tasks}</b></div>
+          <div class="steg"><span>${[`${m.min} min`, m.desktop && K.t("bäst på dator", "best on a computer"), m.nod].filter(Boolean).join(" · ")}</span><b>${done}/${m.tasks}</b></div>
           <div class="mätare" aria-hidden="true"><i style="width:${done / m.tasks * 100}%"></i></div>
         </div>`;
       a.setAttribute("aria-label", `${K.t(m.title)}. ${K.t(m.area)}. ${K.t(`${done} av ${m.tasks} steg klara`, `${done} of ${m.tasks} steps done`)}.`);
       g.append(a);
     });
   }
-  function renderIdeas() {
-    $("ideas").innerHTML = IDEAS.map(i => `<div data-domain="${i.dom}"><i aria-hidden="true"></i><dt>${K.t(i.t)}</dt><dd>${K.t(i.d)}</dd></div>`).join("");
-  }
 
-  /* ---- kartan ---- */
   const POS = { el: [95, 95], logik: [270, 62], kod: [445, 115], ai: [440, 310], nat: [265, 362], signal: [95, 305], matte: [268, 212] };
   const LINKS = [
     ["el", "logik", { sv: "ström blir 1 och 0", en: "current becomes 1 and 0" }],
@@ -257,15 +228,17 @@
         t.setAttribute("text-anchor", "middle"); t.textContent = K.t(label); svg.append(t);
       }
     });
-    MODS.forEach(m => {
-      const [x, y] = POS[m.dom], pr = K.progress(m.id).length / m.tasks, r = 30, R = 37, C = 2 * Math.PI * R;
+    Object.keys(POS).forEach(dom => {
+      const mods = MODS.filter(m => m.dom === dom), m = { dom, file: mods[0].file };
+      const pr = mods.reduce((a, x) => a + K.progress(x.id).length, 0) / mods.reduce((a, x) => a + x.tasks, 0);
+      const [x, y] = POS[dom], r = 30, R = 37, C = 2 * Math.PI * R;
       const g = document.createElementNS(NS, "a");
-      g.setAttribute("href", m.file); g.setAttribute("class", "m-node"); g.dataset.domain = m.dom;
-      g.setAttribute("aria-label", `${K.t(m.title)}, ${K.t(m.area)}`);
+      g.setAttribute("href", "#" + dom); g.setAttribute("class", "m-node"); g.dataset.domain = dom;
+      g.setAttribute("aria-label", K.t(OMR[dom]));
       g.innerHTML = `<circle class="bg" cx="${x}" cy="${y}" r="${r}"/>
         ${pr > 0 ? `<circle class="ring" cx="${x}" cy="${y}" r="${R}" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - pr)}"/>` : ""}
         <g class="ikon" transform="translate(${x - 15} ${y - 15}) scale(1.25)">${ICON[m.dom]}</g>
-        <text x="${x}" y="${y + r + 22}" text-anchor="middle">${m.dom === "ai" ? "AI" : K.t(m.area)}</text>`;
+        <text x="${x}" y="${y + r + 22}" text-anchor="middle">${K.t(OMR[dom])}</text>`;
       const lys = on => paths.forEach(({ p, a, b }) => p.classList.toggle("lyser", on && (a === m.dom || b === m.dom)));
       g.addEventListener("pointerenter", () => lys(true)); g.addEventListener("pointerleave", () => lys(false));
       g.addEventListener("focus", () => lys(true)); g.addEventListener("blur", () => lys(false));
@@ -273,7 +246,6 @@
     });
   }
 
-  /* ---- inmatning ---- */
   $("nick").value = K.nick();
   $("nick").addEventListener("change", e => K.setNick(e.target.value));
   $("dice").addEventListener("click", () => { const n = K.randomNick(); $("nick").value = n; K.setNick(n); });
@@ -282,7 +254,7 @@
   $("lang").addEventListener("click", () => { K.setLang(K.lang === "sv" ? "en" : "sv"); paintLang(); });
   $("theme").addEventListener("click", K.toggleTheme);
 
-  function renderAll() { renderMods(); renderIdeas(); renderMap(); paintLang(); }
+  function renderAll() { renderMods(); renderMap(); paintLang(); }
   K.onLang(renderAll);
   renderAll();
 })();
