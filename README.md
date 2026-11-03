@@ -1,52 +1,44 @@
 # Verkstan
 
-En webbapp med workshopövningar som introducerar teknik för en **icke-teknisk publik**:
-ellära, digital logik, signalteknik, AI/ML, nätverk, mjukvara och matematik.
-Man gör saker först och förstår sedan. Det fungerar ensam i egen takt eller tillsammans i ett rum.
+Workshopövningar om teknik för en publik utan teknisk bakgrund. Femton verkstäder i sju ämnen:
+ellära, digital logik, signalteknik, AI, nätverk, mjukvara och matematik. Ensam eller i ett rum.
 
-> **Status:** idéspåning och klickbara mockupar. Ramverk och teknik är inte valda än.
+Status: klickbara mockupar och firmware-utkast.
 
-## Prova mockuparna
+## Prova
 
-Öppna `mockups/index.html` direkt i webbläsaren, eller kör en lokal server:
+Öppna `mockups/index.html`, eller:
 
 ```bash
 cd mockups && python3 -m http.server 8000
 ```
 
-och gå till <http://localhost:8000>.
+| Ämne | Verkstäder |
+|---|---|
+| Ellära | [Strömkretsen](mockups/moduler/el-krets.html), [Ficklampan](mockups/moduler/el-ficklampa.html), [Vad drar mest?](mockups/moduler/el-energi.html) |
+| Digital logik | [Logikgrindar](mockups/moduler/logik-grindar.html), [Åtta lampor](mockups/moduler/logik-binart.html) |
+| Signalteknik | [Ljudvågor](mockups/moduler/signal-vagor.html), [Pixlar](mockups/moduler/signal-pixlar.html) |
+| AI | [Fruktsorteraren](mockups/moduler/ai-sortera.html), [Nästa ord](mockups/moduler/ai-sprakmodell.html) |
+| Nätverk | [Paketresan](mockups/moduler/natverk-paket.html), [Hemliga färger](mockups/moduler/nat-hemligt.html) |
+| Mjukvara | [Robotens väg](mockups/moduler/robot-kod.html), [Sortera](mockups/moduler/kod-sortera.html) |
+| Matematik | [Funktionsmaskinen](mockups/moduler/matte-maskin.html), [Tärningar](mockups/moduler/matte-tarning.html) |
 
-| Mockup | Område | Vad man gör | Låda på bordet |
-|---|---|---|---|
-| [Startsidan](mockups/index.html) | – | Smeknamn, rumskod, karta över hur ämnena hänger ihop, alla verkstäder | – |
-| [Strömkretsen](mockups/moduler/el-krets.html) | Ellära | Batterier, motstånd och lampa. Växla till vattenvy | Lysdiod, ratt och strömsensor |
-| [Logikgrindar](mockups/moduler/logik-grindar.html) | Digital logik | Brytare, grindar, sanningstabell, gåtor | Två arkadknappar och en lampa |
-| [Ljudvågor](mockups/moduler/signal-vagor.html) | Signalteknik | Riktigt ljud, blanda vågor, släck en ton med motvåg | Högtalare, mikrofon, lysdiodsstapel |
-| [Fruktsorteraren](mockups/moduler/ai-sortera.html) | AI och ML | Lär en maskin att sortera, se skevheten, lura den | Våg, färgsensor och en lucka |
-| [Paketresan](mockups/moduler/natverk-paket.html) | Nätverk | Skicka paket, klipp kablar, se omvägar | Ljusslingor som kablar mellan sju hus |
-| [Robotens väg](mockups/moduler/robot-kod.html) | Mjukvara | Blockprogram, buggar, upprepning | Robot med stegmotorer på golvmatta |
-| [Funktionsmaskinen](mockups/moduler/matte-maskin.html) | Matematik | Hitta den hemliga regeln, se linjen i grafen | Vred, två displayer och ett lock |
-| [Rumsvyn](mockups/rum.html) | – | Storskärm för ledaren, deltagarmobil, ihopparning av lådor (simulerat) | Alla |
-| [Designmanual](mockups/designmanual.html) | – | Färger, typografi och komponenter med levande exempel | – |
-
-Alla mockupar är ren HTML/CSS/JS utan byggsteg och följer designmanualen (dokument 6).
-De delar `mockups/shared/theme.css` (färger, typsnitt, komponenter) och `mockups/shared/kit.js`
-(språk, smeknamn, protokoll, statusrad och lådpanelen ”På bordet”). Lådorna är simulerade i
-mockuparna. Firmware-utkastet finns i [`firmware/`](firmware/).
+Dessutom [rumsvyn](mockups/rum.html) för ledaren och [designmanualen](mockups/designmanual.html).
+Ren HTML, CSS och JS utan byggsteg. Lådorna är simulerade, firmware finns i [`firmware/`](firmware/).
 
 ## Dokument
 
-1. [Vision och pedagogik](docs/01-vision-och-pedagogik.md): målgrupp, principer, designriktlinjer, exempel på workshop
-2. [Övningsbank](docs/02-ovningsbank.md): ~45 övningsidéer per område och samarbetsmönster för 5–75 personer
-3. [Samarbete och arkitektur](docs/03-samarbete-och-arkitektur.md): egen server eller GitHub Pages, offline på plats, GDPR, protokoll
-4. [Moduler skrivna av AI](docs/04-ai-forfattade-moduler.md): byggsats, modulformat, kvalitetskontroller, arbetsflöde
-5. [Fysiska enheter](docs/05-fysiska-enheter.md): idéer per modul, Verkstan-noden med Pico W, MQTT över wifi
-6. [Designmanual](docs/06-designmanual.md): granskning av AI-drag i mockuparna, färg, typografi, komponenter och språk
-7. [Modulplaner](docs/07-modulplaner.md): mål, steg och låda för alla sju verkstäder, med delar, kopplingar, meddelanden och budget
+1. [Vision och pedagogik](docs/01-vision-och-pedagogik.md)
+2. [Övningsbank](docs/02-ovningsbank.md)
+3. [Samarbete och arkitektur](docs/03-samarbete-och-arkitektur.md)
+4. [Moduler skrivna av AI](docs/04-ai-forfattade-moduler.md)
+5. [Fysiska enheter](docs/05-fysiska-enheter.md)
+6. [Designmanual](docs/06-designmanual.md)
+7. [Modulplaner](docs/07-modulplaner.md): steg, delar, stift och meddelanden per verkstad
 
-Den som låter en AI skriva eller ändra moduler ska peka den till [AGENTS.md](AGENTS.md).
+En AI som skriver moduler läser [AGENTS.md](AGENTS.md).
 
 ## GitHub Pages
 
-`.github/workflows/pages.yml` publicerar mappen `mockups/` vid push till `main`.
-Slå på det en gång under **Settings → Pages → Source: GitHub Actions**.
+`.github/workflows/pages.yml` publicerar `mockups/` vid push till `main`. Slå på under
+Settings → Pages → Source: GitHub Actions.
