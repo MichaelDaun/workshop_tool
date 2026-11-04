@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vad drar mest – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  .lcd { font-family: var(--font-num); font-size: 40px; font-weight: 600; fill: var(--on-graphite); }
+  .name { font-family: var(--font-text); font-size: 24px; font-weight: 700; fill: var(--graphite); }
+  .cord { fill: none; stroke: var(--graphite); stroke-width: 4; stroke-linecap: round; }
+  .list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .list li { display: grid; grid-template-columns: minmax(90px, 9em) minmax(0, 1fr) 5.4em; gap: 10px; align-items: center; font-size: var(--fs-small); }
+  .list .bar { height: 12px; background: var(--grid); border-radius: 3px; overflow: hidden; }
+  .list .bar i { display: block; height: 100%; background: var(--active); }
+  .list .sek { font-family: var(--font-num); text-align: right; }
+  .answer { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
+  .answer .field { width: 7em; }
+  .hw-part { fill: var(--sheet); stroke: var(--graphite); stroke-width: 2; }
+  .lid { transition: transform var(--calm) var(--ease); transform-origin: 196px 52px; }
+  .lid.off { transform: translate(34px, -6px) rotate(24deg); }
+</style>
+</head>
+<body data-domain="power">
+<header class="topbar" data-title-sv="Vad drar mest?" data-title-en="What uses most?"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="scene"><svg id="meter" class="free" viewBox="20 20 580 140" role="img" aria-label="Energimätare i ett vägguttag" data-aria-en="Energy meter in a wall socket"></svg></div>
+    <div class="row" id="things"></div>
+    <div class="controls">
+      <div class="control">
+        <label for="hours"><span data-en="Use per day">Används per dag</span><output id="o-hours"></output></label>
+        <input type="range" id="hours" min="0" max="96" step="1">
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="readout"><span class="v" id="r-kwh"></span><span class="k" data-en="kWh per year">kWh per år</span></div>
+      <div class="readout"><span class="v" id="r-sek"></span><span class="k" data-en="SEK per year">kr per år</span></div>
+    </div>
+    <ol class="list" id="list" aria-label="Uppmätt, dyrast först" data-aria-en="Measured, most expensive first"></ol>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Electricity · 2–4 people · 20 min">Ellära · 2–4 personer · 20 min</p>
+      <h2 data-en="What does a cup of tea cost?">Vad kostar en kopp te?</h2>
+      <div class="answer" id="answer" hidden>
+        <input class="field" id="guess" type="text" inputmode="decimal" aria-label="Kronor per år" data-aria-en="SEK per year">
+        <span>kr</span>
+        <button class="btn" id="check" type="button" data-en="Check">Kolla</button>
+      </div>
+    </div>
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="The bill depends on watts times hours. A kilowatt-hour costs 2 kronor here.">Räkningen beror på watt gånger timmar. En kilowattimme kostar 2 kronor här.</p>
+        <div class="formula">kWh = W × h ÷ 1000</div>
+      </div>
+    </details>
+    <div id="box"></div>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const PRICE = 2;
+  // hours are counted in quarters so the slider can run from 0 to 24 h
+  const THINGS = [
+    { id: "charger", w: 5,    q: 8,  sv: "Mobilladdare", en: "Phone charger" },
+    { id: "led",     w: 7,    q: 20, sv: "LED-lampa",    en: "LED bulb" },
+    { id: "filament", w: 60,  q: 20, sv: "Glödlampa",    en: "Filament bulb" },
+    { id: "router",  w: 8,    q: 96, sv: "Router",       en: "Router" },
+    { id: "laptop",  w: 45,   q: 16, sv: "Laptop",       en: "Laptop" },
+    { id: "tv",      w: 90,   q: 12, sv: "TV",           en: "TV" },
+    { id: "fridge",  w: 25,   q: 96, sv: "Kylskåp",      en: "Fridge" },
+    { id: "kettle",  w: 2000, q: 1,  sv: "Vattenkokare", en: "Kettle" },
+    { id: "dryer",   w: 1800, q: 1,  sv: "Hårtork",      en: "Hair dryer" }
+  ];
+  const s = { pick: null, seen: new Set() };
+  const kwh = x => x.w * x.q / 4 * 365 / 1000;
+  const n0 = v => Math.round(v).toLocaleString(K.lang === "sv" ? "sv-SE" : "en-GB");
+  const span = q => q % 4 ? `${Math.floor(q / 4) ? Math.floor(q / 4) + " h " : ""}${(q % 4) * 15} min` : `${q / 4} h`;
+  const thing = id => THINGS.find(x => x.id === id);
+
+  const tasks = K.tasks($("mission"), "energy", [
+    { id: "sneaky", text: { sv: "Hitta något som drar lite men kostar mer per år än vattenkokaren.", en: "Find something that draws little but costs more per year than the kettle." } },
+    { id: "boil",   text: { sv: "Koka en halv liter vatten på lådan med under 60 Wh.", en: "Boil half a litre of water on the box using less than 60 Wh." } },
+    { id: "tea",    text: { sv: "Vad kostar en kopp te om dagen på ett år? En kopp är 2,5 dl.", en: "What does a cup of tea a day cost over a year? A cup is 250 ml." } }
+  ], { onComplete: id => { if (id === "boil") $("answer").hidden = false; } });
+  if (tasks.isDone("boil")) $("answer").hidden = false;
+
+  THINGS.forEach(x => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.dataset.s = x.id;
+    b.addEventListener("click", () => { s.pick = x.id; s.seen.add(x.id); paint(); });
+    $("things").append(b);
+  });
+  $("hours").addEventListener("input", e => { if (s.pick) { thing(s.pick).q = +e.target.value; paint(); } });
+
+  function paint() {
+    const x = s.pick && thing(s.pick);
+    $("meter").innerHTML = `<rect x="30" y="40" width="90" height="100" rx="10" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2.5"/>
+      <circle cx="62" cy="90" r="6" fill="var(--graphite)"/><circle cx="88" cy="90" r="6" fill="var(--graphite)"/>
+      <rect x="140" y="30" width="200" height="120" rx="12" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2.5"/>
+      <rect x="158" y="48" width="164" height="62" rx="4" fill="var(--graphite)"/>
+      <text class="lcd" x="310" y="96" text-anchor="end">${x ? x.w + " W" : "0 W"}</text>
+      <path class="cord" d="M340 90 C390 90 400 ${x ? 90 : 150} 440 ${x ? 90 : 150}"/>
+      <text class="name" x="452" y="${x ? 97 : 157}">${x ? K.t(x) : ""}</text>`;
+
+    document.querySelectorAll("[data-s]").forEach(b => { b.textContent = K.t(thing(b.dataset.s)); b.setAttribute("aria-pressed", b.dataset.s === s.pick); });
+    $("hours").disabled = !x;
+    $("hours").value = x ? x.q : 0;
+    $("o-hours").textContent = x ? span(x.q) : "–";
+    $("r-kwh").textContent = x ? n0(kwh(x)) : "–";
+    $("r-sek").textContent = x ? n0(kwh(x) * PRICE) : "–";
+
+    const seen = THINGS.filter(y => s.seen.has(y.id)).sort((a, b) => kwh(b) - kwh(a));
+    const top = Math.max(1, ...seen.map(kwh));
+    $("list").innerHTML = seen.map(y => `<li><span>${K.t(y)}</span><span class="bar"><i style="width:${kwh(y) / top * 100}%"></i></span><span class="sek">${n0(kwh(y) * PRICE)} kr</span></li>`).join("");
+
+    const kettle = thing("kettle");
+    if (x && s.seen.has("kettle") && x.w < kettle.w && kwh(x) > kwh(kettle)) tasks.complete("sneaky");
+  }
+
+  // plug-01: a smart plug that reports watts and watt-hours, with a kettle in it.
+  // Half a litre from 20 to 100 °C is about 47 Wh; heat loss adds the rest.
+  const boil = { lid: true, running: false, wh: 0, last: null };
+  const box = K.box($("box"), {
+    node: "plug-01",
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Smart kontakt med vattenkokare" data-aria-en="Smart plug with a kettle">
+      <rect class="hw-board" x="8" y="10" width="284" height="130" rx="6"/>
+      <rect class="hw-part" x="24" y="40" width="60" height="80" rx="8"/>
+      <rect class="hw-display" x="32" y="52" width="44" height="22" rx="3"/>
+      <text class="hw-digits" id="hw-w" x="54" y="68" text-anchor="middle" style="font-size:12px">0 W</text>
+      <rect class="hw-display" x="96" y="52" width="74" height="30" rx="3"/>
+      <text class="hw-digits" id="hw-wh" x="133" y="73" text-anchor="middle">-- Wh</text>
+      <path class="hw-wire" d="M84 100 H150 V110 H170"/>
+      <path class="hw-part" d="M170 60 H236 L244 128 H162 Z"/>
+      <path class="hw-part" d="M236 76 C262 78 262 112 240 114"/>
+      <g class="lid hw-press" id="hw-lid" tabindex="0" role="button" aria-label="Lock" data-aria-en="Lid"><rect class="hw-part" x="166" y="48" width="74" height="10" rx="4"/></g>
+    </svg>`,
+    onConnect: () => paintBox()
+  });
+  const start = document.createElement("button");
+  start.className = "btn"; start.type = "button";
+  box.root.querySelector(".plan").after(start);
+  const lid = box.svg.getElementById("hw-lid");
+  const flipLid = () => { if (!boil.running) { boil.lid = !boil.lid; paintBox(); } };
+  lid.addEventListener("click", flipLid);
+  lid.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flipLid(); } });
+
+  function paintBox() {
+    const on = box.connected();
+    start.hidden = !on; start.disabled = boil.running;
+    start.textContent = K.t("Koka", "Boil");
+    lid.classList.toggle("off", !boil.lid);
+    box.svg.getElementById("hw-w").textContent = on && boil.running ? "2000 W" : "0 W";
+    box.svg.getElementById("hw-wh").textContent = on ? Math.round(boil.wh) + " Wh" : "-- Wh";
+  }
+  start.addEventListener("click", () => {
+    const need = boil.lid ? 55 : 66, t0 = performance.now(), secs = 5;
+    boil.running = true; boil.wh = 0; paintBox();
+    const tick = now => {
+      const f = Math.min(1, (now - t0) / (secs * 1000));
+      boil.wh = need * f; paintBox();
+      if (f < 1) return requestAnimationFrame(tick);
+      boil.running = false; boil.last = need; paintBox();
+      if (need < 60) tasks.complete("boil");
+    };
+    requestAnimationFrame(tick);
+  });
+
+  $("check").addEventListener("click", () => {
+    const v = parseFloat($("guess").value.replace(",", ".").replace(/[^\d.]/g, ""));
+    const wh = boil.last || 55, right = wh / 2 * 365 / 1000 * PRICE;
+    if (isNaN(v)) return;
+    if (Math.abs(v - right) <= right * .25) tasks.complete("tea");
+    else K.status(K.t(v > right ? "För mycket." : "För lite.", v > right ? "Too much." : "Too little."));
+  });
+
+  K.onLang(() => { paint(); paintBox(); });
+  paint(); paintBox();
+})();
+</script>
+</body>
+</html>

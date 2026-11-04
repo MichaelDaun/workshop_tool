@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ljudvågor – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  #scope { aspect-ratio: 800 / 340; }
+  .waves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 640px) { .waves { grid-template-columns: minmax(0, 1fr); } }
+  .wave-card { border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; display: grid; gap: 4px; }
+  .wave-card h3 { font-size: 17px; display: flex; align-items: center; gap: 10px; min-height: 36px; }
+  .wave-card h3 svg { width: 28px; height: 10px; }
+  .wave-card h3 .chip { margin-left: auto; }
+  .wave-card.off .control { opacity: .35; pointer-events: none; }
+  .play-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+</style>
+</head>
+<body data-domain="signal">
+<header class="topbar" data-title-sv="Ljudvågor" data-title-en="Sound waves"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="scene"><canvas id="scope" width="1600" height="680" aria-label="Ljudvågor som ritas medan de ändras" data-aria-en="Sound waves drawn as they change"></canvas></div>
+    <div class="play-row">
+      <button class="btn" id="play" type="button">
+        <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path id="play-ico" d="M4 2.5v13l11-6.5z" fill="currentColor"/></svg>
+        <span id="play-lbl"></span>
+      </button>
+    </div>
+
+    <div class="waves">
+      <div class="wave-card">
+        <h3><svg viewBox="0 0 28 10" aria-hidden="true"><line x1="0" y1="5" x2="28" y2="5" stroke="var(--graphite)" stroke-width="2"/></svg><span data-en="Wave A">Våg A</span></h3>
+        <div class="control">
+          <label for="fa"><span data-en="Pitch">Tonhöjd</span><output id="o-fa"></output></label>
+          <input type="range" id="fa" min="100" max="2000" step="1" value="220">
+        </div>
+        <div class="control">
+          <label for="aa"><span data-en="Loudness">Styrka</span><output id="o-aa"></output></label>
+          <input type="range" id="aa" min="0" max="1" step="0.01" value="0.7">
+        </div>
+      </div>
+      <div class="wave-card off" id="card-b">
+        <h3><svg viewBox="0 0 28 10" aria-hidden="true"><line x1="0" y1="5" x2="28" y2="5" stroke="var(--graphite)" stroke-width="2" stroke-dasharray="6 4"/></svg><span data-en="Wave B">Våg B</span>
+          <button class="chip" id="b-on" type="button" aria-pressed="false"></button></h3>
+        <div class="control">
+          <label for="fb"><span data-en="Pitch">Tonhöjd</span><output id="o-fb"></output></label>
+          <input type="range" id="fb" min="100" max="2000" step="1" value="330">
+        </div>
+        <div class="control">
+          <label for="ab"><span data-en="Loudness">Styrka</span><output id="o-ab"></output></label>
+          <input type="range" id="ab" min="0" max="1" step="0.01" value="0.5">
+        </div>
+        <div class="control">
+          <label for="pb"><span data-en="Shift">Förskjutning</span><output id="o-pb"></output></label>
+          <input type="range" id="pb" min="0" max="360" step="5" value="0">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Signals · 2–4 people · 20 min">Signalteknik · 2–4 personer · 20 min</p>
+      <h2 data-en="Copy a sound">Härma ett ljud</h2>
+    </div>
+
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="Sound is air moving back and forth. How often is the <b>frequency</b>, how far is the <b>amplitude</b>. When one wave goes up as the other goes down, they cancel out.">Ljud är luft som rör sig fram och tillbaka. Hur ofta kallas <b>frekvens</b>, hur långt kallas <b>amplitud</b>. Går ena vågen upp när den andra går ner tar de ut varandra.</p>
+      </div>
+    </details>
+
+    <div id="box"></div>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const WINDOW = 0.02;
+  const target = { f: 330, a: 0.6, whistle: false };
+  const s = { fa: 220, aa: 0.7, bOn: false, fb: 330, ab: 0.5, pb: 0, playing: false };
+
+  const tasks = K.tasks($("mission"), "waves", [
+    { id: "match",   text: { sv: "Lägg våg A exakt på den grå vågen.", en: "Lay wave A exactly on the grey wave." } },
+    { id: "silence", text: { sv: "Gör det helt tyst utan att stänga av våg A.", en: "Make it completely silent without turning off wave A." } },
+    { id: "whistle", text: { sv: "Vissla in i lådans mikrofon. Spela samma ton tillbaka genom lådan.", en: "Whistle into the box microphone. Play the same note back through the box." } }
+  ]);
+
+  // node-03: microphone, speaker and an LED bar. In the mockup a tap on the microphone records a whistle.
+  const box = K.box($("box"), {
+    node: "node-03",
+    svg: `<svg viewBox="0 0 300 140" role="img" aria-label="Mikrofon, högtalare och en stapel med lysdioder" data-aria-en="Microphone, speaker and an LED bar">
+      <rect class="hw-board" x="8" y="10" width="284" height="120" rx="6"/>
+      <rect class="hw-chip" x="20" y="22" width="80" height="34" rx="4"/><text class="hw-text-light" x="30" y="43">PICO W</text>
+      <circle cx="60" cy="96" r="24" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2.5"/>
+      <circle id="hw-cone" cx="60" cy="96" r="11" fill="var(--grid)" stroke="var(--graphite)" stroke-width="2"/>
+      <g class="hw-press" id="hw-mic" tabindex="0" role="button" aria-label="Mikrofon" data-aria-en="Microphone">
+        <rect x="112" y="76" width="18" height="34" rx="9" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2.5"/>
+        <path d="M106 96 a15 15 0 0 0 30 0 M121 111 v10" fill="none" stroke="var(--graphite)" stroke-width="2.5"/>
+      </g>
+      <g id="hw-bar">${Array.from({ length: 8 }, (_, i) => `<rect class="hw-led" x="${150 + i * 17}" y="40" width="11" height="70" rx="3"/>`).join("")}</g>
+    </svg>`,
+    onConnect: on => { if (!on && target.whistle) { target.whistle = false; target.f = 330; target.a = 0.6; } paint(); }
+  });
+  const mic = $("hw-mic");
+  const record = () => {
+    if (!box.connected()) return;
+    target.f = Math.round(700 + Math.random() * 900); target.a = 0.5; target.whistle = true;
+    paint();
+  };
+  mic.addEventListener("click", record);
+  mic.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); record(); } });
+
+  const waveA = t => s.aa * Math.sin(2 * Math.PI * s.fa * t);
+  const sumAt = t => waveA(t) + (s.bOn ? s.ab * Math.sin(2 * Math.PI * s.fb * t + s.pb * Math.PI / 180) : 0);
+  const targetAt = t => target.a * Math.sin(2 * Math.PI * target.f * t);
+  function rms(fn) { let acc = 0; const n = 400; for (let i = 0; i < n; i++) { const v = fn(i / n * 0.05); acc += v * v; } return Math.sqrt(acc / n); }
+  const showTarget = () => target.whistle || !tasks.isDone("match");
+
+  let ctx, oa, ob, ga, gb, master, delay;
+  function audioStart() {
+    ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain(); master.gain.value = 0.18; master.connect(ctx.destination);
+    oa = ctx.createOscillator(); ga = ctx.createGain(); oa.connect(ga).connect(master);
+    ob = ctx.createOscillator(); gb = ctx.createGain(); delay = ctx.createDelay(0.02); ob.connect(delay).connect(gb).connect(master);
+    oa.start(); ob.start(); audioUpdate();
+  }
+  function audioUpdate() {
+    if (!oa) return;
+    const now = ctx.currentTime;
+    oa.frequency.setTargetAtTime(s.fa, now, 0.02); ga.gain.setTargetAtTime(s.aa, now, 0.03);
+    ob.frequency.setTargetAtTime(s.fb, now, 0.02); gb.gain.setTargetAtTime(s.bOn ? s.ab : 0, now, 0.03);
+    delay.delayTime.setTargetAtTime((s.pb / 360) / s.fb, now, 0.02);
+  }
+  function audioStop() { if (oa) { oa.stop(); ob.stop(); oa = ob = null; master.disconnect(); } }
+
+  $("play").addEventListener("click", () => {
+    s.playing = !s.playing;
+    s.playing ? audioStart() : audioStop();
+    paint();
+  });
+
+  // values close to wave A snap to it, so the anti-wave can be found with a slider
+  const snap = (id, v) => {
+    if (id === "fb" && Math.abs(v - s.fa) <= 4) v = s.fa;
+    if (id === "ab" && Math.abs(v - s.aa) <= 0.04) v = s.aa;
+    if (v !== +$(id).value) $(id).value = v;
+    return v;
+  };
+  ["fa", "aa", "fb", "ab", "pb"].forEach(id => $(id).addEventListener("input", e => { s[id] = snap(id, +e.target.value); paint(); audioUpdate(); }));
+  $("b-on").addEventListener("click", () => { s.bOn = !s.bOn; paint(); audioUpdate(); });
+
+  function paint() {
+    $("o-fa").textContent = s.fa + " Hz"; $("o-fb").textContent = s.fb + " Hz";
+    $("o-aa").textContent = Math.round(s.aa * 100) + " %"; $("o-ab").textContent = Math.round(s.ab * 100) + " %";
+    $("o-pb").textContent = s.pb + "°";
+    $("b-on").setAttribute("aria-pressed", s.bOn); $("b-on").textContent = s.bOn ? K.t("På", "On") : K.t("Av", "Off");
+    $("card-b").classList.toggle("off", !s.bOn);
+    $("play-lbl").textContent = s.playing ? K.t("Stoppa", "Stop") : K.t("Spela", "Play");
+    $("play-ico").setAttribute("d", s.playing ? "M4 3h3.5v12H4zM10.5 3H14v12h-3.5z" : "M4 2.5v13l11-6.5z");
+
+    const level = rms(sumAt), on = box.connected();
+    [...$("hw-bar").children].forEach((l, i) => l.classList.toggle("on", on && s.playing && level * 8 > i + .3));
+
+    if (!target.whistle && rms(t => sumAt(t) - targetAt(t)) / rms(targetAt) < 0.18) tasks.complete("match");
+    if (s.bOn && s.aa >= 0.3 && level / rms(waveA) < 0.12) tasks.complete("silence");
+    if (on && target.whistle && s.playing && s.aa > 0.1 && Math.abs(s.fa - target.f) / target.f <= 0.03) tasks.complete("whistle");
+  }
+  K.onLang(paint);
+
+  const cv = $("scope"), g = cv.getContext("2d");
+  let scroll = 0, last = performance.now();
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function draw(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (!still) scroll += dt * 0.0012;
+    const cs = getComputedStyle(document.body), C = n => cs.getPropertyValue(n).trim();
+    const W = cv.width, H = cv.height, left = 220, mid = H / 2, amp = H * 0.2;
+    g.clearRect(0, 0, W, H);
+    g.strokeStyle = C("--graphite"); g.lineWidth = 2;
+    g.beginPath(); g.moveTo(left, mid); g.lineTo(W - 20, mid); g.stroke();
+
+    const plot = (fn, color, width, dash) => {
+      g.save(); g.strokeStyle = color; g.lineWidth = width; g.setLineDash(dash || []); g.lineJoin = "round"; g.lineCap = "round";
+      g.beginPath();
+      for (let x = left; x <= W - 20; x += 2) {
+        const t = (x - left) / (W - 20 - left) * WINDOW + scroll, y = mid - fn(t) * amp;
+        x === left ? g.moveTo(x, y) : g.lineTo(x, y);
+      }
+      g.stroke(); g.restore();
+    };
+    if (showTarget()) plot(targetAt, C("--line"), 22);
+    plot(waveA, C("--graphite"), 3);
+    if (s.bOn) plot(t => s.ab * Math.sin(2 * Math.PI * s.fb * t + s.pb * Math.PI / 180), C("--graphite"), 3, [14, 10]);
+    plot(sumAt, C("--active"), 8);
+
+    // the speaker, drawn as a symbol
+    const vib = s.playing && !still ? sumAt(now / 1000 * 3) * 10 : 0, cx = 110, cy = mid;
+    g.strokeStyle = C("--graphite"); g.lineWidth = 5; g.lineJoin = "round"; g.fillStyle = C("--sheet");
+    g.beginPath(); g.rect(cx - 70, cy - 34, 38, 68); g.fill(); g.stroke();
+    g.beginPath(); g.moveTo(cx - 32, cy - 34); g.lineTo(cx + 8 + vib, cy - 88); g.lineTo(cx + 8 + vib, cy + 88); g.lineTo(cx - 32, cy + 34); g.closePath(); g.fill(); g.stroke();
+    if (s.playing) {
+      const level = Math.min(1, rms(sumAt));
+      g.strokeStyle = C("--active"); g.lineCap = "round";
+      for (let i = 0; i < 3; i++) {
+        const r = 40 + i * 26 + (still ? 0 : now / 20 % 26);
+        g.globalAlpha = level * (1 - i / 3); g.beginPath(); g.arc(cx + 20, cy, r, -0.6, 0.6); g.stroke();
+      }
+      g.globalAlpha = 1;
+    }
+    $("hw-cone").setAttribute("r", 11 + (box.connected() ? Math.abs(vib) * .4 : 0));
+    g.fillStyle = C("--pencil"); g.font = `26px ${C("--font-num")}`;
+    g.fillText("0 ms", left, H - 14); g.textAlign = "right"; g.fillText("20 ms", W - 20, H - 14); g.textAlign = "left";
+    requestAnimationFrame(draw);
+  }
+
+  paint();
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

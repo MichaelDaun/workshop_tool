@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ficklampan – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  .wire { fill: none; stroke: var(--graphite); stroke-width: 3; stroke-linecap: round; }
+  .wire.flow { stroke: var(--active); stroke-width: 4; stroke-dasharray: 10 8; animation: flow var(--speed, 1s) linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -18; } }
+  .batt { fill: var(--sheet); stroke: var(--graphite); stroke-width: 2.5; }
+  .pole { fill: var(--graphite); }
+  .bulb { cursor: pointer; }
+  .bulb .glass { fill: var(--sheet); stroke: var(--graphite); stroke-width: 2.5; }
+  .bulb .glow { fill: var(--active); }
+  .bulb .filament { fill: none; stroke: var(--graphite); stroke-width: 2; }
+  .bulb.out .glass { stroke-dasharray: 5 5; }
+  .bulb:focus-visible { outline: none; }
+  .bulb:focus-visible .glass { stroke-width: 4; }
+  .volt { font-family: var(--font-num); font-size: 14px; fill: var(--pencil); }
+  .hw-part { fill: var(--sheet); stroke: var(--graphite); stroke-width: 2; }
+</style>
+</head>
+<body data-domain="power">
+<header class="topbar" data-title-sv="Ficklampan" data-title-en="The torch"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="scene"><svg id="circuit" class="free" viewBox="0 0 600 320" role="img" aria-label="Två batterier och två lampor" data-aria-en="Two batteries and two bulbs"></svg></div>
+
+    <div class="readouts">
+      <div class="readout"><span class="v" id="r-u"></span></div>
+      <div class="readout"><span class="v" id="r-i"></span></div>
+      <div class="readout"><span class="v" id="r-t"></span><span class="k" data-en="lasts">räcker</span></div>
+    </div>
+
+    <div class="row">
+      <span class="small" data-en="Batteries">Batterier</span>
+      <button class="chip" type="button" data-b="series" data-en="In a row">I rad</button>
+      <button class="chip" type="button" data-b="parallel" data-en="Side by side">Bredvid</button>
+    </div>
+    <div class="row">
+      <span class="small" data-en="Bulbs">Lampor</span>
+      <button class="chip" type="button" data-l="series" data-en="In a row">I rad</button>
+      <button class="chip" type="button" data-l="parallel" data-en="Side by side">Bredvid</button>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Electricity · 2–4 people · 20 min">Ellära · 2–4 personer · 20 min</p>
+      <h2 data-en="A torch for the night">En ficklampa för natten</h2>
+    </div>
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="Batteries in a row add up their voltage. Side by side they share the load and last twice as long.">Batterier i rad lägger ihop sin spänning. Bredvid varandra delar de på jobbet och räcker dubbelt så länge.</p>
+        <p data-en="Bulbs in a row share the voltage and draw less current.">Lampor i rad delar på spänningen och drar mindre ström.</p>
+      </div>
+    </details>
+    <div id="box"></div>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const CELL = 1.5, R = 3, MAH = 2000;   // one AA cell and a small filament bulb
+  const s = { b: "parallel", l: "parallel", in: [true, true] };
+
+  const tasks = K.tasks($("mission"), "torch", [
+    { id: "bright", text: { sv: "Få båda lamporna att lysa så starkt det går.", en: "Make both bulbs shine as brightly as they can." } },
+    { id: "night",  text: { sv: "Bygg en ficklampa som lyser i minst 8 timmar med båda lamporna.", en: "Build a torch that lasts at least 8 hours with both bulbs." } },
+    { id: "real",   text: { sv: "Koppla samma ficklampa på lådan.", en: "Wire the same torch on the box." } }
+  ]);
+
+  function calc(b, l, inside = [true, true]) {
+    const U = b === "series" ? 2 * CELL : CELL, cap = b === "series" ? MAH : 2 * MAH;
+    let P = [0, 0], I = 0;
+    if (l === "series") {
+      if (inside[0] && inside[1]) { I = U / (2 * R); P = [I * I * R, I * I * R]; }
+    } else {
+      inside.forEach((on, k) => { if (on) { I += U / R; P[k] = U * U / R; } });
+    }
+    return { U, I, P, h: I ? cap / (I * 1000) : 0 };
+  }
+
+  // node-11: a build board with two battery holders, two bulb sockets and an INA219.
+  // In the mockup a tap on the batteries or bulbs in the drawing rewires them.
+  const hw = { b: "series", l: "series" };
+  const box = K.box($("box"), { node: "node-11", svg: `<svg viewBox="0 0 300 150" id="hw" role="img" aria-label="Byggplatta med batterier, lampor och strömmätare" data-aria-en="Build board with batteries, bulbs and a current meter"></svg>`, onConnect: () => update() });
+
+  function drawBox(c) {
+    const on = box.connected();
+    const pair = (cx, how, w, h) => how === "series" ? [[cx - w / 2, 34], [cx - w / 2, 34 + h + 6]] : [[cx - w - 4, 50], [cx + 4, 50]];
+    const bat = pair(70, hw.b, 22, 40).map(([x, y]) => `<rect class="hw-part" x="${x}" y="${y}" width="22" height="40" rx="3"/>`).join("");
+    const lit = on && c.I > 0, glow = lit ? Math.min(.8, c.P[0] / 3) : 0;
+    const bul = pair(170, hw.l, 30, 30).map(([x, y]) => `<circle class="hw-part" cx="${x + 15}" cy="${y + 15}" r="14"/><circle cx="${x + 15}" cy="${y + 15}" r="12" fill="var(--power)" opacity="${glow}"/>`).join("");
+    box.svg.innerHTML = `<rect class="hw-board" x="8" y="10" width="284" height="130" rx="6"/>
+      <g class="hw-press" id="hw-b" tabindex="0" role="button" aria-label="Byt koppling av batterierna" data-aria-en="Rewire the batteries"><rect x="30" y="24" width="80" height="106" fill="transparent"/>${bat}</g>
+      <g class="hw-press" id="hw-l" tabindex="0" role="button" aria-label="Byt koppling av lamporna" data-aria-en="Rewire the bulbs"><rect x="130" y="24" width="80" height="106" fill="transparent"/>${bul}</g>
+      <rect class="hw-display" x="222" y="24" width="62" height="34" rx="4"/>
+      <text class="hw-digits" x="253" y="47" text-anchor="middle">${on ? fmt(c.I) : "----"}</text>
+      <rect class="hw-chip" x="222" y="74" width="62" height="56" rx="4"/>
+      <text class="hw-text-light" x="230" y="106">PICO W</text>`;
+    [["hw-b", "b"], ["hw-l", "l"]].forEach(([id, k]) => {
+      const g = box.svg.getElementById(id);
+      const flip = () => { hw[k] = hw[k] === "series" ? "parallel" : "series"; update(); };
+      g.addEventListener("click", flip);
+      g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+    });
+  }
+
+  const TOP = 40, BOT = 290;
+  const cols = (cx, how) => how === "series" ? [cx] : [cx - 52, cx + 52];
+
+  function draw(c) {
+    const svg = $("circuit");
+    const bx = cols(150, s.b), lx = cols(450, s.l), all = [...bx, ...lx];
+    const left = Math.min(...all), right = Math.max(...all);
+    const on = c.I > 0, speed = on ? (1.6 / Math.min(4, c.I * 2 + .4)).toFixed(2) + "s" : "1s";
+    let h = "";
+    const wire = (d, flow) => { h += `<path class="wire${flow && on ? " flow" : ""}" style="--speed:${speed}" d="${d}"/>`; };
+    wire(`M${left} ${TOP}H${right}`, true); wire(`M${left} ${BOT}H${right}`, true);
+
+    // each column runs from the top rail to the bottom rail with one or two parts in it
+    const column = (x, parts) => {
+      const ys = parts.length === 2 ? [115, 215] : [165];
+      let y0 = TOP;
+      parts.forEach((p, k) => {
+        const flow = p.kind === "bulb" ? (s.l === "series" ? true : s.in[p.i]) : true;
+        wire(`M${x} ${y0}V${ys[k] - 30}`, flow);
+        h += p.kind === "batt" ? battery(x, ys[k]) : bulb(x, ys[k], p.i, c.P[p.i]);
+        y0 = ys[k] + 30;
+      });
+      const last = parts[parts.length - 1];
+      wire(`M${x} ${y0}V${BOT}`, last.kind === "bulb" && s.l !== "series" ? s.in[last.i] : true);
+    };
+    if (s.b === "series") column(bx[0], [{ kind: "batt" }, { kind: "batt" }]);
+    else bx.forEach(x => column(x, [{ kind: "batt" }]));
+    if (s.l === "series") column(lx[0], [{ kind: "bulb", i: 0 }, { kind: "bulb", i: 1 }]);
+    else lx.forEach((x, i) => column(x, [{ kind: "bulb", i }]));
+    svg.innerHTML = h;
+    svg.querySelectorAll(".bulb").forEach(el => {
+      const flip = () => { const i = +el.dataset.i; s.in[i] = !s.in[i]; update(); };
+      el.addEventListener("click", flip);
+      el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+    });
+  }
+  function battery(x, y) {
+    return `<rect class="batt" x="${x - 24}" y="${y - 30}" width="48" height="60" rx="4"/>
+      <rect class="pole" x="${x - 7}" y="${y - 35}" width="14" height="5" rx="1"/>
+      <text class="volt" x="${x}" y="${y + 5}" text-anchor="middle">${K.lang === "sv" ? "1,5" : "1.5"} V</text>`;
+  }
+  function bulb(x, y, i, p) {
+    const b = Math.min(1, p / 3), out = !s.in[i];
+    return `<g class="bulb${out ? " out" : ""}" data-i="${i}" tabindex="0" role="button" aria-label="${out ? K.t("Skruva i lampan", "Screw in the bulb") : K.t("Skruva ur lampan", "Unscrew the bulb")}">
+      ${b > 0 ? `<circle class="glow" cx="${x}" cy="${y}" r="${26 + b * 20}" opacity="${.12 + b * .25}"/>` : ""}
+      <circle class="glass" cx="${x}" cy="${y}" r="26"/>
+      ${out ? "" : `<circle class="glow" cx="${x}" cy="${y}" r="24" opacity="${b * .85}"/><path class="filament" d="M${x - 10} ${y + 8}l6-14 4 10 4-10 6 14"/>`}
+    </g>`;
+  }
+
+  const fmt = v => v.toFixed(2).replace(".", K.lang === "sv" ? "," : ".");
+  function update() {
+    const c = calc(s.b, s.l, s.in), real = calc(hw.b, hw.l);
+    document.querySelectorAll("[data-b]").forEach(b => b.setAttribute("aria-pressed", b.dataset.b === s.b));
+    document.querySelectorAll("[data-l]").forEach(b => b.setAttribute("aria-pressed", b.dataset.l === s.l));
+    draw(c); drawBox(real);
+    $("r-u").textContent = fmt(c.U).replace(/0$/, "") + " V";
+    $("r-i").textContent = fmt(c.I) + " A";
+    $("r-t").textContent = c.I ? String(c.h).replace(".", K.lang === "sv" ? "," : ".") + " h" : "–";
+
+    const lit = c.P.filter(p => p > 0).length;
+    if (lit === 2 && c.P.every(p => p >= 3)) tasks.complete("bright");
+    if (lit === 2 && c.h >= 8) tasks.complete("night");
+    if (box.connected() && real.h >= 8 && hw.b === s.b && hw.l === s.l && lit === 2) tasks.complete("real");
+  }
+  document.querySelectorAll("[data-b]").forEach(b => b.addEventListener("click", () => { s.b = b.dataset.b; update(); }));
+  document.querySelectorAll("[data-l]").forEach(b => b.addEventListener("click", () => { s.l = b.dataset.l; update(); }));
+  K.onLang(update);
+  update();
+})();
+</script>
+</body>
+</html>

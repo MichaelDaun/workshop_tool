@@ -9,8 +9,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
 <link rel="stylesheet" href="../shared/theme.css">
 <style>
-  .bild { display: grid; place-items: center; padding: 16px; }
-  #bild { width: min(100%, 520px); aspect-ratio: 1; cursor: crosshair; border: 1px solid var(--grafit); }
+  .picture { display: grid; place-items: center; padding: 16px; }
+  #picture { width: min(100%, 520px); aspect-ratio: 1; cursor: crosshair; border: 1px solid var(--graphite); }
 </style>
 </head>
 <body data-domain="signal">
@@ -18,8 +18,7 @@
 
 <main class="module">
   <section class="stage">
-    <div class="scen bild"><canvas id="bild" class="fritt" width="1040" height="1040" aria-label="En bild av ett hus som går att zooma in i" data-aria-en="A picture of a house you can zoom into"></canvas></div>
-    <p class="status" aria-live="polite" role="status"></p>
+    <div class="scene picture"><canvas id="picture" class="free" width="1040" height="1040" aria-label="En bild av ett hus som går att zooma in i" data-aria-en="A picture of a house you can zoom into"></canvas></div>
 
     <div class="controls">
       <div class="control">
@@ -27,34 +26,32 @@
         <input type="range" id="zoom" min="0" max="4" step="1" value="0">
       </div>
     </div>
-    <div class="rad" id="upplosning">
-      <span class="liten" data-en="Pixels across">Pixlar på bredden</span>
+    <div class="row" id="resolution">
+      <span class="small" data-en="Pixels across">Pixlar på bredden</span>
     </div>
-    <div class="controls" id="farg">
+    <div class="controls" id="colour">
       <div class="control"><label for="r"><span data-en="Red">Rött</span><output id="o-r"></output></label><input type="range" id="r" min="0" max="255"></div>
       <div class="control"><label for="g"><span data-en="Green">Grönt</span><output id="o-g"></output></label><input type="range" id="g" min="0" max="255"></div>
       <div class="control"><label for="b"><span data-en="Blue">Blått</span><output id="o-b"></output></label><input type="range" id="b" min="0" max="255"></div>
     </div>
     <div class="readouts">
       <div class="readout"><span class="v" id="r-px"></span><span class="k" data-en="pixels">pixlar</span></div>
-      <div class="readout"><span class="v" id="r-tal"></span><span class="k" data-en="numbers">tal</span></div>
+      <div class="readout"><span class="v" id="r-numbers"></span><span class="k" data-en="numbers">tal</span></div>
     </div>
   </section>
 
   <aside class="panel">
     <div class="mission" id="mission">
-      <p class="meta" data-en="Signals · 10 min">Signalteknik · 10 min</p>
-      <h2 data-en="Zoom until it turns into numbers">Zooma tills det blir siffror</h2>
-      <p class="lead" data-en="Tap a spot in the picture and zoom in.">Tryck på ett ställe i bilden och zooma in.</p>
+      <p class="meta" data-en="Signals · 2–4 people · 20 min">Signalteknik · 2–4 personer · 20 min</p>
+      <h2 data-en="A picture is numbers">En bild är tal</h2>
     </div>
     <details class="why">
       <summary data-en="What happened?">Vad hände?</summary>
       <div class="body">
-        <p data-en="A picture is a grid of <b>pixels</b>. Each pixel is three numbers from 0 to 255: red, green and blue.">En bild är ett rutnät av <b>pixlar</b>. Varje pixel är tre tal mellan 0 och 255: rött, grönt och blått.</p>
-        <p data-en="A phone photo has about 12 million pixels, so 36 million numbers.">En mobilbild har ungefär 12 miljoner pixlar, alltså 36 miljoner tal.</p>
+        <p data-en="A picture is a grid of <b>pixels</b>. Each pixel is three numbers from 0 to 255: red, green and blue. A phone photo holds about 36 million numbers.">En bild är ett rutnät av <b>pixlar</b>. Varje pixel är tre tal mellan 0 och 255: rött, grönt och blått. En mobilbild består av ungefär 36 miljoner tal.</p>
       </div>
     </details>
-    <div id="lada"></div>
+    <div id="box"></div>
   </aside>
 </main>
 
@@ -64,12 +61,12 @@
   const $ = id => document.getElementById(id);
   const N = 32;
 
-  // en liten bild som ritas med kod: himmel, sol, kulle, hus och träd
-  const bas = [];
+  // a small picture drawn with code: sky, sun, hill, house and tree
+  const base = [], sun = [];
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const t = Math.min(1, y / 20);
     let c = [120 + 80 * t, 180 + 45 * t, 230 + 15 * t];
-    if (Math.hypot(x - 25, y - 6) < 4) c = [250, 210, 60];
+    if (Math.hypot(x - 25, y - 6) < 4) { c = [250, 210, 60]; sun.push(y * N + x); }
     if (y > 23 + 2 * Math.sin(x / 5)) c = [80 - (y - 24) * 3, 150 - (y - 24) * 4, 60];
     if (x >= 5 && x <= 14 && y >= 15 && y <= 25) c = [190, 60, 50];
     if (y >= 9 && y < 15 && Math.abs(x - 9.5) <= (y - 9) * 1.05 + .5) c = [90, 60, 50];
@@ -77,38 +74,40 @@
     if (x >= 11 && x <= 12 && y >= 20 && y <= 25) c = [110, 70, 40];
     if (x === 21 && y >= 19 && y <= 24) c = [100, 70, 40];
     if (Math.hypot(x - 21, y - 16) < 3.6) c = [50, 120, 50];
-    bas.push(c.map(Math.round));
+    base.push(c.map(Math.round));
   }
 
-  const s = { res: 32, zoom: 0, sel: { x: 7, y: 17 } };
-  const tasks = K.tasks($("mission"), "pixlar", [
-    { id: "rutor",   text: { sv: "Zooma tills du ser rutorna", en: "Zoom until you see the squares" } },
-    { id: "siffror", text: { sv: "Zooma tills du ser siffrorna", en: "Zoom until you see the numbers" } },
-    { id: "vit",     text: { sv: "Gör en pixel helt vit", en: "Make one pixel pure white" } },
-    { id: "atta",    text: { sv: "Visa bilden med 8 × 8 pixlar", en: "Show the picture with 8 × 8 pixels" } }
+  const s = { res: 32, zoom: 0, sel: { x: 25, y: 6 } };
+  const tasks = K.tasks($("mission"), "pixels", [
+    { id: "green-sun", text: { sv: "Gör solen grön genom att ändra talen.", en: "Turn the sun green by changing the numbers." } },
+    { id: "budget",    text: { sv: "Lådan tar emot högst 200 tal. Gör bilden så skarp det går.", en: "The box accepts 200 numbers at most. Make the picture as sharp as you can." } },
+    { id: "symbol",    text: { sv: "Rita lagets symbol på lådans lampor.", en: "Draw the team's symbol on the box lamps." } }
   ]);
 
-  K.lada($("lada"), {
-    nod: "nod-09",
-    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Lysdiodsmatris med 8 × 8 punkter">
-      <rect class="hw-platta" x="8" y="8" width="284" height="134" rx="6"/>
-      <rect x="92" y="14" width="122" height="122" rx="4" fill="var(--grafit)"/>
-      <g id="hw-matris">${Array.from({ length: 64 }, (_, i) => `<rect x="${98 + (i % 8) * 14.4}" y="${20 + Math.floor(i / 8) * 14.4}" width="10" height="10" rx="2"/>`).join("")}</g>
-    </svg>`
+  // node-09: an 8 × 8 WS2812 matrix
+  const box = K.box($("box"), {
+    node: "node-09",
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Lysdiodsmatris med 8 × 8 punkter" data-aria-en="LED matrix with 8 × 8 dots">
+      <rect class="hw-board" x="8" y="8" width="284" height="134" rx="6"/>
+      <rect x="92" y="14" width="122" height="122" rx="4" fill="var(--graphite)"/>
+      <g id="hw-matrix">${Array.from({ length: 64 }, (_, i) => `<rect x="${98 + (i % 8) * 14.4}" y="${20 + Math.floor(i / 8) * 14.4}" width="10" height="10" rx="2"/>`).join("")}</g>
+    </svg>`,
+    onConnect: () => paint()
   });
 
-  // nedskalad bild: medelvärdet av varje block
+  // scaled-down picture: the mean of each block
   function grid(res) {
     const k = N / res, out = [];
     for (let y = 0; y < res; y++) for (let x = 0; x < res; x++) {
       const sum = [0, 0, 0];
-      for (let j = 0; j < k; j++) for (let i = 0; i < k; i++) bas[(y * k + j) * N + x * k + i].forEach((v, c) => sum[c] += v);
+      for (let j = 0; j < k; j++) for (let i = 0; i < k; i++) base[(y * k + j) * N + x * k + i].forEach((v, c) => sum[c] += v);
       out.push(sum.map(v => Math.round(v / (k * k))));
     }
     return out;
   }
+  const original8 = grid(8);
 
-  const cv = $("bild"), g = cv.getContext("2d"), W = cv.width;
+  const cv = $("picture"), g = cv.getContext("2d"), W = cv.width;
   const across = () => Math.max(2, s.res >> s.zoom);
   function view() {
     const n = across(), x0 = Math.max(0, Math.min(s.res - n, Math.round(s.sel.x - n / 2 + .5)));
@@ -123,8 +122,8 @@
       const c = px[(v.y0 + y) * s.res + v.x0 + x];
       g.fillStyle = `rgb(${c})`; g.fillRect(x * v.cell, y * v.cell, v.cell + .5, v.cell + .5);
       if (v.cell >= 120) {
-        const ljus = c[0] * .3 + c[1] * .55 + c[2] * .15 > 140;
-        g.fillStyle = ljus ? "#1c2120" : "#ffffff"; g.font = `600 ${Math.round(v.cell / 7)}px ${C("--siffror")}`; g.textAlign = "center";
+        const light = c[0] * .3 + c[1] * .55 + c[2] * .15 > 140;
+        g.fillStyle = light ? "#1c2120" : "#ffffff"; g.font = `600 ${Math.round(v.cell / 7)}px ${C("--font-num")}`; g.textAlign = "center";
         ["R", "G", "B"].forEach((l, i) => g.fillText(`${l} ${c[i]}`, x * v.cell + v.cell / 2, y * v.cell + v.cell * (.38 + i * .18)));
       }
     }
@@ -135,34 +134,33 @@
     }
     const sx = s.sel.x - v.x0, sy = s.sel.y - v.y0;
     if (sx >= 0 && sy >= 0 && sx < v.n && sy < v.n) {
-      g.strokeStyle = C("--grafit"); g.lineWidth = Math.max(4, v.cell / 30);
+      g.strokeStyle = C("--graphite"); g.lineWidth = Math.max(4, v.cell / 30);
       g.strokeRect(sx * v.cell + 2, sy * v.cell + 2, v.cell - 4, v.cell - 4);
-      g.strokeStyle = C("--ark"); g.lineWidth = 2;
+      g.strokeStyle = C("--sheet"); g.lineWidth = 2;
       g.strokeRect(sx * v.cell + 6, sy * v.cell + 6, v.cell - 12, v.cell - 12);
     }
-    const atta = grid(8);
-    [...$("hw-matris").children].forEach((r, i) => r.setAttribute("fill", `rgb(${atta[i]})`));
+    const on = box.connected(), eight = grid(8);
+    [...$("hw-matrix").children].forEach((r, i) => r.setAttribute("fill", on ? `rgb(${eight[i]})` : "var(--pencil)"));
   }
 
   function paint() {
-    const px = grid(s.res), c = px[s.sel.y * s.res + s.sel.x], v = view();
+    const px = grid(s.res), c = px[s.sel.y * s.res + s.sel.x], v = view(), loc = K.lang === "sv" ? "sv-SE" : "en-GB";
     ["r", "g", "b"].forEach((k, i) => { $(k).value = c[i]; $("o-" + k).textContent = c[i]; });
     $("o-zoom").textContent = `${v.n} × ${v.n}`;
-    $("r-px").textContent = (s.res * s.res).toLocaleString("sv-SE");
-    $("r-tal").textContent = (s.res * s.res * 3).toLocaleString("sv-SE");
+    $("r-px").textContent = (s.res * s.res).toLocaleString(loc);
+    $("r-numbers").textContent = (s.res * s.res * 3).toLocaleString(loc);
     document.querySelectorAll("[data-res]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.res === s.res));
-    K.status(`R ${c[0]}, G ${c[1]}, B ${c[2]}`);
     draw();
-    if (v.cell >= 60) tasks.complete("rutor");
-    if (v.cell >= 120) tasks.complete("siffror");
-    if (c.every(x => x === 255)) tasks.complete("vit");
-    if (s.res === 8) tasks.complete("atta");
+    if (sun.every(i => { const [r, gr, b] = base[i]; return gr > 150 && r < 120 && b < 120; })) tasks.complete("green-sun");
+    if (s.res === 8) tasks.complete("budget");
+    const changed = grid(8).filter((c, i) => c.reduce((a, v, k) => a + Math.abs(v - original8[i][k]), 0) > 60).length;
+    if (box.connected() && s.res === 8 && changed >= 8) tasks.complete("symbol");
   }
 
   [32, 16, 8, 4].forEach(r => {
     const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.dataset.res = r; b.textContent = r;
     b.addEventListener("click", () => { s.sel = { x: Math.floor(s.sel.x * r / s.res), y: Math.floor(s.sel.y * r / s.res) }; s.res = r; paint(); });
-    $("upplosning").append(b);
+    $("resolution").append(b);
   });
   $("zoom").addEventListener("input", e => { s.zoom = +e.target.value; paint(); });
   cv.addEventListener("click", e => {
@@ -170,10 +168,10 @@
     s.sel = { x: v.x0 + Math.floor((e.clientX - r.left) / r.width * v.n), y: v.y0 + Math.floor((e.clientY - r.top) / r.height * v.n) };
     paint();
   });
-  // ändra färgen på den valda pixeln (alla småpixlar i blocket)
+  // a colour change applies to every small pixel inside the selected block
   ["r", "g", "b"].forEach((k, ci) => $(k).addEventListener("input", e => {
     const blk = N / s.res;
-    for (let j = 0; j < blk; j++) for (let i = 0; i < blk; i++) bas[(s.sel.y * blk + j) * N + s.sel.x * blk + i][ci] = +e.target.value;
+    for (let j = 0; j < blk; j++) for (let i = 0; i < blk; i++) base[(s.sel.y * blk + j) * N + s.sel.x * blk + i][ci] = +e.target.value;
     paint();
   }));
   K.onLang(paint);

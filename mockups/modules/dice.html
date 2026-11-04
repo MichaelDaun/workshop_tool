@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tärningar – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  .bar { fill: var(--active); }
+  .bar.guess { stroke: var(--graphite); stroke-width: 3; }
+  .expected { fill: none; stroke: var(--graphite); stroke-width: 2; stroke-dasharray: 6 5; }
+  .axis { stroke: var(--graphite); stroke-width: 2; }
+  .label { font-family: var(--font-num); font-size: 19px; fill: var(--graphite); }
+  .label.guess { font-weight: 600; text-decoration: underline; }
+  .count { font-family: var(--font-num); font-size: 15px; fill: var(--pencil); }
+  .guesses .chip { min-width: 44px; justify-content: center; }
+</style>
+</head>
+<body data-domain="math">
+<header class="topbar" data-title-sv="Tärningar" data-title-en="Dice"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="scene"><svg id="chart" viewBox="0 0 600 300" role="img" aria-label="Stapeldiagram över tärningskast" data-aria-en="Bar chart of dice rolls"></svg></div>
+    <div class="row">
+      <span class="small" data-en="Dice">Tärningar</span>
+      <button class="chip" type="button" data-d="1">1</button>
+      <button class="chip" type="button" data-d="2">2</button>
+      <button class="chip" type="button" data-d="3">3</button>
+    </div>
+    <div class="row guesses" id="guesses"><span class="small" data-en="Most common?">Vanligast?</span></div>
+    <div class="row">
+      <button class="btn" type="button" data-roll="1" data-en="Roll">Kasta</button>
+      <button class="btn ghost" type="button" data-roll="10" data-en="Roll 10">Kasta 10</button>
+      <button class="btn ghost" type="button" data-roll="100" data-en="Roll 100">Kasta 100</button>
+      <button class="btn ghost" id="clear" type="button" data-en="Clear">Rensa</button>
+    </div>
+    <div class="readouts">
+      <div class="readout"><span class="v" id="r-rolls"></span><span class="k" data-en="rolls">kast</span></div>
+      <div class="readout"><span class="v" id="r-top"></span><span class="k" data-en="most common">vanligast</span></div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Mathematics · 2–4 people · 20 min">Matematik · 2–4 personer · 20 min</p>
+      <h2 data-en="Chance becomes a curve">Slumpen blir en kurva</h2>
+    </div>
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="A single roll cannot be predicted, many rolls can. With two dice, 7 comes up in six ways and 2 in only one.">Ett kast går inte att förutsäga, många kast går. Med två tärningar kan 7 komma på sex sätt och 2 på bara ett.</p>
+      </div>
+    </details>
+    <div id="box"></div>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const s = { d: 2, rolls: [], last: null, guess: null, guessedFirst: false, boxRolls: 0 };
+
+  const tasks = K.tasks($("mission"), "dice", [
+    { id: "seven", text: { sv: "Gissa vilken summa som blir vanligast med två tärningar. Kasta sedan 100 gånger.", en: "Guess which total comes up most with two dice. Then roll 100 times." } },
+    { id: "level", text: { sv: "Kasta en tärning tills staplarna är nästan lika höga.", en: "Roll one die until the bars are nearly level." } },
+    { id: "real",  text: { sv: "Skaka lådans tärning 20 gånger.", en: "Shake the box die 20 times." } }
+  ]);
+
+  // node-10: a shaker with an accelerometer and a number display. In the mockup a tap on it is a shake.
+  const box = K.box($("box"), {
+    node: "node-10",
+    svg: `<svg viewBox="0 0 300 130" role="img" aria-label="Skakburk med en sifferdisplay" data-aria-en="Shaker with a number display">
+      <rect class="hw-board" x="8" y="8" width="284" height="114" rx="6"/>
+      <rect class="hw-press" x="40" y="26" width="90" height="78" rx="14" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2.5" id="hw-shaker" tabindex="0" role="button" aria-label="Skaka" data-aria-en="Shake"/>
+      <rect class="hw-display" x="160" y="44" width="110" height="42" rx="3"/>
+      <text class="hw-digits" id="hw-number" x="215" y="73" text-anchor="middle" style="font-size:24px">--</text>
+    </svg>`,
+    onConnect: () => paint()
+  });
+  const shake = () => { if (box.connected()) { roll(1); s.boxRolls++; paint(); } };
+  $("hw-shaker").addEventListener("click", shake);
+  $("hw-shaker").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); shake(); } });
+
+  for (let v = 2; v <= 12; v++) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.dataset.g = v; b.textContent = v;
+    b.addEventListener("click", () => { if (s.d === 2 && !s.rolls.length) { s.guess = v; paint(); } });
+    $("guesses").append(b);
+  }
+
+  // number of ways to get each total with d dice
+  const ways = d => {
+    let w = [1];
+    for (let k = 0; k < d; k++) { const n = Array(w.length + 6).fill(0); w.forEach((v, i) => { for (let f = 1; f <= 6; f++) n[i + f] += v; }); w = n; }
+    return w.slice(d);
+  };
+
+  function roll(n) {
+    if (s.d === 2 && !s.rolls.length) s.guessedFirst = s.guess != null;
+    for (let i = 0; i < n; i++) {
+      let sum = 0;
+      for (let k = 0; k < s.d; k++) sum += 1 + Math.floor(Math.random() * 6);
+      s.rolls.push(sum);
+    }
+    s.last = s.rolls[s.rolls.length - 1];
+    paint();
+  }
+
+  function paint() {
+    const min = s.d, max = 6 * s.d, N = max - min + 1;
+    const counts = Array(N).fill(0); s.rolls.forEach(v => counts[v - min]++);
+    const w = ways(s.d), all = w.reduce((a, b) => a + b, 0);
+    const T = s.rolls.length, expected = w.map(x => x / all * T);
+    const top = Math.max(1, ...counts, ...expected);
+    const X = 40, Y = 250, B = 520 / N, H = 210, g = s.d === 2 ? s.guess : null;
+    let h = `<line class="axis" x1="${X}" y1="${Y}" x2="${X + 520}" y2="${Y}"/>`;
+    counts.forEach((c, i) => {
+      const x = X + i * B, hh = c / top * H, isGuess = i + min === g;
+      h += `<rect class="bar${isGuess ? " guess" : ""}" x="${x + B * .12}" y="${Y - hh}" width="${B * .76}" height="${hh}"/>`;
+      if (N <= 11) h += `<text class="count" x="${x + B / 2}" y="${Y - hh - 6}" text-anchor="middle">${c || ""}</text>`;
+      if (N <= 11 || i % 2 === 0) h += `<text class="label${isGuess ? " guess" : ""}" x="${x + B / 2}" y="${Y + 24}" text-anchor="middle">${i + min}</text>`;
+    });
+    if (T) h += `<path class="expected" d="${expected.map((v, i) => `${i ? "L" : "M"}${X + i * B + B / 2} ${Y - v / top * H}`).join("")}"/>`;
+    $("chart").innerHTML = h;
+
+    document.querySelectorAll("[data-d]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.d === s.d));
+    $("guesses").hidden = s.d !== 2;
+    document.querySelectorAll("[data-g]").forEach(b => { b.setAttribute("aria-pressed", +b.dataset.g === s.guess); b.disabled = T > 0; });
+    $("r-rolls").textContent = T;
+    const best = T ? counts.indexOf(Math.max(...counts)) + min : null;
+    $("r-top").textContent = best ?? "–";
+    $("hw-number").textContent = box.connected() && s.last != null ? s.last : "--";
+
+    if (s.d === 2 && s.guessedFirst && T >= 100) tasks.complete("seven");
+    if (s.d === 1 && T >= 60 && Math.min(...counts) / Math.max(...counts) > .75) tasks.complete("level");
+    if (box.connected() && s.boxRolls >= 20) tasks.complete("real");
+  }
+
+  const reset = () => { s.rolls = []; s.last = null; s.guessedFirst = false; s.boxRolls = 0; };
+  document.querySelectorAll("[data-d]").forEach(b => b.addEventListener("click", () => { s.d = +b.dataset.d; reset(); paint(); }));
+  document.querySelectorAll("[data-roll]").forEach(b => b.addEventListener("click", () => roll(+b.dataset.roll)));
+  $("clear").addEventListener("click", () => { reset(); s.guess = null; paint(); });
+  K.onLang(paint);
+  paint();
+})();
+</script>
+</body>
+</html>

@@ -11,87 +11,87 @@
 <style>
   .room { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; max-width: 1320px; margin: 0 auto; padding-block: 20px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); align-items: start; }
   @media (max-width: 980px) { .room { grid-template-columns: minmax(0, 1fr); } }
-  .over { font-size: var(--fs-liten); color: var(--blyerts); margin-bottom: 8px; }
+  .over { font-size: var(--fs-small); color: var(--pencil); margin-bottom: 8px; }
 
-  .screen { background: var(--ark); border: 1px solid var(--linje); border-radius: 10px; overflow: hidden; min-width: 0; }
-  .screen-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--linje); }
+  .screen { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-width: 0; }
+  .screen-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--line); }
   @media (max-width: 640px) { .screen-head { grid-template-columns: auto minmax(0, 1fr); } .screen-head .count { grid-column: 1 / -1; text-align: left; } }
-  .qr { width: 80px; height: 80px; border: 1px solid var(--grafit); border-radius: 6px; background: var(--ark); padding: 6px; display: grid; grid-template-columns: repeat(11, 1fr); }
-  .qr i { background: var(--grafit); }
+  .qr { width: 80px; height: 80px; border: 1px solid var(--graphite); border-radius: 6px; background: var(--sheet); padding: 6px; display: grid; grid-template-columns: repeat(11, 1fr); }
+  .qr i { background: var(--graphite); }
   .qr i.o { background: transparent; }
-  .code { font-family: var(--siffror); font-size: clamp(1.8rem, 1.2rem + 2vw, 2.6rem); font-weight: 600; line-height: 1; }
-  .join-text { font-size: var(--fs-liten); color: var(--blyerts); margin-top: 6px; }
+  .code { font-family: var(--font-num); font-size: clamp(1.8rem, 1.2rem + 2vw, 2.6rem); font-weight: 600; line-height: 1; }
+  .join-text { font-size: var(--fs-small); color: var(--pencil); margin-top: 6px; }
   .count { text-align: right; }
-  .count b { font-family: var(--siffror); font-size: 34px; font-weight: 600; display: block; line-height: 1; }
-  .count span { font-size: var(--fs-liten); color: var(--blyerts); }
-  .tabs { display: flex; gap: 2px; padding: 0 12px; border-bottom: 1px solid var(--linje); overflow-x: auto; }
-  .tab { border: 0; background: transparent; padding: 12px 12px 10px; font-weight: 700; cursor: pointer; color: var(--blyerts); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
-  .tab[aria-selected="true"] { color: var(--grafit); border-bottom-color: var(--grafit); }
+  .count b { font-family: var(--font-num); font-size: 34px; font-weight: 600; display: block; line-height: 1; }
+  .count span { font-size: var(--fs-small); color: var(--pencil); }
+  .tabs { display: flex; gap: 2px; padding: 0 12px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .tab { border: 0; background: transparent; padding: 12px 12px 10px; font-weight: 700; cursor: pointer; color: var(--pencil); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+  .tab[aria-selected="true"] { color: var(--graphite); border-bottom-color: var(--graphite); }
   .pane { padding: 18px; display: grid; gap: 16px; }
-  .rad { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+  .pane .row { justify-content: space-between; }
 
   .summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0 16px; }
-  .sum { padding: 8px 0; border-top: 1px solid var(--rutnat); display: grid; gap: 4px; min-width: 0; }
-  .sum .namn { display: grid; font-size: var(--fs-liten); min-width: 0; }
-  .sum .namn b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sum .namn span { color: var(--blyerts); font-variant-numeric: tabular-nums; }
-  .sum .bar { height: 4px; border-radius: 2px; background: var(--rutnat); overflow: hidden; display: flex; }
-  .sum .bar i { display: block; height: 100%; background: var(--aktiv); transition: width .8s var(--broms); }
-  .sum .bar i + i { background: color-mix(in srgb, var(--aktiv) 30%, var(--rutnat)); }
-  .lagesbild { padding: 10px 14px; border-left: 3px solid var(--grafit); background: var(--papper); font-size: 16px; border-radius: 0 6px 6px 0; }
+  .sum { padding: 8px 0; border-top: 1px solid var(--grid); display: grid; gap: 4px; min-width: 0; }
+  .sum .name { display: grid; font-size: var(--fs-small); min-width: 0; }
+  .sum .name b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sum .name span { color: var(--pencil); font-variant-numeric: tabular-nums; }
+  .sum .bar { height: 4px; border-radius: 2px; background: var(--grid); overflow: hidden; display: flex; }
+  .sum .bar i { display: block; height: 100%; background: var(--active); transition: width .8s var(--ease); }
+  .sum .bar i + i { background: color-mix(in srgb, var(--active) 30%, var(--grid)); }
+  .insight { padding: 10px 14px; border-left: 3px solid var(--graphite); background: var(--paper); font-size: 16px; border-radius: 0 6px 6px 0; }
   .people { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px; }
-  .person { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; align-items: center; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--rutnat); animation: in var(--lugn) var(--broms) both; }
-  .person.me { border-color: var(--grafit); }
-  .person .av { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--grafit); display: grid; place-items: center; font-size: 11px; font-weight: 700; }
-  .person .av.lag { border-radius: 6px; background: var(--grafit); color: var(--pa-grafit); font-family: var(--siffror); }
-  .person .nm { font-size: var(--fs-liten); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .person { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; align-items: center; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--grid); animation: in var(--calm) var(--ease) both; }
+  .person.me { border-color: var(--graphite); }
+  .person .av { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--graphite); display: grid; place-items: center; font-size: 11px; font-weight: 700; }
+  .person .av.team { border-radius: 6px; background: var(--graphite); color: var(--on-graphite); font-family: var(--font-num); }
+  .person .nm { font-size: var(--fs-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .person .dots { display: flex; gap: 1.5px; margin-top: 3px; }
-  .person .dots i { width: 7px; height: 7px; border-radius: 1px; border: 1.5px solid var(--linje); flex: none; }
-  .person .dots i.pagar { border-color: var(--aktiv); }
-  .person .dots i.klar { border-color: var(--aktiv); background: var(--aktiv); }
+  .person .dots i { width: 7px; height: 7px; border-radius: 1px; border: 1.5px solid var(--line); flex: none; }
+  .person .dots i.busy { border-color: var(--active); }
+  .person .dots i.done { border-color: var(--active); background: var(--active); }
 
   #class-ai { aspect-ratio: 16 / 8; }
   .ticker { display: grid; gap: 2px; min-height: 92px; align-content: start; }
-  .ticker span { font-size: var(--fs-liten); color: var(--blyerts); animation: in var(--lugn) var(--broms) both; }
-  .ticker span.mitt { color: var(--grafit); font-weight: 700; }
+  .ticker span { font-size: var(--fs-small); color: var(--pencil); animation: in var(--calm) var(--ease) both; }
+  .ticker span.mine { color: var(--graphite); font-weight: 700; }
 
-  .poll-q { font-size: var(--fs-r2); font-weight: 800; line-height: 1.2; }
+  .poll-q { font-size: var(--fs-h2); font-weight: 800; line-height: 1.2; }
   .opts { display: grid; gap: 8px; }
   .opt { display: grid; grid-template-columns: 40px minmax(0, 1fr) 48px; gap: 12px; align-items: center; }
-  .opt .letter { width: 40px; height: 40px; border-radius: 6px; border: 1px solid var(--grafit); display: grid; place-items: center; font-weight: 800; }
-  .opt .track { position: relative; height: 40px; border-radius: 6px; border: 1px solid var(--linje); overflow: hidden; }
-  .opt .track i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--rutnat); transition: width .6s var(--broms); }
+  .opt .letter { width: 40px; height: 40px; border-radius: 6px; border: 1px solid var(--graphite); display: grid; place-items: center; font-weight: 800; }
+  .opt .track { position: relative; height: 40px; border-radius: 6px; border: 1px solid var(--line); overflow: hidden; }
+  .opt .track i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--grid); transition: width .6s var(--ease); }
   .opt .track span { position: relative; display: flex; align-items: center; gap: 8px; height: 100%; padding: 0 12px; font-size: 16px; }
-  .opt .n { font-family: var(--siffror); text-align: right; }
-  .opt.right .letter { background: var(--grafit); color: var(--pa-grafit); }
-  .opt.right .track { border: 2px solid var(--grafit); }
-  .opt.right .track i { background: color-mix(in srgb, var(--nat) 22%, var(--ark)); }
+  .opt .n { font-family: var(--font-num); text-align: right; }
+  .opt.right .letter { background: var(--graphite); color: var(--on-graphite); }
+  .opt.right .track { border: 2px solid var(--graphite); }
+  .opt.right .track i { background: color-mix(in srgb, var(--net) 22%, var(--sheet)); }
 
-  .lador { width: 100%; border-collapse: collapse; font-size: 16px; }
-  .lador th { text-align: left; font-weight: 400; font-size: var(--fs-liten); color: var(--blyerts); padding: 0 8px 6px; }
-  .lador td { padding: 10px 8px; border-top: 1px solid var(--rutnat); vertical-align: middle; }
-  .lador td.mono { font-family: var(--siffror); }
-  .lador select { height: 40px; border-radius: 6px; border: 1px solid var(--grafit); background: var(--ark); padding: 0 8px; max-width: 100%; }
-  .lador .btn { min-height: 40px; font-size: var(--fs-liten); padding: 0 12px; }
-  .lampa { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--grafit); vertical-align: -1px; margin-right: 6px; }
-  .lampa.pa { background: var(--grafit); }
-  .lampa.blink { animation: blink .5s steps(1) infinite; }
+  .boxes { width: 100%; border-collapse: collapse; font-size: 16px; }
+  .boxes th { text-align: left; font-weight: 400; font-size: var(--fs-small); color: var(--pencil); padding: 0 8px 6px; }
+  .boxes td { padding: 10px 8px; border-top: 1px solid var(--grid); vertical-align: middle; }
+  .boxes td.mono { font-family: var(--font-num); }
+  .boxes select { height: 40px; border-radius: 6px; border: 1px solid var(--graphite); background: var(--sheet); padding: 0 8px; max-width: 100%; }
+  .boxes .btn { min-height: 40px; font-size: var(--fs-small); padding: 0 12px; }
+  .lamp { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--graphite); vertical-align: -1px; margin-right: 6px; }
+  .lamp.on { background: var(--graphite); }
+  .lamp.blink { animation: blink .5s steps(1) infinite; }
   @keyframes blink { 50% { background: transparent; } }
-  .tyst { color: var(--blyerts); }
-  .tejp { display: inline-block; width: 18px; height: 12px; background: var(--tejp-monster); border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
-  .tabell-wrap { overflow-x: auto; }
-  @media (max-width: 720px) { .lador .dold-smal { display: none; } }
+  .quiet { color: var(--pencil); }
+  .tape { display: inline-block; width: 18px; height: 12px; background: var(--tape-stripes); border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+  .table-wrap { overflow-x: auto; }
+  @media (max-width: 720px) { .boxes .hide-narrow { display: none; } }
 
   .phone-col { position: sticky; top: calc(76px + env(safe-area-inset-top, 0px)); }
   @media (max-width: 980px) { .phone-col { position: static; } }
-  .phone { width: min(100%, 300px); margin: 0 auto; border-radius: 30px; border: 8px solid var(--grafit); background: var(--papper); overflow: hidden; min-height: 560px; display: grid; grid-template-rows: auto 1fr; }
-  .phone-top { display: flex; justify-content: space-between; align-items: center; padding: 14px 14px 10px; background: var(--ark); border-bottom: 1px solid var(--linje); font-size: var(--fs-liten); }
-  .phone-top .code-s { font-family: var(--siffror); color: var(--blyerts); }
+  .phone { width: min(100%, 300px); margin: 0 auto; border-radius: 30px; border: 8px solid var(--graphite); background: var(--paper); overflow: hidden; min-height: 560px; display: grid; grid-template-rows: auto 1fr; }
+  .phone-top { display: flex; justify-content: space-between; align-items: center; padding: 14px 14px 10px; background: var(--sheet); border-bottom: 1px solid var(--line); font-size: var(--fs-small); }
+  .phone-top .code-s { font-family: var(--font-num); color: var(--pencil); }
   .phone-body { padding: 14px; display: grid; gap: 10px; align-content: start; }
-  .phone-body h3 { font-size: var(--fs-r3); }
-  .phone-body p { font-size: var(--fs-liten); color: var(--blyerts); }
-  .p-mod { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--linje); background: var(--ark); text-decoration: none; font-size: var(--fs-liten); font-weight: 700; }
-  .p-mod i { width: 10px; height: 10px; border-radius: 50%; background: var(--aktiv); flex: none; }
+  .phone-body h3 { font-size: var(--fs-h3); }
+  .phone-body p { font-size: var(--fs-small); color: var(--pencil); }
+  .p-mod { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--sheet); text-decoration: none; font-size: var(--fs-small); font-weight: 700; }
+  .p-mod i { width: 10px; height: 10px; border-radius: 50%; background: var(--active); flex: none; }
   #mini { aspect-ratio: 1; cursor: crosshair; touch-action: manipulation; }
   .p-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
   .p-vote { display: grid; gap: 6px; }
@@ -118,50 +118,46 @@
         <button class="tab" role="tab" id="t-overview" aria-selected="true" data-en="Overview">Översikt</button>
         <button class="tab" role="tab" id="t-ai" aria-selected="false" data-en="The class's AI">Klassens AI</button>
         <button class="tab" role="tab" id="t-poll" aria-selected="false" data-en="Quick question">Snabbfråga</button>
-        <button class="tab" role="tab" id="t-lador" aria-selected="false" data-en="Boxes">Lådor</button>
+        <button class="tab" role="tab" id="t-boxes" aria-selected="false" data-en="Boxes">Lådor</button>
       </div>
 
       <div class="pane" id="p-overview">
         <div class="summary" id="summary"></div>
-        <p class="lagesbild" id="insight"></p>
-        <div class="rad">
-          <span class="liten" data-en="One square per workshop.">En ruta per verkstad.</span>
-          <button class="btn ghost" id="teams" type="button" data-en="Split into teams of four">Dela in i lag om fyra</button>
+        <p class="insight" id="insight"></p>
+        <div class="row">
+          <button class="btn ghost" id="teams" type="button" data-en="Split into teams">Dela in i lag</button>
         </div>
         <div class="people" id="people"></div>
       </div>
 
       <div class="pane" id="p-ai" hidden data-domain="ai">
-        <div class="rad">
-          <span class="liten" data-en="Everyone adds fruit from their phone.">Alla lägger till frukt från mobilen.</span>
-          <span class="mono liten" id="ai-n"></span>
-        </div>
-        <div class="scen"><canvas id="class-ai" width="1600" height="800" aria-label="Gemensam karta över frukter" data-aria-en="Shared map of fruit"></canvas></div>
+        <span class="mono small" id="ai-n"></span>
+        <div class="scene"><canvas id="class-ai" width="1600" height="800" aria-label="Gemensam karta över frukter" data-aria-en="Shared map of fruit"></canvas></div>
         <div class="ticker" id="ticker" aria-live="polite"></div>
       </div>
 
-      <div class="pane" id="p-poll" hidden data-domain="nat">
-        <span class="liten" data-en="Before the network workshop">Inför nätverksverkstaden</span>
+      <div class="pane" id="p-poll" hidden data-domain="net">
+        <span class="small" data-en="Before the network workshop">Inför nätverksworkshopen</span>
         <p class="poll-q" data-en="If one cable on the internet breaks, what happens?">Om en kabel på internet går sönder, vad händer?</p>
         <div class="opts" id="opts"></div>
-        <div class="rad">
-          <span class="mono liten" id="votes"></span>
+        <div class="row">
+          <span class="mono small" id="votes"></span>
           <button class="btn" id="reveal" type="button" data-en="Show the answer">Visa svaret</button>
         </div>
       </div>
 
-      <div class="pane" id="p-lador" hidden>
-        <div class="tabell-wrap">
-          <table class="lador">
+      <div class="pane" id="p-boxes" hidden>
+        <div class="table-wrap">
+          <table class="boxes">
             <thead><tr>
-              <th data-en="Box">Låda</th><th data-en="Status">Status</th><th class="dold-smal" data-en="Signal">Signal</th><th data-en="Belongs to">Hör till</th><th></th>
+              <th data-en="Box">Låda</th><th data-en="Status">Status</th><th class="hide-narrow" data-en="Signal">Signal</th><th data-en="Belongs to">Hör till</th><th></th>
             </tr></thead>
-            <tbody id="lador"></tbody>
+            <tbody id="boxes"></tbody>
           </table>
         </div>
-        <div class="rad">
-          <span class="liten" data-en="New box: hold its button until the light blinks fast.">Ny låda: håll inne knappen tills lampan blinkar snabbt.</span>
-          <button class="btn ghost" id="para" type="button" data-en="Look for new boxes">Leta efter nya lådor</button>
+        <div class="row">
+          <span class="small" data-en="New box: hold its button until the light blinks fast.">Ny låda: håll inne knappen tills lampan blinkar snabbt.</span>
+          <button class="btn ghost" id="pair" type="button" data-en="Look for new boxes">Leta efter nya lådor</button>
         </div>
       </div>
     </section>
@@ -182,22 +178,22 @@
 (() => {
   const $ = id => document.getElementById(id);
   const MODS = [
-    ["el-krets", "el", 5, "Strömkretsen", "The circuit", "el-krets", "nod-01"],
-    ["ficklampa", "el", 4, "Ficklampan", "The torch", "el-ficklampa"],
-    ["energi", "el", 4, "Vad drar mest?", "What uses most?", "el-energi"],
-    ["logik", "logik", 4, "Logikgrindar", "Logic gates", "logik-grindar", "nod-02"],
-    ["binart", "logik", 4, "Åtta lampor", "Eight lamps", "logik-binart", "nod-08"],
-    ["signal", "signal", 4, "Ljudvågor", "Sound waves", "signal-vagor", "nod-03"],
-    ["pixlar", "signal", 4, "Pixlar", "Pixels", "signal-pixlar", "nod-09"],
-    ["ai", "ai", 4, "Fruktsorteraren", "The fruit sorter", "ai-sortera", "nod-04"],
-    ["sprakmodell", "ai", 4, "Nästa ord", "Next word", "ai-sprakmodell"],
-    ["natverk", "nat", 4, "Paketresan", "Packet tour", "natverk-paket", "nod-05"],
-    ["hemligt", "nat", 4, "Hemliga färger", "Secret colours", "nat-hemligt"],
-    ["robot", "kod", 4, "Robotens väg", "The robot's path", "robot-kod", "nod-06"],
-    ["sortera", "kod", 4, "Sortera", "Sorting", "kod-sortera"],
-    ["matte", "matte", 4, "Funktionsmaskinen", "The function machine", "matte-maskin", "nod-07"],
-    ["tarning", "matte", 4, "Tärningar", "Dice", "matte-tarning", "nod-10"]
-  ].map(([id, dom, n, sv, en, f, nod]) => ({ id, dom, n, t: { sv, en }, f: `moduler/${f}.html`, nod }));
+    ["circuit", "power", "Strömkretsen", "The circuit", "node-01", 4],
+    ["torch", "power", "Ficklampan", "The torch", "node-11"],
+    ["energy", "power", "Vad drar mest?", "What uses most?", "plug-01"],
+    ["gates", "logic", "Logikgrindar", "Logic gates", "node-02"],
+    ["binary", "logic", "Åtta lampor", "Eight lamps", "node-08"],
+    ["waves", "signal", "Ljudvågor", "Sound waves", "node-03"],
+    ["pixels", "signal", "Pixlar", "Pixels", "node-09"],
+    ["fruit", "ai", "Fruktsorteraren", "The fruit sorter", "node-04"],
+    ["nextword", "ai", "Nästa ord", "Next word", "node-12"],
+    ["packets", "net", "Paketresan", "Packet tour", "node-05"],
+    ["secret", "net", "Hemliga färger", "Secret colours", "node-13"],
+    ["robot", "code", "Robotens väg", "The robot's path", "node-06"],
+    ["sorting", "code", "Sortera", "Sorting", "node-09"],
+    ["function", "math", "Funktionsmaskinen", "The function machine", "node-07"],
+    ["dice", "math", "Tärningar", "Dice", "node-10"]
+  ].map(([id, dom, sv, en, node, n = 3]) => ({ id, dom, n, t: { sv, en }, f: `modules/${id}.html`, node }));
   const me = { nick: K.nick(), me: true, prog: MODS.map(m => K.progress(m.id).length / m.n), team: null };
   const people = [me];
   let tab = "overview";
@@ -243,31 +239,33 @@
       }
       const av = el.querySelector(".av");
       av.textContent = p.team != null ? p.team + 1 : K.initials(p.nick);
-      av.classList.toggle("lag", p.team != null);
+      av.classList.toggle("team", p.team != null);
       av.title = p.team != null ? K.t(`Lag ${p.team + 1}`, `Team ${p.team + 1}`) : "";
       el.querySelector(".nm").textContent = p.me ? p.nick + K.t(" (du)", " (you)") : p.nick;
-      [...el.querySelectorAll(".dots i")].forEach((d, j) => { d.className = p.prog[j] >= 1 ? "klar" : p.prog[j] > 0 ? "pagar" : ""; });
+      [...el.querySelectorAll(".dots i")].forEach((d, j) => { d.className = p.prog[j] >= 1 ? "done" : p.prog[j] > 0 ? "busy" : ""; });
     });
     const sum = $("summary");
-    if (!sum.children.length) MODS.forEach(m => { const d = document.createElement("div"); d.className = "sum"; d.dataset.domain = m.dom; d.innerHTML = "<div class='namn'><b></b><span></span></div><div class='bar'><i></i><i></i></div>"; sum.append(d); });
+    if (!sum.children.length) MODS.forEach(m => { const d = document.createElement("div"); d.className = "sum"; d.dataset.domain = m.dom; d.innerHTML = "<div class='name'><b></b><span></span></div><div class='bar'><i></i><i></i></div>"; sum.append(d); });
     let worst = null;
     MODS.forEach((m, j) => {
       const started = people.filter(p => p.prog[j] > 0).length, done = people.filter(p => p.prog[j] >= 1).length, busy = started - done;
       const d = sum.children[j], [a, b] = d.querySelectorAll(".bar i");
       d.querySelector("b").textContent = K.t(m.t);
-      d.querySelector(".namn span").textContent = K.t(`${done} klara, ${busy} pågår`, `${done} done, ${busy} busy`);
+      d.querySelector(".name span").textContent = K.t(`${done} klara, ${busy} pågår`, `${done} done, ${busy} busy`);
       a.style.width = done / people.length * 100 + "%"; b.style.width = busy / people.length * 100 + "%";
       if (!worst || busy > worst.busy) worst = { m, busy };
     });
     $("insight").textContent = worst && worst.busy > 2
-      ? K.t(`Flest är mitt i ${K.t(worst.m.t)} just nu: ${worst.busy} personer.${worst.m.id === "robot" ? " Nivå 3 brukar ta längst tid." : ""}`,
-            `Most people are in the middle of ${K.t(worst.m.t)} right now: ${worst.busy}.${worst.m.id === "robot" ? " Level 3 usually takes longest." : ""}`)
-      : K.t("Ingen verkstad har många som står still just nu.", "No workshop has many people stuck right now.");
+      ? K.t(`${worst.busy} personer är mitt i ${K.t(worst.m.t)}.`, `${worst.busy} people are in the middle of ${K.t(worst.m.t)}.`)
+      : "";
+    $("insight").hidden = !$("insight").textContent;
   }
 
   $("teams").addEventListener("click", () => {
     const order = people.map((p, i) => i).sort(() => Math.random() - .5);
-    order.forEach((idx, k) => { people[idx].team = Math.floor(k / 4); });
+    // teams of four, or three when the numbers do not add up
+    const teams = Math.ceil(people.length / 4);
+    order.forEach((idx, k) => { people[idx].team = k % teams; });
     renderOverview(); renderPhone();
   });
 
@@ -285,7 +283,7 @@
   function ticker(f) {
     const t = $("ticker"), s = document.createElement("span");
     s.textContent = `${f.by} ${K.t("lade till", "added")} ${f.c === "apple" ? K.t("ett äpple", "an apple") : K.t("en citron", "a lemon")}`;
-    if (f.mine) s.className = "mitt";
+    if (f.mine) s.className = "mine";
     t.prepend(s); while (t.children.length > 4) t.lastChild.remove();
   }
   function predict(p) {
@@ -307,7 +305,7 @@
     g.globalAlpha = 1;
     fruits.forEach(f => {
       const px = f.x * W, py = (1 - f.y) * H, r = (small ? 12 : 14) + f.y * (small ? 14 : 20);
-      g.fillStyle = color(f.x); g.strokeStyle = C("--grafit"); g.lineWidth = f.mine ? 8 : 3.5;
+      g.fillStyle = color(f.x); g.strokeStyle = C("--graphite"); g.lineWidth = f.mine ? 8 : 3.5;
       g.beginPath(); f.c === "lemon" ? g.ellipse(px, py, r * 1.25, r * .88, 0, 0, 7) : g.arc(px, py, r, 0, 7); g.fill(); g.stroke();
       if (f.c === "apple") { g.lineWidth = 4; g.beginPath(); g.moveTo(px, py - r); g.lineTo(px + 3, py - r - 11); g.stroke(); }
       if (f.fresh && !small) {
@@ -328,12 +326,12 @@
     { l: "C", t: { sv: "Bara de som bor närmast märker det", en: "Only the people nearest notice" }, v: 0 }
   ];
   let myVote = null, revealed = false;
-  const BOCK = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const TICK = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function renderPoll() {
     const total = OPTS.reduce((a, o) => a + o.v, 0) || 1;
     $("opts").innerHTML = OPTS.map(o => `<div class="opt ${revealed && o.right ? "right" : ""}">
       <span class="letter">${o.l}</span>
-      <div class="track"><i style="width:${o.v / total * 100}%"></i><span>${K.t(o.t)}${revealed && o.right ? BOCK : ""}</span></div>
+      <div class="track"><i style="width:${o.v / total * 100}%"></i><span>${K.t(o.t)}${revealed && o.right ? TICK : ""}</span></div>
       <span class="n">${o.v}</span></div>`).join("");
     $("votes").textContent = K.t(`${OPTS.reduce((a, o) => a + o.v, 0)} svar`, `${OPTS.reduce((a, o) => a + o.v, 0)} answers`);
     $("reveal").disabled = revealed;
@@ -344,37 +342,40 @@
   }
   $("reveal").addEventListener("click", () => { revealed = true; renderPoll(); if (tab === "poll") renderPhone(); });
 
-  const LADOR = MODS.filter(m => m.nod).sort((a, b) => a.nod.localeCompare(b.nod)).map(m => ({ nod: m.nod, mod: m.id, rssi: -48 - Math.round(Math.random() * 22), online: m.id !== "robot", seen: m.id === "robot" ? 4 : 0, blink: false }));
-  LADOR.push({ nod: "nod-11", mod: "", rssi: -71, online: true, seen: 0, blink: false, ny: true });
-  function signal(rssi) { return rssi > -60 ? K.t("stark", "strong") : rssi > -70 ? K.t("bra", "good") : K.t("svag", "weak"); }
-  function renderLador() {
-    const tb = $("lador"); tb.innerHTML = "";
-    LADOR.forEach((l, i) => {
-      if (l.ny && !l.visas) return;
+  // every box in the room: one per workshop, plus the smart plug. node-09 serves two workshops.
+  const BOXES = [...new Set(MODS.map(m => m.node))].sort().map(node => {
+    const m = MODS.find(x => x.node === node);
+    return { node, mod: m.id, rssi: -48 - Math.round(Math.random() * 22), online: node !== "node-06", seen: node === "node-06" ? 4 : 0, blink: false };
+  });
+  BOXES.push({ node: "node-14", mod: "", rssi: -71, online: true, seen: 0, blink: false, fresh: true });
+  const signal = rssi => rssi > -60 ? K.t("stark", "strong") : rssi > -70 ? K.t("bra", "good") : K.t("svag", "weak");
+  function renderBoxes() {
+    const tb = $("boxes"); tb.innerHTML = "";
+    BOXES.forEach(l => {
+      if (l.fresh && !l.shown) return;
       const tr = document.createElement("tr");
       const opts = [`<option value="">${K.t("Ingen ännu", "None yet")}</option>`]
-        .concat(MODS.map(m => `<option value="${m.id}" ${l.mod === m.id ? "selected" : ""}>${K.t(m.t)}</option>`))
-        .concat(Array.from({ length: 4 }, (_, k) => `<option value="lag${k + 1}" ${l.mod === "lag" + (k + 1) ? "selected" : ""}>${K.t("Lag", "Team")} ${k + 1}</option>`));
-      tr.innerHTML = `<td class="mono">${l.nod}</td>
+        .concat(MODS.map(m => `<option value="${m.id}" ${l.mod === m.id ? "selected" : ""}>${K.t(m.t)}</option>`));
+      tr.innerHTML = `<td class="mono">${l.node}</td>
         <td>${l.online
-          ? `<span class="lampa pa${l.blink ? " blink" : ""}" aria-hidden="true"></span>${l.blink ? K.t("blinkar", "blinking") : K.t("ansluten", "connected")}`
-          : `<span class="tejp" aria-hidden="true"></span><span class="tyst">${K.t(`ingen kontakt på ${l.seen} min`, `no contact for ${l.seen} min`)}</span>`}</td>
-        <td class="mono dold-smal">${l.online ? `${l.rssi} dBm <span class="tyst" style="font-family:var(--text)">${signal(l.rssi)}</span>` : "–"}</td>
-        <td><select aria-label="${K.t("Vad lådan " + l.nod + " hör till", "What box " + l.nod + " belongs to")}">${opts.join("")}</select></td>
+          ? `<span class="lamp on${l.blink ? " blink" : ""}" aria-hidden="true"></span>${l.blink ? K.t("blinkar", "blinking") : K.t("ansluten", "connected")}`
+          : `<span class="tape" aria-hidden="true"></span><span class="quiet">${K.t(`ingen kontakt på ${l.seen} min`, `no contact for ${l.seen} min`)}</span>`}</td>
+        <td class="mono hide-narrow">${l.online ? `${l.rssi} dBm <span class="quiet" style="font-family:var(--font-text)">${signal(l.rssi)}</span>` : "–"}</td>
+        <td><select aria-label="${K.t("Workshop för " + l.node, "Workshop for " + l.node)}">${opts.join("")}</select></td>
         <td><button class="btn ghost" type="button" ${l.online ? "" : "disabled"}>${K.t("Hitta", "Find")}</button></td>`;
       tr.querySelector("select").addEventListener("change", e => { l.mod = e.target.value; renderPhone(); });
       tr.querySelector(".btn").addEventListener("click", () => {
-        l.blink = true; renderLador();
-        setTimeout(() => { l.blink = false; if (tab === "lador") renderLador(); }, 3000);
+        l.blink = true; renderBoxes();
+        setTimeout(() => { l.blink = false; if (tab === "boxes") renderBoxes(); }, 3000);
       });
       tb.append(tr);
     });
   }
-  $("para").addEventListener("click", () => {
-    const ny = LADOR.find(l => l.ny);
-    if (ny.visas) return;
-    $("para").disabled = true; $("para").textContent = K.t("Letar …", "Looking …");
-    setTimeout(() => { ny.visas = true; $("para").disabled = false; $("para").textContent = K.t("Leta efter nya lådor", "Look for new boxes"); renderLador(); }, 1600);
+  $("pair").addEventListener("click", () => {
+    const fresh = BOXES.find(l => l.fresh);
+    if (fresh.shown) return;
+    $("pair").disabled = true; $("pair").textContent = K.t("Letar …", "Looking …");
+    setTimeout(() => { fresh.shown = true; $("pair").disabled = false; $("pair").textContent = K.t("Leta efter nya lådor", "Look for new boxes"); renderBoxes(); }, 1600);
   });
 
   let pick = "apple";
@@ -382,13 +383,13 @@
     $("p-nick").textContent = me.nick;
     const ph = $("phone");
     if (tab === "overview") {
-      ph.innerHTML = `<h3>${me.team != null ? K.t(`Du är i lag ${me.team + 1}`, `You are in team ${me.team + 1}`) : K.t("Du är med i rummet", "You are in the room")}</h3>
-        <p>${K.t("Ledaren ser hur långt du har kommit, inte vad du svarar.", "The leader sees how far you have come, not what you answer.")}</p>` +
+      ph.innerHTML = `<h3>${me.team != null ? K.t(`Lag ${me.team + 1}`, `Team ${me.team + 1}`) : "VERK-42"}</h3>
+        <p>${K.t("Ledaren ser hur långt ni har kommit, inte vad ni svarar.", "The leader sees how far you have come, not what you answer.")}</p>` +
         MODS.map(m => `<a class="p-mod" href="${m.f}" data-domain="${m.dom}"><i></i><span>${K.t(m.t)}</span></a>`).join("");
     } else if (tab === "ai") {
-      ph.innerHTML = `<h3>${K.t("Lär klassens maskin", "Teach the class machine")}</h3><p>${K.t("Välj frukt och tryck på kartan.", "Pick a fruit and tap the map.")}</p>
+      ph.innerHTML = `<h3>${K.t("Lär klassens maskin", "Teach the class machine")}</h3>
         <div class="p-pick"><button class="chip" type="button" data-c="lemon" aria-pressed="${pick === "lemon"}">${K.t("Citron", "Lemon")}</button><button class="chip" type="button" data-c="apple" aria-pressed="${pick === "apple"}">${K.t("Äpple", "Apple")}</button></div>
-        <div class="scen" data-domain="ai"><canvas id="mini" width="600" height="600"></canvas></div>`;
+        <div class="scene" data-domain="ai"><canvas id="mini" width="600" height="600"></canvas></div>`;
       ph.querySelectorAll(".p-pick button").forEach(b => b.addEventListener("click", () => { pick = b.dataset.c; renderPhone(); }));
       $("mini").addEventListener("click", e => {
         const r = e.target.getBoundingClientRect();
@@ -398,29 +399,28 @@
     } else if (tab === "poll") {
       ph.innerHTML = `<h3>${K.t("Snabbfråga", "Quick question")}</h3><p>${K.t("Om en kabel på internet går sönder, vad händer?", "If one cable on the internet breaks, what happens?")}</p>
         <div class="p-vote">${OPTS.map(o => `<button class="chip" type="button" data-l="${o.l}" aria-pressed="${myVote === o.l}"><b>${o.l}</b>${K.t(o.t)}</button>`).join("")}</div>
-        ${revealed ? `<p>${K.t("Rätt svar är B. Paketen hittar en annan väg, som i Paketresan.", "The answer is B. The packets find another way, as in Packet tour.")}</p>` : ""}`;
+        ${revealed ? `<p>${K.t("B. Paketen hittar en annan väg.", "B. The packets find another way.")}</p>` : ""}`;
       ph.querySelectorAll(".p-vote button").forEach(b => b.addEventListener("click", () => {
         if (myVote) OPTS.find(o => o.l === myVote).v--;
         myVote = b.dataset.l; OPTS.find(o => o.l === myVote).v++;
         renderPhone(); renderPoll();
       }));
     } else {
-      const l = LADOR.find(x => x.mod === "ai") || LADOR[3];
+      const l = BOXES.find(x => x.mod === "fruit") || BOXES[3];
       const m = MODS.find(x => x.id === l.mod);
-      ph.innerHTML = `<h3>${K.t("Lådan på ert bord", "The box on your table")}</h3>
-        <p>${m ? K.t(`${l.nod} hör till ${K.t(m.t)}.`, `${l.nod} belongs to ${K.t(m.t)}.`)
-              : K.t(`${l.nod} hör inte till någon verkstad ännu.`, `${l.nod} does not belong to a workshop yet.`)}</p>
+      ph.innerHTML = `<h3 class="mono">${l.node}</h3>
+        <p>${m ? K.t(m.t) : K.t("Ingen workshop ännu.", "No workshop yet.")}</p>
         ${m ? `<a class="p-mod" href="${m.f}" data-domain="${m.dom}"><i></i><span>${K.t("Öppna", "Open")} ${K.t(m.t)}</span></a>` : ""}`;
     }
   }
 
-  const TABS = ["overview", "ai", "poll", "lador"];
+  const TABS = ["overview", "ai", "poll", "boxes"];
   function setTab(t) {
     tab = t;
     TABS.forEach(k => { $("t-" + k).setAttribute("aria-selected", k === t); $("p-" + k).hidden = k !== t; });
     if (t === "overview") renderOverview();
     if (t === "poll") renderPoll();
-    if (t === "lador") renderLador();
+    if (t === "boxes") renderBoxes();
     renderPhone();
   }
   TABS.forEach(k => $("t-" + k).addEventListener("click", () => setTab(k)));
@@ -429,7 +429,7 @@
   setInterval(tickSim, 900);
   setInterval(() => { if (fruits.length < 60) { addFake(false); fruits[fruits.length - 1].fresh = performance.now(); } }, 1800);
   setInterval(tickPoll, 500);
-  const HASH = { "#klassens-ai": "ai", "#snabbfraga": "poll", "#lador": "lador" };
+  const HASH = { "#class-ai": "ai", "#poll": "poll", "#boxes": "boxes" };
   setTab(HASH[location.hash] || "overview");
   requestAnimationFrame(aiLoop);
 })();

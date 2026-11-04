@@ -1,92 +1,84 @@
-/* ==========================================================================
-   Verkstan – gemensam stil enligt designmanualen (docs/06-designmanual.md)
-   Idé: arbetsbänken. Scenen ligger på ett rutnät, kontroller ser ut som
-   instrument, färg används bara på det som är aktivt.
-   ========================================================================== */
+/* Verkstan shared styles. See docs/06-design-manual.md. */
 
 :root {
-  /* Neutraler med svag grön ton, som en skärmatta */
-  --papper: #f3f4f1;
-  --ark: #ffffff;
-  --rutnat: #e4e7e3;
-  --linje: #cdd2cd;
-  --blyerts: #5b6360;
-  --grafit: #1c2120;
-  --pa-grafit: #ffffff;        /* text på grafit */
+  --paper: #f3f4f1;
+  --sheet: #ffffff;
+  --grid: #e4e7e3;
+  --line: #cdd2cd;
+  --pencil: #5b6360;
+  --graphite: #1c2120;
+  --on-graphite: #ffffff;
 
-  /* Ämnesfärger: för att hitta rätt och för det som är aktivt */
-  --el: #d99a00;
-  --logik: #16899b;
+  --power: #d99a00;
+  --logic: #16899b;
   --signal: #6a4fd8;
   --ai: #c8417a;
-  --nat: #2d6bd2;
-  --kod: #3f8a3a;
-  --matte: #d9631c;
-  --aktiv: var(--grafit);      /* sätts per modul via data-domain */
+  --net: #2d6bd2;
+  --code: #3f8a3a;
+  --math: #d9631c;
+  --active: var(--graphite);
 
-  /* Fara: varningstejp i stället för rött */
-  --tejp: #f2c200;
-  --tejp-monster: repeating-linear-gradient(-45deg, #1c2120 0 7px, var(--tejp) 7px 14px);
+  --tape: #f2c200;
+  --tape-stripes: repeating-linear-gradient(-45deg, #1c2120 0 7px, var(--tape) 7px 14px);
 
-  --text: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
-  --siffror: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, monospace;
+  --font-text: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-num: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, monospace;
 
-  --fs-liten: 14px;
-  --fs-brod: 17px;
-  --fs-r3: 20px;
-  --fs-r2: 28px;
-  --fs-r1: clamp(2rem, 1.4rem + 2.2vw, 2.75rem);
+  --fs-small: 14px;
+  --fs-body: 17px;
+  --fs-h3: 20px;
+  --fs-h2: 28px;
+  --fs-h1: clamp(2rem, 1.4rem + 2.2vw, 2.75rem);
 
-  --kort: 150ms;
-  --lugn: 220ms;
-  --broms: cubic-bezier(.2, .7, .2, 1);
+  --fast: 150ms;
+  --calm: 220ms;
+  --ease: cubic-bezier(.2, .7, .2, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --papper: #121514; --ark: #1a1e1d; --rutnat: #242a28; --linje: #343b38;
-    --blyerts: #9aa39f; --grafit: #e8ece9; --pa-grafit: #121514;
-    --el: #f2b630; --logik: #3cc0d0; --signal: #9b86ff; --ai: #f06aa2; --nat: #6a9cff; --kod: #6cc466; --matte: #ff8f4a;
+    --paper: #121514; --sheet: #1a1e1d; --grid: #242a28; --line: #343b38;
+    --pencil: #9aa39f; --graphite: #e8ece9; --on-graphite: #121514;
+    --power: #f2b630; --logic: #3cc0d0; --signal: #9b86ff; --ai: #f06aa2; --net: #6a9cff; --code: #6cc466; --math: #ff8f4a;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --papper: #121514; --ark: #1a1e1d; --rutnat: #242a28; --linje: #343b38;
-  --blyerts: #9aa39f; --grafit: #e8ece9; --pa-grafit: #121514;
-  --el: #f2b630; --logik: #3cc0d0; --signal: #9b86ff; --ai: #f06aa2; --nat: #6a9cff; --kod: #6cc466; --matte: #ff8f4a;
+  --paper: #121514; --sheet: #1a1e1d; --grid: #242a28; --line: #343b38;
+  --pencil: #9aa39f; --graphite: #e8ece9; --on-graphite: #121514;
+  --power: #f2b630; --logic: #3cc0d0; --signal: #9b86ff; --ai: #f06aa2; --net: #6a9cff; --code: #6cc466; --math: #ff8f4a;
   color-scheme: dark;
 }
 
-[data-domain="el"]     { --aktiv: var(--el); }
-[data-domain="logik"]  { --aktiv: var(--logik); }
-[data-domain="signal"] { --aktiv: var(--signal); }
-[data-domain="ai"]     { --aktiv: var(--ai); }
-[data-domain="nat"]    { --aktiv: var(--nat); }
-[data-domain="kod"]    { --aktiv: var(--kod); }
-[data-domain="matte"]  { --aktiv: var(--matte); }
+[data-domain="power"]  { --active: var(--power); }
+[data-domain="logic"]  { --active: var(--logic); }
+[data-domain="signal"] { --active: var(--signal); }
+[data-domain="ai"]     { --active: var(--ai); }
+[data-domain="net"]    { --active: var(--net); }
+[data-domain="code"]   { --active: var(--code); }
+[data-domain="math"]   { --active: var(--math); }
 
-/* ---------- Bas ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; min-height: 100vh;
-  background: var(--papper); color: var(--grafit);
-  font-family: var(--text); font-size: var(--fs-brod); line-height: 1.55;
+  background: var(--paper); color: var(--graphite);
+  font-family: var(--font-text); font-size: var(--fs-body); line-height: 1.55;
 }
 h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; font-weight: 800; letter-spacing: -.01em; }
 h3 { font-weight: 700; }
 p { margin: 0; }
 a { color: inherit; }
 button, input, select { font: inherit; color: inherit; }
-:focus-visible { outline: 3px solid var(--grafit); outline-offset: 2px; }
-.siffra, .mono { font-family: var(--siffror); font-variant-numeric: tabular-nums; }
-.liten { font-size: var(--fs-liten); color: var(--blyerts); }
+:focus-visible { outline: 3px solid var(--graphite); outline-offset: 2px; }
+.mono { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+.small { font-size: var(--fs-small); color: var(--pencil); }
 [hidden] { display: none !important; }
 
-/* ---------- Toppfält ---------- */
+/* top bar */
 body::before {
   content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
-  z-index: 30; background: var(--papper);
+  z-index: 30; background: var(--paper);
 }
 .topbar {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
@@ -94,34 +86,34 @@ body::before {
   padding-block: 10px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  background: var(--papper); border-bottom: 1px solid var(--linje);
+  background: var(--paper); border-bottom: 1px solid var(--line);
 }
 .topbar .back {
   display: inline-grid; place-items: center; width: 40px; height: 40px; flex: none;
-  border-radius: 6px; border: 1px solid var(--linje); text-decoration: none;
+  border-radius: 6px; border: 1px solid var(--line); text-decoration: none;
 }
-.topbar .back:hover { border-color: var(--grafit); }
+.topbar .back:hover { border-color: var(--graphite); }
 .topbar .title { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
-.topbar .title h1 { font-size: var(--fs-r3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.topbar .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--aktiv); flex: none; }
+.topbar .title h1 { font-size: var(--fs-h3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--active); flex: none; }
 .topbar .tools { display: flex; gap: 6px; align-items: center; }
-.topbar .nick { font-size: var(--fs-liten); color: var(--blyerts); white-space: nowrap; margin-left: 4px; }
+.topbar .nick { font-size: var(--fs-small); color: var(--pencil); white-space: nowrap; margin-left: 4px; }
 
-/* ---------- Valknappar (små) ---------- */
 .chip {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   min-height: 36px; padding: 0 12px; border-radius: 6px;
-  border: 1px solid var(--linje); background: var(--ark); cursor: pointer;
-  font-size: var(--fs-liten); transition: border-color var(--kort) var(--broms);
+  border: 1px solid var(--line); background: var(--sheet); cursor: pointer;
+  font-size: var(--fs-small); transition: border-color var(--fast) var(--ease);
 }
-.chip:hover { border-color: var(--grafit); }
+.chip:hover { border-color: var(--graphite); }
+.chip:disabled { opacity: .4; cursor: not-allowed; }
 .chip[aria-pressed="true"] {
-  border: 2px solid var(--grafit);
-  background: color-mix(in srgb, var(--aktiv) 10%, var(--ark));
+  border: 2px solid var(--graphite);
+  background: color-mix(in srgb, var(--active) 10%, var(--sheet));
   font-weight: 700;
 }
 
-/* ---------- Modul: scen + panel ---------- */
+/* module layout */
 .module {
   display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px;
   max-width: 1280px; margin: 0 auto;
@@ -132,146 +124,133 @@ body::before {
 @media (max-width: 920px) { .module { grid-template-columns: minmax(0, 1fr); gap: 8px; } }
 
 .stage {
-  background: var(--ark); border: 1px solid var(--linje); border-radius: 10px;
+  background: var(--sheet); border: 1px solid var(--line); border-radius: 10px;
   padding: 16px; min-width: 0; display: grid; gap: 14px; align-content: start; align-self: start;
 }
-/* bänken: rutnätet där själva experimentet ligger */
-.scen {
-  position: relative; border-radius: 6px; border: 1px solid var(--rutnat); overflow: hidden;
-  background-color: var(--ark);
+.scene {
+  position: relative; border-radius: 6px; border: 1px solid var(--grid); overflow: hidden;
+  background-color: var(--sheet);
   background-image:
-    linear-gradient(var(--rutnat) 1px, transparent 1px),
-    linear-gradient(90deg, var(--rutnat) 1px, transparent 1px);
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: 20px 20px;
 }
-.scen svg, .scen canvas { display: block; width: 100%; height: auto; max-width: 100%; }
+.scene svg, .scene canvas { display: block; width: 100%; height: auto; max-width: 100%; }
 
 .panel { display: grid; gap: 0; align-content: start; min-width: 0; }
-.panel > * { padding-block: 18px; border-top: 1px solid var(--linje); }
+.panel > * { padding-block: 18px; border-top: 1px solid var(--line); }
 .panel > *:first-child { border-top: 0; padding-top: 4px; }
-@media (max-width: 920px) { .panel > *:first-child { border-top: 1px solid var(--linje); padding-top: 18px; } }
+@media (max-width: 920px) { .panel > *:first-child { border-top: 1px solid var(--line); padding-top: 18px; } }
 
-/* Kontrollrad */
 .controls { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: end; }
 .control { display: grid; gap: 2px; min-width: 180px; flex: 1; }
-.control label { font-size: var(--fs-liten); color: var(--blyerts); display: flex; justify-content: space-between; gap: 8px; }
-.control label output { font-family: var(--siffror); color: var(--grafit); font-size: 16px; }
+.control label { font-size: var(--fs-small); color: var(--pencil); display: flex; justify-content: space-between; gap: 8px; }
+.control label output { font-family: var(--font-num); color: var(--graphite); font-size: 16px; }
 
-/* Fader */
 input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 38px; background: transparent; cursor: pointer; margin: 0; }
-input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--grafit); }
-input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--grafit); }
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--graphite); }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--graphite); }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none; width: 18px; height: 30px; margin-top: -13px; border-radius: 4px;
-  background: var(--ark); border: 2px solid var(--grafit); box-shadow: inset 0 -7px 0 var(--aktiv);
+  background: var(--sheet); border: 2px solid var(--graphite); box-shadow: inset 0 -7px 0 var(--active);
 }
 input[type="range"]::-moz-range-thumb {
   width: 14px; height: 26px; border-radius: 4px;
-  background: var(--ark); border: 2px solid var(--grafit); box-shadow: inset 0 -7px 0 var(--aktiv);
+  background: var(--sheet); border: 2px solid var(--graphite); box-shadow: inset 0 -7px 0 var(--active);
 }
+.field { height: 44px; border-radius: 6px; border: 1px solid var(--graphite); background: var(--sheet); padding: 0 12px; font-size: var(--fs-body); min-width: 0; }
 
-/* Knappar */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   min-height: 48px; padding: 0 18px; border-radius: 6px;
-  border: 1px solid var(--grafit); background: var(--grafit); color: var(--pa-grafit);
+  border: 1px solid var(--graphite); background: var(--graphite); color: var(--on-graphite);
   font-weight: 700; cursor: pointer; text-decoration: none;
-  transition: transform var(--kort) var(--broms);
+  transition: transform var(--fast) var(--ease);
 }
 .btn:active { transform: translateY(1px); }
-.btn.ghost { background: transparent; color: var(--grafit); }
+.btn.ghost { background: transparent; color: var(--graphite); }
 .btn:disabled { opacity: .4; cursor: not-allowed; }
 .btn svg { flex: none; }
 
-/* Stegare */
-.stegare { display: inline-flex; align-items: stretch; border: 1px solid var(--grafit); border-radius: 6px; overflow: hidden; height: 48px; }
-.stegare button { width: 46px; border: 0; background: var(--ark); font-size: 22px; cursor: pointer; font-family: var(--siffror); }
-.stegare button:active { background: var(--rutnat); }
-.stegare output { min-width: 56px; display: grid; place-items: center; border-inline: 1px solid var(--grafit); font-family: var(--siffror); font-size: 18px; }
+.stepper { display: inline-flex; align-items: stretch; border: 1px solid var(--graphite); border-radius: 6px; overflow: hidden; height: 48px; }
+.stepper button { width: 46px; border: 0; background: var(--sheet); font-size: 22px; cursor: pointer; font-family: var(--font-num); }
+.stepper button:active { background: var(--grid); }
+.stepper output { min-width: 56px; display: grid; place-items: center; border-inline: 1px solid var(--graphite); font-family: var(--font-num); font-size: 18px; }
 
-/* Mätare */
 .readouts { display: flex; flex-wrap: wrap; gap: 10px; }
 .readout {
-  flex: 1; min-width: 104px; display: grid; gap: 0;
-  padding: 8px 12px; border: 1px solid var(--grafit); border-radius: 6px; background: var(--ark);
+  flex: 1; min-width: 96px; display: grid; gap: 0;
+  padding: 8px 12px; border: 1px solid var(--graphite); border-radius: 6px; background: var(--sheet);
 }
-.readout .v { font-family: var(--siffror); font-size: 26px; font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums; }
-.readout .k { font-size: var(--fs-liten); color: var(--blyerts); }
+.readout .v { font-family: var(--font-num); font-size: 26px; font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.readout .k { font-size: var(--fs-small); color: var(--pencil); }
 
-/* Statusrad i scenen: återkoppling nära det den gäller */
 .status { min-height: 26px; display: flex; gap: 10px; align-items: center; font-size: 16px; }
 .status svg { flex: none; }
-.status.fara { padding: 8px 12px 8px 0; border: 1px solid var(--grafit); border-radius: 6px; overflow: hidden; }
-.status.fara::before { content: ""; align-self: stretch; width: 26px; margin: -8px 0; background: var(--tejp-monster); flex: none; }
-.status .ny { animation: in var(--lugn) var(--broms); }
+.status.danger { padding: 8px 12px 8px 0; border: 1px solid var(--graphite); border-radius: 6px; overflow: hidden; }
+.status.danger::before { content: ""; align-self: stretch; width: 26px; margin: -8px 0; background: var(--tape-stripes); flex: none; }
+.status .new { animation: in var(--calm) var(--ease); }
 @keyframes in { from { opacity: 0; transform: translateY(4px); } }
 
-/* ---------- Protokoll (uppdragen) ---------- */
-.mission h2 { font-size: var(--fs-r2); }
-.mission .meta { font-size: var(--fs-liten); color: var(--blyerts); margin-bottom: 6px; }
-.mission .lead { margin: 8px 0 14px; }
+/* mission and tasks */
+.mission h2 { font-size: var(--fs-h2); margin-bottom: 14px; }
+.mission .meta { font-size: var(--fs-small); color: var(--pencil); margin-bottom: 6px; }
 .tasks { list-style: none; margin: 0; padding: 0; display: grid; }
 .task {
   position: relative; display: grid; grid-template-columns: 24px minmax(0, 1fr) 24px; gap: 10px; align-items: start;
-  padding: 10px 0 10px 12px; border-top: 1px solid var(--rutnat);
+  padding: 10px 0 10px 12px; border-top: 1px solid var(--grid); font-size: 16px;
 }
-.task:last-child { border-bottom: 1px solid var(--rutnat); }
-.task .nr { font-family: var(--siffror); color: var(--blyerts); }
-.task p { font-size: 16px; }
-.task .hint { color: var(--blyerts); font-size: var(--fs-liten); margin-top: 2px; }
-.task.current::before { content: ""; position: absolute; left: 0; top: 9px; bottom: 9px; width: 3px; border-radius: 2px; background: var(--grafit); }
-.task.current p:first-child { font-weight: 700; }
-.task.done p:first-child { color: var(--blyerts); }
-.task .bock { width: 24px; height: 24px; }
-.task .bock path { fill: none; stroke: var(--aktiv); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; }
-.task.ritas .bock path { animation: rita .45s var(--broms) both; }
-@keyframes rita { from { stroke-dashoffset: 24; } }
+.task:last-child { border-bottom: 1px solid var(--grid); }
+.task .nr { font-family: var(--font-num); color: var(--pencil); }
+.task.current::before { content: ""; position: absolute; left: 0; top: 9px; bottom: 9px; width: 3px; border-radius: 2px; background: var(--graphite); }
+.task.current p { font-weight: 700; }
+.task.done p { color: var(--pencil); }
+.tick { width: 24px; height: 24px; }
+.tick path { fill: none; stroke: var(--active); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; }
+.task.drawing .tick path { animation: draw .45s var(--ease) both; }
+@keyframes draw { from { stroke-dashoffset: 24; } }
 
-/* ---------- Vad hände? ---------- */
 .why summary {
   cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 10px;
-  font-size: var(--fs-r3); font-weight: 700;
+  font-size: var(--fs-h3); font-weight: 700;
 }
 .why summary::-webkit-details-marker { display: none; }
 .why summary::after {
   content: ""; width: 10px; height: 10px; flex: none; margin-right: 4px;
-  border-right: 2px solid var(--grafit); border-bottom: 2px solid var(--grafit);
-  transform: rotate(45deg); transition: transform var(--lugn) var(--broms);
+  border-right: 2px solid var(--graphite); border-bottom: 2px solid var(--graphite);
+  transform: rotate(45deg); transition: transform var(--calm) var(--ease);
 }
 .why[open] summary::after { transform: rotate(-135deg); }
 .why .body { margin-top: 12px; display: grid; gap: 10px; font-size: 16px; }
-.why .formula { font-family: var(--siffror); font-size: 22px; padding: 10px 0; border-block: 1px solid var(--rutnat); text-align: center; }
+.why .formula { font-family: var(--font-num); font-size: 22px; padding: 10px 0; border-block: 1px solid var(--grid); text-align: center; }
 
-/* ---------- På bordet (lådan) ---------- */
-.lada h3 { font-size: var(--fs-r3); }
-.lada .lada-status { display: flex; gap: 8px; align-items: center; font-size: var(--fs-liten); color: var(--blyerts); margin: 4px 0 10px; }
-.lada .lada-status i { width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--blyerts); flex: none; }
-.lada.ansluten .lada-status i { background: var(--aktiv); border-color: var(--aktiv); }
-.lada .ritning { border: 1px solid var(--rutnat); border-radius: 6px; background: var(--ark); }
-.lada .ritning svg { display: block; width: 100%; height: auto; }
-.lada .ritning + .btn { margin-top: 10px; }
-.lada .btn { min-height: 40px; font-size: var(--fs-liten); }
-/* gemensamma ritelement för hårdvara */
-.hw-platta { fill: var(--ark); stroke: var(--linje); stroke-width: 1.5; }
-.hw-hal { fill: var(--rutnat); }
-.hw-kort { fill: var(--grafit); }
-.hw-text { font-family: var(--siffror); font-size: 11px; fill: var(--blyerts); }
-.hw-text-ljus { font-family: var(--siffror); font-size: 10px; fill: var(--pa-grafit); }
-.hw-tråd { fill: none; stroke: var(--grafit); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-.hw-led { fill: var(--rutnat); stroke: var(--grafit); stroke-width: 2; transition: fill var(--lugn); }
-.hw-led.pa { fill: var(--aktiv); }
+/* the box */
+.box h3 { font-family: var(--font-num); font-size: var(--fs-h3); font-weight: 600; display: flex; gap: 10px; align-items: center; }
+.box h3 i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--pencil); flex: none; }
+.box.connected h3 i { background: var(--active); border-color: var(--active); }
+.box .plan { margin-top: 10px; border: 1px solid var(--grid); border-radius: 6px; background: var(--sheet); }
+.box .plan svg { display: block; width: 100%; height: auto; }
+.box .plan + .btn { margin-top: 10px; }
+.box .btn { min-height: 40px; font-size: var(--fs-small); }
+.hw-board { fill: var(--sheet); stroke: var(--line); stroke-width: 1.5; }
+.hw-hole { fill: var(--grid); }
+.hw-chip { fill: var(--graphite); }
+.hw-text { font-family: var(--font-num); font-size: 11px; fill: var(--pencil); }
+.hw-text-light { font-family: var(--font-num); font-size: 10px; fill: var(--on-graphite); }
+.hw-wire { fill: none; stroke: var(--graphite); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.hw-led { fill: var(--grid); stroke: var(--graphite); stroke-width: 2; transition: fill var(--calm); }
+.hw-led.on { fill: var(--active); }
+.hw-press { cursor: pointer; }
+.hw-display { fill: var(--graphite); }
+.hw-digits { font-family: var(--font-num); font-size: 17px; font-weight: 600; fill: var(--tape); }
+.box .knob { margin-top: 12px; }
 
-.mock-note { font-size: var(--fs-liten); color: var(--blyerts); }
+.mock-note { font-size: var(--fs-small); color: var(--pencil); }
+
+.row { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.row.between { justify-content: space-between; }
+.free { touch-action: manipulation; user-select: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
-
-/* ---------- Små hjälpare ---------- */
-.rad { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
-.rad.mellan { justify-content: space-between; }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: var(--fs-liten); color: var(--blyerts); }
-.legend span { display: inline-flex; align-items: center; gap: 8px; }
-.chip .bock { width: 16px; height: 16px; }
-.chip .bock path { fill: none; stroke: var(--aktiv); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-.fritt { touch-action: manipulation; user-select: none; }

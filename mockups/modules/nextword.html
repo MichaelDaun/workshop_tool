@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nästa ord – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  .text { padding: 22px 20px; display: grid; gap: 18px; }
+  .sentence { font-size: var(--fs-h2); font-weight: 700; line-height: 1.35; min-height: 2.7em; }
+  .sentence .cursor { display: inline-block; width: .55em; height: 1em; vertical-align: -.12em; background: var(--active); margin-left: 4px; }
+  .choices { display: grid; gap: 6px; }
+  .word { display: grid; grid-template-columns: minmax(84px, 9em) minmax(0, 1fr) 3.6em; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 6px; background: var(--sheet); padding: 6px 10px; cursor: pointer; text-align: left; min-height: 44px; }
+  .word:hover, .word:focus-visible { border-color: var(--graphite); }
+  .word b { font-weight: 700; }
+  .word .bar { height: 14px; background: var(--grid); border-radius: 3px; overflow: hidden; }
+  .word .bar i { display: block; height: 100%; background: var(--active); }
+  .word .pc { font-family: var(--font-num); text-align: right; }
+  .teach { display: flex; gap: 8px; }
+  .teach .field { flex: 1; min-width: 0; }
+  .hw-scroll { font-family: var(--font-num); font-size: 22px; font-weight: 600; fill: #ff5a3c; }
+</style>
+</head>
+<body data-domain="ai">
+<header class="topbar" data-title-sv="Nästa ord" data-title-en="Next word"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="scene text">
+      <p class="sentence" id="sentence" aria-live="polite"></p>
+      <div class="choices" id="choices"></div>
+    </div>
+    <div class="row">
+      <button class="btn" id="auto" type="button" data-en="Let the machine write">Låt maskinen skriva</button>
+      <button class="chip" id="m-random" type="button" aria-pressed="true" data-en="Random">Slump</button>
+      <button class="chip" id="m-greedy" type="button" aria-pressed="false" data-en="Most likely">Mest troligt</button>
+      <button class="btn ghost" id="restart" type="button" data-en="Start over">Börja om</button>
+    </div>
+    <form class="teach" id="teach">
+      <input class="field" id="new" autocomplete="off" aria-label="En ny mening att lära maskinen" data-aria-en="A new sentence to teach the machine">
+      <button class="btn ghost" type="submit" data-en="Teach">Lär in</button>
+    </form>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="AI · 2–4 people · 20 min">AI · 2–4 personer · 20 min</p>
+      <h2 data-en="Guess the next word">Gissa nästa ord</h2>
+    </div>
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="The machine has counted which word tends to follow which, and looks only at the last word. A large language model does the same with billions of pages and thousands of words of context.">Maskinen har räknat vilket ord som brukar komma efter vilket och tittar bara på det senaste. En stor språkmodell gör samma sak med miljarder sidor och tusentals ord bakåt.</p>
+      </div>
+    </details>
+    <div id="box"></div>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const TEXT = {
+    sv: `katten sover på soffan. katten jagar en fågel. katten äter fisk. hunden sover i korgen.
+      hunden jagar katten. hunden äter en korv. en fågel sjunger i trädet. en fågel sover i trädet.
+      solen skiner på soffan. solen skiner i trädet. barnen äter glass i solen. barnen leker i trädgården.
+      barnen jagar hunden. jag äter fisk på fredag. jag sover på soffan. jag leker med katten.`,
+    en: `the cat sleeps on the sofa. the cat chases a bird. the cat eats fish. the dog sleeps in the basket.
+      the dog chases the cat. the dog eats a sausage. a bird sings in the tree. a bird sleeps in the tree.
+      the sun shines on the sofa. the sun shines in the tree. the children eat ice cream in the sun. the children play in the garden.
+      the children chase the dog. i eat fish on friday. i sleep on the sofa. i play with the cat.`
+  };
+  // reachable by teaching: no word in the target needs two different next words
+  const TARGET = { sv: "katten sover i solen", en: "the dog sleeps all day" };
+  const END = ".";
+  let pairs, known, words, running = false, greedy = false, steps = [];
+
+  const tasks = K.tasks($("mission"), "nextword", [
+    { id: "new",    text: { sv: "Bygg en mening som inte finns i maskinens text.", en: "Build a sentence that is not in the machine's text." } },
+    { id: "greedy", text: { sv: "Lär maskinen så att Mest troligt skriver ”katten sover i solen”.", en: "Teach the machine so that Most likely writes “the dog sleeps all day”." } },
+    { id: "show",   text: { sv: "Visa den meningen på lådan.", en: "Show that sentence on the box." } }
+  ]);
+
+  function read(text) {
+    text.toLowerCase().split(/[.!?\n]+/).map(m => m.trim().split(/\s+/).filter(Boolean)).filter(m => m.length).forEach(m => {
+      known.add(m.join(" "));
+      ["^", ...m, END].forEach((w, i, a) => {
+        if (!i) return;
+        const f = a[i - 1];
+        pairs[f] = pairs[f] || {};
+        pairs[f][w] = (pairs[f][w] || 0) + 1;
+      });
+    });
+  }
+  function reset() { pairs = {}; known = new Set(); read(TEXT[K.lang]); words = []; steps = []; }
+
+  function options() {
+    const f = pairs[words.length ? words[words.length - 1] : "^"] || {};
+    const sum = Object.values(f).reduce((a, b) => a + b, 0);
+    return Object.entries(f).map(([w, n]) => ({ w, n, p: n / sum })).sort((a, b) => b.p - a.p);
+  }
+  const finished = () => words[words.length - 1] === END;
+  const plain = () => words.filter(o => o !== END).join(" ");
+
+  function add(w, byMachine) {
+    words.push(w);
+    if (!byMachine) steps.push(false);
+    paint();
+    if (finished() && words.length >= 4 && !known.has(plain())) tasks.complete("new");
+  }
+
+  // node-12: a MAX7219 matrix that scrolls text
+  const box = K.box($("box"), {
+    node: "node-12",
+    svg: `<svg viewBox="0 0 300 100" role="img" aria-label="Rullande textskylt" data-aria-en="Scrolling text display">
+      <defs><clipPath id="hw-clip"><rect x="20" y="24" width="260" height="44"/></clipPath></defs>
+      <rect class="hw-board" x="8" y="10" width="284" height="80" rx="6"/>
+      <rect class="hw-display" x="20" y="24" width="260" height="44" rx="3"/>
+      <g clip-path="url(#hw-clip)"><text class="hw-scroll" id="hw-text" x="280" y="54"></text></g>
+    </svg>`,
+    onConnect: on => { if (!on) shown = ""; paint(); }
+  });
+  let shown = "", scrollX = 280;
+  const send = document.createElement("button");
+  send.className = "btn"; send.type = "button";
+  box.root.querySelector(".plan").after(send);
+  send.addEventListener("click", () => {
+    shown = plain(); scrollX = 280;
+    if (shown === TARGET[K.lang] && tasks.isDone("greedy")) tasks.complete("show");
+  });
+  (function scroll() {
+    const el = $("hw-text");
+    if (shown) { scrollX -= 1.2; if (scrollX < -el.getComputedTextLength()) scrollX = 280; }
+    el.setAttribute("x", scrollX); el.textContent = shown.toUpperCase();
+    requestAnimationFrame(scroll);
+  })();
+
+  function paint() {
+    const txt = plain();
+    $("sentence").innerHTML = (txt ? txt.charAt(0).toUpperCase() + txt.slice(1) : "") + (finished() ? "." : '<span class="cursor" aria-hidden="true"></span>');
+    const f = finished() ? [] : options();
+    $("choices").innerHTML = f.map(o => `<button class="word" type="button" data-w="${o.w}">
+      <b>${o.w === END ? K.t("(punkt)", "(full stop)") : o.w}</b><span class="bar"><i style="width:${o.p * 100}%"></i></span><span class="pc">${Math.round(o.p * 100)} %</span></button>`).join("");
+    $("choices").querySelectorAll(".word").forEach(b => b.addEventListener("click", () => { if (!running) add(b.dataset.w, false); }));
+    $("auto").disabled = finished() || running;
+    $("m-random").setAttribute("aria-pressed", !greedy); $("m-greedy").setAttribute("aria-pressed", greedy);
+    send.hidden = !box.connected() || !finished();
+    send.textContent = K.t("Skicka till lådan", "Send to the box");
+  }
+
+  function choose() {
+    const f = options();
+    if (greedy) {
+      const top = f.filter(o => o.n === f[0].n);
+      return { o: top[Math.floor(Math.random() * top.length)], sure: top.length === 1 };
+    }
+    let r = Math.random();
+    for (const o of f) { r -= o.p; if (r <= 0) return { o, sure: false }; }
+    return { o: f[f.length - 1], sure: false };
+  }
+  $("auto").addEventListener("click", () => {
+    running = true; paint();
+    const step = () => {
+      const { o, sure } = choose(); steps.push(greedy && sure); add(o.w, true);
+      if (!finished() && words.length < 14) return setTimeout(step, 500);
+      running = false; paint();
+      // a tie at any step means the result was luck
+      if (finished() && plain() === TARGET[K.lang] && steps.every(Boolean)) tasks.complete("greedy");
+    };
+    step();
+  });
+  $("m-random").addEventListener("click", () => { greedy = false; paint(); });
+  $("m-greedy").addEventListener("click", () => { greedy = true; paint(); });
+  $("restart").addEventListener("click", () => { if (!running) { words = []; steps = []; paint(); } });
+  $("teach").addEventListener("submit", e => {
+    e.preventDefault();
+    const v = $("new").value.trim();
+    if (v.split(/\s+/).length < 2) return;
+    read(v); $("new").value = ""; words = []; steps = []; paint();
+  });
+  K.onLang(() => { reset(); paint(); });
+  reset(); paint();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Åtta lampor – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  .room { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; padding: 18px 14px 14px; }
+  .phone { display: grid; gap: 6px; justify-items: center; cursor: pointer; border: 0; background: none; padding: 0; }
+  .phone .screen { width: 100%; max-width: 64px; aspect-ratio: 9 / 16; border: 3px solid var(--graphite); border-radius: 8px; background: var(--sheet); display: grid; place-items: center; transition: background var(--calm); }
+  .phone .screen b { font-family: var(--font-num); font-size: 26px; font-weight: 600; }
+  .phone[aria-pressed="true"] .screen { background: var(--active); color: var(--sheet); }
+  .phone .value { font-family: var(--font-num); font-size: 15px; }
+  .phone .name { font-size: 12px; color: var(--pencil); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  @media (max-width: 560px) { .phone .name { display: none; } .phone .screen b { font-size: 18px; } .room { gap: 4px; padding: 12px 6px; } }
+  .number { display: flex; gap: 24px; align-items: baseline; flex-wrap: wrap; }
+  .number .big { font-family: var(--font-num); font-size: 56px; font-weight: 600; line-height: 1; }
+  .number .letter { font-family: var(--font-num); font-size: 40px; font-weight: 600; color: var(--active); }
+  .count { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 3px; }
+  .count i { height: 10px; border-radius: 2px; background: var(--grid); }
+  .count i.on { background: var(--active); }
+</style>
+</head>
+<body data-domain="logic">
+<header class="topbar" data-title-sv="Åtta lampor" data-title-en="Eight lamps"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="scene"><div class="room" id="room"></div></div>
+    <p class="status" aria-live="polite" role="status"></p>
+    <div class="number">
+      <span class="big" id="number">0</span>
+      <span class="letter" id="letter"></span>
+    </div>
+    <div class="count" id="count" aria-hidden="true"></div>
+    <div class="row"><button class="btn ghost" id="zero" type="button" data-en="All off">Släck alla</button></div>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Digital logic · 2–4 people · 20 min">Digital logik · 2–4 personer · 20 min</p>
+      <h2 data-en="The room counts in binary">Rummet räknar binärt</h2>
+    </div>
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="Each lamp is a <b>bit</b>, 1 or 0. Eight bits make a <b>byte</b>, enough for 0 to 255. Letters are stored as numbers: 65 is A.">Varje lampa är en <b>bit</b>, 1 eller 0. Åtta bitar kallas en <b>byte</b> och räcker till 0–255. Bokstäver sparas som tal: 65 är A.</p>
+      </div>
+    </details>
+    <div id="box"></div>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const VALUES = [128, 64, 32, 16, 8, 4, 2, 1];
+  const names = VALUES.map((_, i) => i === 7 ? K.nick() : K.randomNick());
+  const bits = VALUES.map(() => false);
+  let counted = 0, sent = "";
+
+  const tasks = K.tasks($("mission"), "binary", [
+    { id: "hundred", text: { sv: "Visa 100.", en: "Show 100." } },
+    { id: "count",   text: { sv: "Räkna från 0 till 15 utan att hoppa över något tal.", en: "Count from 0 to 15 without skipping a number." } },
+    { id: "initials", text: { sv: "Skriv lagets initialer på lådans skärm.", en: "Write the team's initials on the box screen." } }
+  ]);
+
+  // node-08: eight LEDs, eight buttons, a send button and a small OLED screen
+  const box = K.box($("box"), {
+    node: "node-08",
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Låda med åtta lampor, åtta knappar och en skärm" data-aria-en="Box with eight lamps, eight buttons and a screen">
+      <rect class="hw-board" x="8" y="8" width="284" height="134" rx="6"/>
+      <rect class="hw-display" x="24" y="18" width="190" height="30" rx="3"/>
+      <text class="hw-digits" id="hw-text" x="34" y="39"></text>
+      <g class="hw-press" id="hw-send" tabindex="0" role="button" aria-label="Skicka" data-aria-en="Send"><circle cx="252" cy="33" r="16" fill="var(--logic)" stroke="var(--graphite)" stroke-width="2"/></g>
+      ${VALUES.map((v, i) => `<circle class="hw-led" id="hw-l${i}" cx="${36 + i * 33}" cy="70" r="9"/>
+        <rect class="hw-press hw-key" data-i="${i}" x="${24 + i * 33}" y="90" width="24" height="24" rx="4" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2"/>
+        <text class="hw-text" x="${36 + i * 33}" y="132" text-anchor="middle">${v}</text>`).join("")}
+    </svg>`,
+    onConnect: on => { if (!on) sent = ""; paint(); }
+  });
+  box.root.querySelectorAll(".hw-key").forEach(k => k.addEventListener("click", () => { if (box.connected()) flip(+k.dataset.i); }));
+  const sendKey = box.root.querySelector("#hw-send");
+  const send = () => {
+    if (!box.connected()) return;
+    const n = total();
+    if (n >= 65 && n <= 90) sent = (sent + String.fromCharCode(n)).slice(-10);
+    paint();
+  };
+  sendKey.addEventListener("click", send);
+  sendKey.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); send(); } });
+
+  const room = $("room");
+  VALUES.forEach((v, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "phone";
+    b.innerHTML = `<span class="screen"><b>0</b></span><span class="value">${v}</span><span class="name">${names[i]}</span>`;
+    b.addEventListener("click", () => flip(i));
+    room.append(b);
+  });
+  $("count").innerHTML = "<i></i>".repeat(16);
+  function flip(i) { bits[i] = !bits[i]; paint(); }
+  $("zero").addEventListener("click", () => { bits.fill(false); paint(); });
+  const total = () => VALUES.reduce((a, v, i) => a + (bits[i] ? v : 0), 0);
+
+  function paint() {
+    const n = total(), on = box.connected();
+    [...room.children].forEach((b, i) => {
+      b.setAttribute("aria-pressed", bits[i]);
+      b.setAttribute("aria-label", `${VALUES[i]}: ${bits[i] ? 1 : 0}`);
+      b.querySelector("b").textContent = bits[i] ? 1 : 0;
+      $("hw-l" + i).classList.toggle("on", on && bits[i]);
+    });
+    $("number").textContent = n;
+    $("letter").textContent = n >= 65 && n <= 90 ? String.fromCharCode(n) : "";
+    $("hw-text").textContent = on ? sent + "_" : "";
+    const parts = VALUES.filter((v, i) => bits[i]);
+    K.status(bits.map(b => b ? 1 : 0).join("") + (parts.length > 1 ? ` = ${parts.join(" + ")} = ${n}` : ` = ${n}`));
+
+    // counting only moves on when the next number shows up
+    if (n === counted + 1) counted++;
+    [...$("count").children].forEach((c, i) => c.classList.toggle("on", i <= counted));
+    if (n === 100) tasks.complete("hundred");
+    if (counted === 15) tasks.complete("count");
+    if (on && sent.length >= 2 && new Set(sent).size >= 2) tasks.complete("initials");
+  }
+  K.onLang(paint);
+  paint();
+})();
+</script>
+</body>
+</html>

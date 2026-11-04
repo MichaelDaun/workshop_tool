@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Funktionsmaskinen – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  .chip .tick { width: 16px; height: 16px; }
+  .chip .tick path { fill: none; stroke: var(--active); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .chute { fill: var(--sheet); stroke: var(--graphite); stroke-width: 2.5; }
+  .body { fill: var(--sheet); stroke: var(--graphite); stroke-width: 3; }
+  .lock { fill: var(--grid); stroke: var(--graphite); stroke-width: 3; transition: transform .8s var(--ease); transform-origin: 196px 76px; }
+  .open .lock { transform: rotate(-9deg) translateY(-6px); }
+  .cog { fill: none; stroke: var(--graphite); stroke-width: 5; stroke-dasharray: 8 6; transform-box: fill-box; transform-origin: center; }
+  .spinning .cog { animation: spin .8s linear infinite; }
+  .spinning .cog.reverse { animation-direction: reverse; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hub { fill: var(--graphite); }
+  .rule { font-family: var(--font-num); font-size: 19px; font-weight: 600; fill: var(--graphite); opacity: 0; transition: opacity .5s .3s; }
+  .open .rule { opacity: 1; }
+  .open .cog, .open .hub { opacity: .15; }
+  .word { font-family: var(--font-text); font-size: 15px; fill: var(--pencil); }
+  .ball circle { stroke-width: 2.5; stroke: var(--graphite); }
+  .ball text { font-family: var(--font-num); font-weight: 600; font-size: 24px; text-anchor: middle; fill: var(--graphite); }
+  .ball.in circle { fill: var(--sheet); }
+  .ball.out circle { fill: var(--active); }
+  .ball.out text { fill: var(--sheet); }
+
+  .keypad { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; }
+  @media (max-width: 560px) { .keypad { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+  .key { height: 48px; border-radius: 6px; border: 1px solid var(--line); background: var(--sheet); font-family: var(--font-num); font-size: 20px; font-weight: 600; cursor: pointer; transition: border-color var(--fast); }
+  .key:hover { border-color: var(--graphite); }
+  .key:active { transform: translateY(1px); }
+  .key.used { border-color: var(--graphite); background: color-mix(in srgb, var(--active) 12%, var(--sheet)); }
+
+  .two { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 700px) { .two { grid-template-columns: minmax(0, 1fr); } }
+  .pane { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; display: grid; gap: 6px; }
+  .log { width: 100%; border-collapse: collapse; font-family: var(--font-num); font-size: 16px; }
+  .log th { font-family: var(--font-text); font-size: var(--fs-small); color: var(--pencil); font-weight: 400; text-align: center; padding-bottom: 4px; }
+  .log td { text-align: center; padding: 5px 4px; border-top: 1px solid var(--grid); }
+  .log td.miss { color: var(--pencil); }
+  .graph .ax { stroke: var(--graphite); stroke-width: 1.5; }
+  .graph .gl { stroke: var(--grid); stroke-width: 1; }
+  .graph text { font-family: var(--font-num); font-size: 11px; fill: var(--pencil); }
+  .graph .pt { fill: var(--active); stroke: var(--graphite); stroke-width: 1.5; }
+  .graph .new { animation: pop .35s var(--ease); transform-box: fill-box; transform-origin: center; }
+  @keyframes pop { from { transform: scale(0); } }
+  .graph .guess { stroke: var(--graphite); stroke-width: 2; stroke-dasharray: 6 5; fill: none; }
+  .graph .truth { stroke: var(--active); stroke-width: 3; fill: none; }
+
+  .builder { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-family: var(--font-num); font-size: 20px; }
+  .builder .btn { font-family: var(--font-text); margin-left: auto; }
+  @media (max-width: 560px) { .builder .btn { margin-left: 0; width: 100%; } }
+</style>
+</head>
+<body data-domain="math">
+<header class="topbar" data-title-sv="Funktionsmaskinen" data-title-en="The function machine"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="row" id="levels"></div>
+    <div class="scene">
+      <svg id="machine" viewBox="0 0 600 230" role="img" aria-label="En maskin som gör om tal enligt en hemlig regel" data-aria-en="A machine that turns numbers into other numbers with a secret rule">
+        <rect class="chute" x="16" y="128" width="164" height="44" rx="4"/>
+        <rect class="chute" x="420" y="128" width="164" height="44" rx="4"/>
+        <rect class="body" x="190" y="80" width="220" height="130" rx="10"/>
+        <rect class="lock" x="180" y="62" width="240" height="26" rx="6"/>
+        <g id="cogs">
+          <circle class="cog" cx="262" cy="146" r="26"/><circle class="hub" cx="262" cy="146" r="5"/>
+          <circle class="cog reverse" cx="338" cy="146" r="26"/><circle class="hub" cx="338" cy="146" r="5"/>
+        </g>
+        <text class="rule" id="reveal" x="300" y="154" text-anchor="middle"></text>
+        <g id="balls"></g>
+        <text class="word" x="98" y="200" text-anchor="middle" data-en="in">in</text>
+        <text class="word" x="502" y="200" text-anchor="middle" data-en="out">ut</text>
+      </svg>
+    </div>
+
+    <div class="keypad" id="keypad"></div>
+
+    <div class="two">
+      <div class="pane">
+                <svg class="graph" id="graph" viewBox="0 0 320 240" role="img" aria-label="Graf över in- och utvärden" data-aria-en="Graph of in and out values"></svg>
+      </div>
+      <div class="pane">
+                <table class="log" id="log"><thead><tr><th data-en="in">in</th><th data-en="out">ut</th><th data-en="your rule gives">din regel ger</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <div class="pane">
+      <div class="builder">
+        <span data-en="out = in ×">ut = in ×</span>
+        <span class="stepper"><button type="button" id="a-" aria-label="Minska gånger-talet" data-aria-en="Decrease the times number">−</button><output id="a">1</output><button type="button" id="a+" aria-label="Öka gånger-talet" data-aria-en="Increase the times number">+</button></span>
+        <span>+</span>
+        <span class="stepper"><button type="button" id="b-" aria-label="Minska plus-talet" data-aria-en="Decrease the plus number">−</button><output id="b">0</output><button type="button" id="b+" aria-label="Öka plus-talet" data-aria-en="Increase the plus number">+</button></span>
+        <button class="btn" id="check" type="button" data-en="Open the machine">Öppna maskinen</button>
+      </div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Mathematics · 2–4 people · 20 min">Matematik · 2–4 personer · 20 min</p>
+      <h2 data-en="What does the machine do?">Vad gör maskinen?</h2>
+    </div>
+
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="The machine is a <b>function</b>. The dots land on a straight line: times sets the slope, plus sets where it starts.">Maskinen är en <b>funktion</b>. Prickarna hamnar på en rak linje: gånger avgör lutningen, plus var den börjar.</p>
+        <p class="formula" data-en="out = in × 2 + 1">ut = in × 2 + 1</p>
+      </div>
+    </details>
+
+    <div id="box"></div>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const RULES = [{ id: "r1", a: 1, b: 3 }, { id: "r2", a: 2, b: 0 }, { id: "r3", a: 2, b: 1 }, { id: "r4", a: 3, b: -2 }];
+  const s = { lvl: 0, tests: [], ga: 1, gb: 0, busy: false, newX: null, few: new Set(), box: { a: 2, b: 5 } };
+  const TICK = '<svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg>';
+
+  const tasks = K.tasks($("mission"), "function", [
+    { id: "few",    text: { sv: "Knäck maskin 1 och 2 med högst tre test vardera.", en: "Crack machines 1 and 2 with three tests each at most." } },
+    { id: "r4",     text: { sv: "Knäck maskin 4.", en: "Crack machine 4." } },
+    { id: "rule",   text: { sv: "Ställ in en hemlig regel i lådan åt ett annat lag.", en: "Set a secret rule in the box for another team." } }
+  ]);
+  const R = () => RULES[s.lvl];
+  const solved = () => K.store.get("function-solved", []);
+  const f = (x, r = R()) => r.a * x + r.b;
+  const minus = n => n < 0 ? "−" + Math.abs(n) : String(n);
+  const ruleText = (a, b) => `${K.t("ut", "out")} = ${K.t("in", "in")} × ${a} ${b < 0 ? "−" : "+"} ${Math.abs(b)}`;
+  const open = () => $("machine").classList.contains("open");
+
+  // node-07: a knob for the input, two displays and a lid that a servo lifts
+  const box = K.box($("box"), {
+    node: "node-07",
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Låda med vred och två sifferdisplayer" data-aria-en="Box with a knob and two number displays">
+      <rect class="hw-board" x="8" y="8" width="284" height="134" rx="6"/>
+      <g id="hw-lid" style="transform-origin:60px 36px;transition:transform .8s var(--ease)"><rect x="56" y="28" width="188" height="12" rx="3" fill="var(--grid)" stroke="var(--graphite)" stroke-width="2"/></g>
+      <rect x="60" y="40" width="180" height="92" rx="4" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2"/>
+      <circle cx="96" cy="88" r="20" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2.5"/>
+      <line id="hw-knob" x1="96" y1="88" x2="96" y2="72" stroke="var(--graphite)" stroke-width="3" stroke-linecap="round" style="transform-origin:96px 88px;transition:transform .3s var(--ease)"/>
+      <rect class="hw-display" x="134" y="56" width="78" height="26" rx="3"/><text id="hw-in" class="hw-digits" x="204" y="75" text-anchor="end">----</text>
+      <rect class="hw-display" x="134" y="94" width="78" height="26" rx="3"/><text id="hw-out" class="hw-digits" x="204" y="113" text-anchor="end">----</text>
+    </svg>`,
+    onConnect: () => paintBox(null, null)
+  });
+  const editor = document.createElement("div");
+  editor.className = "builder knob";
+  editor.innerHTML = `<span>${K.t("ut = in ×", "out = in ×")}</span>
+    <span class="stepper"><button type="button" data-k="a" data-d="-1" aria-label="−">−</button><output id="box-a"></output><button type="button" data-k="a" data-d="1" aria-label="+">+</button></span><span>+</span>
+    <span class="stepper"><button type="button" data-k="b" data-d="-1" aria-label="−">−</button><output id="box-b"></output><button type="button" data-k="b" data-d="1" aria-label="+">+</button></span>
+    <button class="btn" id="box-send" type="button">${K.t("Skicka", "Send")}</button>`;
+  box.root.querySelector(".plan").after(editor);
+  editor.querySelectorAll("[data-k]").forEach(b => b.addEventListener("click", () => {
+    const k = b.dataset.k, lim = k === "a" ? [-3, 5] : [-9, 9];
+    s.box[k] = Math.max(lim[0], Math.min(lim[1], s.box[k] + +b.dataset.d)); paintBox(null, null);
+  }));
+  editor.querySelector("#box-send").addEventListener("click", () => {
+    if (!(s.box.a === 1 && s.box.b === 0)) tasks.complete("rule");
+    $("hw-lid").style.transform = "none";
+  });
+  function paintBox(x, y) {
+    const on = box.connected();
+    editor.hidden = !on;
+    $("box-a").textContent = minus(s.box.a); $("box-b").textContent = minus(s.box.b);
+    if (!on) { $("hw-in").textContent = $("hw-out").textContent = "----"; return; }
+    if (x != null) { $("hw-in").textContent = String(x); $("hw-knob").style.transform = `rotate(${x * 32}deg)`; }
+    $("hw-out").textContent = y == null ? "----" : minus(y);
+    $("hw-lid").style.transform = open() ? "rotate(-12deg)" : "none";
+  }
+
+  function renderLevels() {
+    const w = $("levels"); w.innerHTML = "";
+    RULES.forEach((r, i) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip";
+      b.setAttribute("aria-pressed", i === s.lvl);
+      b.innerHTML = `${K.t("Maskin", "Machine")} ${i + 1}${solved().includes(r.id) ? TICK : ""}`;
+      b.addEventListener("click", () => {
+        if (s.busy) return;
+        s.lvl = i; s.tests = []; $("machine").classList.remove("open"); $("balls").innerHTML = "";
+        paintBox(null, null); render();
+      });
+      w.append(b);
+    });
+  }
+  function renderKeypad() {
+    const k = $("keypad"); k.innerHTML = "";
+    for (let i = 0; i <= 9; i++) {
+      const b = document.createElement("button"); b.type = "button"; b.className = "key" + (s.tests.some(t => t.x === i) ? " used" : "");
+      b.textContent = i; b.addEventListener("click", () => feed(i)); k.append(b);
+    }
+  }
+  function renderLog() {
+    const tb = $("log").querySelector("tbody"); tb.innerHTML = "";
+    s.tests.slice(-6).forEach(t => {
+      const g = s.ga * t.x + s.gb, ok = g === t.y;
+      tb.insertAdjacentHTML("beforeend", `<tr><td>${t.x}</td><td>${minus(t.y)}</td><td class="${ok ? "" : "miss"}">${minus(g)} ${ok ? "=" : "≠"} ${minus(t.y)}</td></tr>`);
+    });
+  }
+  function renderGraph() {
+    const g = $("graph"); g.innerHTML = "";
+    const X0 = 30, Y0 = 215, sx = 28, ymin = -5, ymax = 30, sy = 200 / (ymax - ymin);
+    const P = (x, y) => [X0 + x * sx, Y0 - (y - ymin) * sy];
+    for (let y = 0; y <= 30; y += 10) { const [, py] = P(0, y); g.insertAdjacentHTML("beforeend", `<line class="gl" x1="${X0}" x2="${X0 + 9 * sx}" y1="${py}" y2="${py}"/><text x="${X0 - 6}" y="${py + 4}" text-anchor="end">${y}</text>`); }
+    for (let x = 0; x <= 9; x += 3) { const [px] = P(x, 0); g.insertAdjacentHTML("beforeend", `<text x="${px}" y="${Y0 + 18}" text-anchor="middle">${x}</text>`); }
+    const [, y0] = P(0, 0);
+    g.insertAdjacentHTML("beforeend", `<line class="ax" x1="${X0}" x2="${X0 + 9 * sx}" y1="${y0}" y2="${y0}"/><line class="ax" x1="${X0}" x2="${X0}" y1="15" y2="${Y0}"/>`);
+    const clip = (a, b) => { const pts = [0, 9].map(x => P(x, Math.max(ymin, Math.min(ymax, a * x + b)))); return `M${pts[0]} L${pts[1]}`; };
+    if (s.tests.length >= 2) g.insertAdjacentHTML("beforeend", `<path class="guess" d="${clip(s.ga, s.gb)}"/>`);
+    if (open()) g.insertAdjacentHTML("beforeend", `<path class="truth" d="${clip(R().a, R().b)}"/>`);
+    s.tests.forEach(t => { const [px, py] = P(t.x, t.y); g.insertAdjacentHTML("beforeend", `<circle class="pt${t.x === s.newX ? " new" : ""}" cx="${px}" cy="${py}" r="6"/>`); });
+    s.newX = null;
+  }
+  function render() {
+    $("a").textContent = minus(s.ga); $("b").textContent = minus(s.gb);
+    $("reveal").textContent = ruleText(R().a, R().b);
+    renderLevels(); renderKeypad(); renderLog(); renderGraph();
+  }
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  function ball(cls, x, val) {
+    const g = document.createElementNS(NS, "g"); g.setAttribute("class", "ball " + cls);
+    g.innerHTML = `<circle r="22"/><text y="8">${minus(val)}</text>`;
+    g.style.transition = "transform .7s var(--ease), opacity .3s";
+    g.style.transform = `translate(${x}px,150px)`; $("balls").append(g); return g;
+  }
+  async function feed(x) {
+    if (s.busy) return; s.busy = true;
+    const y = f(x);
+    $("balls").innerHTML = "";
+    paintBox(x, null);
+    const bi = ball("in", 44, x); await wait(30);
+    bi.style.transform = "translate(222px,150px)"; await wait(650);
+    bi.style.opacity = 0;
+    $("cogs").classList.add("spinning"); await wait(700);
+    $("cogs").classList.remove("spinning");
+    const bo = ball("out", 378, y); await wait(30);
+    bo.style.transform = "translate(540px,150px)"; await wait(600);
+    paintBox(x, y);
+    if (!s.tests.some(t => t.x === x)) { s.tests.push({ x, y }); s.newX = x; }
+    s.busy = false; render();
+  }
+
+  function step(id, prop, d, lo, hi) { $(id).addEventListener("click", () => { s[prop] = Math.max(lo, Math.min(hi, s[prop] + d)); render(); }); }
+  step("a-", "ga", -1, -3, 5); step("a+", "ga", 1, -3, 5); step("b-", "gb", -1, -9, 9); step("b+", "gb", 1, -9, 9);
+
+  $("check").addEventListener("click", () => {
+    if (s.busy) return;
+    if (s.tests.length && s.ga === R().a && s.gb === R().b) {
+      $("machine").classList.add("open"); paintBox(null, null);
+      K.store.set("function-solved", [...new Set([...solved(), R().id])]);
+      if (s.tests.length <= 3) s.few.add(R().id);
+      render();
+      if (s.few.has("r1") && s.few.has("r2")) tasks.complete("few");
+      if (R().id === "r4") tasks.complete("r4");
+    } else {
+      $("machine").animate([{ transform: "translateX(0)" }, { transform: "translateX(-6px)" }, { transform: "translateX(4px)" }, { transform: "translateX(0)" }], { duration: 300 });
+    }
+  });
+  K.onLang(render);
+  render(); paintBox(null, null);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fruktsorteraren – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  #plot { aspect-ratio: 3 / 2; cursor: crosshair; touch-action: manipulation; }
+  .chip svg { width: 22px; height: 22px; }
+  .guess { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 10px; }
+  .readout .v.word { font-family: var(--font-text); font-weight: 800; }
+  .confidence { height: 6px; background: var(--grid); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+  .confidence i { display: block; height: 100%; width: 0; background: var(--active); transition: width var(--calm) var(--ease); }
+</style>
+</head>
+<body data-domain="ai">
+<header class="topbar" data-title-sv="Fruktsorteraren" data-title-en="The fruit sorter"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="scene">
+      <canvas id="plot" width="1200" height="800" aria-label="Karta över frukter. Åt höger blir frukten rödare, uppåt blir den större. Bakgrunden visar vad maskinen skulle svara." data-aria-en="A map of fruit. To the right the fruit gets redder, upwards it gets bigger. The background shows what the machine would answer."></canvas>
+    </div>
+    <div class="row">
+      <button class="chip" id="pick-lemon" type="button" aria-pressed="true">
+        <svg viewBox="0 0 28 28" aria-hidden="true"><ellipse cx="14" cy="14" rx="11" ry="8" fill="#f1cf2a" stroke="var(--graphite)" stroke-width="2"/></svg>
+        <span data-en="Lemon">Citron</span></button>
+      <button class="chip" id="pick-apple" type="button" aria-pressed="false">
+        <svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="16" r="9.5" fill="#d23d2f" stroke="var(--graphite)" stroke-width="2"/><path d="M14 6.5v-3" stroke="var(--graphite)" stroke-width="2" stroke-linecap="round"/></svg>
+        <span data-en="Apple">Äpple</span></button>
+    </div>
+
+    <div class="guess">
+      <div class="readout">
+        <span class="v word" id="g-answer">–</span>
+        <span class="k" data-en="guess">gissning</span>
+        <span class="confidence" aria-hidden="true"><i id="g-conf"></i></span>
+      </div>
+      <div class="readout"><span class="v" id="streak">0</span><span class="k" data-en="right in a row">rätt i rad</span></div>
+    </div>
+
+    <div class="row">
+      <button class="btn" id="test" type="button" data-en="New mystery fruit">Ny mystisk frukt</button>
+      <button class="btn ghost" id="teach" type="button" hidden data-en="Add it as an example">Lägg in den som exempel</button>
+    </div>
+
+    <div class="controls">
+      <div class="control">
+        <label for="k"><span data-en="Neighbours that get a vote">Grannar som får rösta</span><output id="o-k">3</output></label>
+        <input type="range" id="k" min="1" max="7" step="2" value="3">
+      </div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="AI and machine learning · 2–4 people · 20 min">AI och maskininlärning · 2–4 personer · 20 min</p>
+      <h2 data-en="Teach a machine to sort">Lär en maskin att sortera</h2>
+    </div>
+
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="A new fruit is compared with its most similar examples, its <b>neighbours</b>, and the majority decides. The machine knows only what it has been shown.">En ny frukt jämförs med de mest lika exemplen, dess <b>grannar</b>, och majoriteten avgör. Maskinen vet bara det den har fått se.</p>
+      </div>
+    </details>
+
+    <div id="box"></div>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  // x: colour, 0 = green, 0.5 = yellow, 1 = red. y: size, 0 = small, 1 = big
+  const data = [
+    { x: .46, y: .32, c: "lemon" }, { x: .52, y: .40, c: "lemon" }, { x: .42, y: .25, c: "lemon" }, { x: .55, y: .30, c: "lemon" },
+    { x: .82, y: .62, c: "apple" }, { x: .90, y: .70, c: "apple" }, { x: .78, y: .74, c: "apple" }, { x: .93, y: .56, c: "apple" }
+  ];
+  const RED_APPLE = { x: .86, y: .66 };
+  const s = { pick: "lemon", k: 3, test: null, streak: 0, boxStreak: 0 };
+
+  const tasks = K.tasks($("mission"), "fruit", [
+    { id: "five",  text: { sv: "Få maskinen att gissa rätt fem gånger i rad.", en: "Get the machine to guess right five times in a row." } },
+    { id: "fool",  text: { sv: "Lura den att kalla ett rött äpple för citron.", en: "Fool it into calling a red apple a lemon." } },
+    { id: "real",  text: { sv: "Sortera riktig frukt med lådan, fem rätt i rad.", en: "Sort real fruit with the box, five right in a row." } }
+  ]);
+
+  function predict(p, k = s.k) {
+    const near = data.map(d => ({ d, dist: Math.hypot(d.x - p.x, d.y - p.y) })).sort((a, b) => a.dist - b.dist).slice(0, Math.min(k, data.length));
+    const apples = near.filter(n => n.d.c === "apple").length;
+    const c = apples * 2 > near.length ? "apple" : "lemon";
+    const conf = (c === "apple" ? apples : near.length - apples) / near.length;
+    return { c, conf, near };
+  }
+
+  // node-04: a scale and a colour sensor measure the fruit, a servo flap drops it into a bin.
+  // In the mockup a tap on the scale puts a fruit on it.
+  const box = K.box($("box"), {
+    node: "node-04",
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Våg med färgsensor och en lucka över två lådor" data-aria-en="Scale with a colour sensor and a flap over two bins">
+      <rect class="hw-board" x="8" y="8" width="284" height="134" rx="6"/>
+      <rect class="hw-chip" x="20" y="20" width="70" height="30" rx="4"/><text class="hw-text-light" x="30" y="39">PICO W</text>
+      <g class="hw-press" id="hw-scale" tabindex="0" role="button" aria-label="Lägg en frukt på vågen" data-aria-en="Put a fruit on the scale">
+        <rect x="16" y="70" width="112" height="60" fill="transparent"/>
+        <rect x="22" y="96" width="100" height="10" rx="2" fill="var(--grid)" stroke="var(--graphite)" stroke-width="2"/>
+        <path class="hw-wire" d="M40 106v18M104 106v18"/>
+        <circle id="hw-fruit" cx="66" cy="84" r="0" stroke="var(--graphite)" stroke-width="2"/>
+      </g>
+      <rect x="106" y="56" width="26" height="22" rx="3" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2"/>
+      <circle id="hw-sensor" cx="119" cy="67" r="5" class="hw-led"/>
+      <rect x="168" y="104" width="50" height="28" rx="2" fill="var(--grid)" stroke="var(--graphite)" stroke-width="2"/>
+      <rect x="226" y="104" width="50" height="28" rx="2" fill="var(--grid)" stroke="var(--graphite)" stroke-width="2"/>
+      <ellipse cx="193" cy="118" rx="10" ry="7" fill="#f1cf2a" stroke="var(--graphite)" stroke-width="2"/>
+      <circle cx="251" cy="118" r="8" fill="#d23d2f" stroke="var(--graphite)" stroke-width="2"/>
+      <g id="hw-flap" style="transform-origin:222px 62px;transition:transform .5s var(--ease)">
+        <path class="hw-wire" d="M222 62v-22M222 62l-34 28" stroke-width="4"/>
+        <circle cx="222" cy="62" r="6" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2.5"/>
+      </g>
+    </svg>`,
+    onConnect: () => paint()
+  });
+  const scale = $("hw-scale");
+  const fromBox = () => { if (box.connected()) newTest(true); };
+  scale.addEventListener("click", fromBox);
+  scale.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fromBox(); } });
+
+  function paintBox() {
+    const on = box.connected(), t = s.test && s.test.box ? s.test : null, pr = t ? predict(t) : null;
+    $("hw-flap").style.transform = pr && pr.c === "apple" ? "scaleX(-1)" : "none";
+    $("hw-sensor").classList.toggle("on", on && !!t);
+    $("hw-fruit").setAttribute("r", t ? 10 + t.y * 6 : 0);
+    if (t) $("hw-fruit").setAttribute("fill", fruitColor(t.x));
+  }
+
+  function fruitColor(x) {
+    const stops = [[96, 170, 60], [241, 207, 42], [210, 61, 47]];
+    const t = x * 2, i = Math.min(1, Math.floor(t)), f = t - i, a = stops[i], b = stops[i + 1];
+    return `rgb(${a.map((v, j) => Math.round(v + (b[j] - v) * f)).join(",")})`;
+  }
+  const cv = $("plot"), g = cv.getContext("2d"), W = cv.width, H = cv.height;
+  const PAD_L = 90, PAD_B = 80, PAD = 30;
+  const toPx = p => ({ px: PAD_L + p.x * (W - PAD_L - PAD), py: H - PAD_B - p.y * (H - PAD_B - PAD) });
+  const fromPx = (px, py) => ({ x: Math.max(0, Math.min(1, (px - PAD_L) / (W - PAD_L - PAD))), y: Math.max(0, Math.min(1, (H - PAD_B - py) / (H - PAD_B - PAD))) });
+  let CS; const C = n => CS.getPropertyValue(n).trim();
+
+  function drawFruit(p, kind, scale = 1) {
+    const { px, py } = toPx(p), r = (14 + p.y * 20) * scale;
+    g.fillStyle = fruitColor(p.x); g.strokeStyle = C("--graphite"); g.lineWidth = 3.5;
+    g.beginPath();
+    if (kind === "lemon") g.ellipse(px, py, r * 1.25, r * .88, 0, 0, Math.PI * 2); else g.arc(px, py, r, 0, Math.PI * 2);
+    g.fill(); g.stroke();
+    if (kind === "apple") { g.lineWidth = 4; g.lineCap = "round"; g.beginPath(); g.moveTo(px, py - r); g.lineTo(px + 3, py - r - 11); g.stroke(); }
+  }
+
+  const map = document.createElement("canvas"); map.width = W; map.height = H; let mapKey = "";
+  function draw(now) {
+    CS = getComputedStyle(document.body);
+    g.clearRect(0, 0, W, H);
+    const key = data.length + ":" + s.k + ":" + C("--active") + C("--sheet");
+    if (key !== mapKey) {
+      mapKey = key;
+      const m = map.getContext("2d"); m.clearRect(0, 0, W, H); m.fillStyle = C("--active");
+      const cell = 10;
+      for (let x = PAD_L; x < W - PAD; x += cell) for (let y = PAD; y < H - PAD_B; y += cell) {
+        const { c, conf } = predict(fromPx(x + cell / 2, y + cell / 2));
+        if (c !== "apple") continue;
+        m.globalAlpha = 0.12 + (conf - .5) * 0.36; m.fillRect(x, y, cell, cell);
+      }
+    }
+    g.drawImage(map, 0, 0);
+
+    // axes
+    g.strokeStyle = C("--graphite"); g.lineWidth = 2;
+    g.beginPath(); g.moveTo(PAD_L, PAD); g.lineTo(PAD_L, H - PAD_B); g.lineTo(W - PAD, H - PAD_B); g.stroke();
+    const grad = g.createLinearGradient(PAD_L, 0, W - PAD, 0);
+    grad.addColorStop(0, fruitColor(0)); grad.addColorStop(.5, fruitColor(.5)); grad.addColorStop(1, fruitColor(1));
+    g.fillStyle = grad; g.fillRect(PAD_L, H - PAD_B + 12, W - PAD_L - PAD, 10);
+    g.fillStyle = C("--pencil"); g.font = `26px ${C("--font-text")}`;
+    g.textAlign = "center"; g.fillText(K.t("färg", "colour"), (PAD_L + W - PAD) / 2, H - 18);
+    g.save(); g.translate(46, (PAD + H - PAD_B) / 2); g.rotate(-Math.PI / 2); g.textAlign = "center";
+    g.fillText(K.t("storlek", "size"), 0, 0); g.restore();
+
+    if (s.test) {
+      const { near } = predict(s.test), t = toPx(s.test);
+      g.strokeStyle = C("--graphite"); g.lineWidth = 2.5; g.setLineDash([8, 8]);
+      near.forEach(n => { const q = toPx(n.d); g.beginPath(); g.moveTo(t.px, t.py); g.lineTo(q.px, q.py); g.stroke(); });
+      g.setLineDash([]);
+    }
+    data.forEach(d => drawFruit(d, d.c));
+    if (s.test) {
+      const t = toPx(s.test), still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const r = 54 + (still ? 0 : Math.sin(now / 400) * 3);
+      g.fillStyle = C("--sheet"); g.strokeStyle = C("--graphite"); g.lineWidth = 3;
+      g.beginPath(); g.arc(t.px, t.py, r, 0, Math.PI * 2); g.fill(); g.stroke();
+      drawFruit(s.test, s.test.truth, 1.05);
+      g.fillStyle = C("--graphite"); g.font = `700 32px ${C("--font-text")}`; g.textAlign = "center";
+      g.fillText("?", t.px, t.py - r - 12);
+    }
+    requestAnimationFrame(draw);
+  }
+
+  const name = c => c === "apple" ? K.t("Äpple", "Apple") : K.t("Citron", "Lemon");
+
+  function paint() {
+    $("streak").textContent = s.test && s.test.box ? s.boxStreak : s.streak;
+    $("o-k").textContent = s.k;
+    paintBox();
+    if (!s.test) { $("g-answer").textContent = "–"; $("g-conf").style.width = "0%"; $("teach").hidden = true; return; }
+    const pr = predict(s.test), pct = Math.round(pr.conf * 100);
+    $("g-answer").textContent = `${name(pr.c)}, ${pct} %`;
+    $("g-conf").style.width = pct + "%";
+    $("teach").hidden = pr.c === s.test.truth;
+  }
+
+  // a third each: lemons, red apples, green apples
+  function newTest(onBox = false) {
+    const r = Math.random();
+    let t;
+    if (r < .33) t = { x: .05 + Math.random() * .18, y: .5 + Math.random() * .3, truth: "apple" };
+    else if (r < .66) t = { x: .42 + Math.random() * .16, y: .2 + Math.random() * .25, truth: "lemon" };
+    else t = { x: .78 + Math.random() * .18, y: .5 + Math.random() * .35, truth: "apple" };
+    t.box = onBox;
+    s.test = t;
+    const ok = predict(t).c === t.truth;
+    if (onBox) s.boxStreak = ok ? s.boxStreak + 1 : 0; else s.streak = ok ? s.streak + 1 : 0;
+    paint();
+    if (s.streak >= 5) tasks.complete("five");
+    if (s.boxStreak >= 5 && box.connected()) tasks.complete("real");
+  }
+
+  function addExample(p, c) {
+    data.push({ x: p.x, y: p.y, c });
+    paint();
+    if (predict(RED_APPLE).c === "lemon") tasks.complete("fool");
+  }
+
+  cv.addEventListener("click", e => {
+    const r = cv.getBoundingClientRect();
+    addExample(fromPx((e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H), s.pick);
+  });
+  const pick = c => { s.pick = c; $("pick-lemon").setAttribute("aria-pressed", c === "lemon"); $("pick-apple").setAttribute("aria-pressed", c === "apple"); };
+  $("pick-lemon").addEventListener("click", () => pick("lemon"));
+  $("pick-apple").addEventListener("click", () => pick("apple"));
+  $("test").addEventListener("click", () => newTest(false));
+  $("teach").addEventListener("click", () => { if (s.test) { addExample(s.test, s.test.truth); s.test = null; paint(); } });
+  $("k").addEventListener("input", e => { s.k = +e.target.value; paint(); });
+  K.onLang(paint);
+
+  paint();
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paketresan – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  #net { user-select: none; touch-action: manipulation; }
+  .link { stroke: var(--graphite); stroke-width: 3; stroke-linecap: round; fill: none; }
+  .link.route { stroke: var(--active); stroke-width: 7; }
+  .link.cut { stroke: var(--pencil); stroke-width: 3; stroke-dasharray: 2 8; }
+  .link-hit { stroke: transparent; stroke-width: 34; cursor: pointer; }
+  .link-hit:focus-visible { outline: none; stroke: color-mix(in srgb, var(--graphite) 14%, transparent); }
+  .scissors { pointer-events: none; opacity: 0; transition: opacity var(--fast); }
+  .link-hit:hover + .scissors, .link-hit:focus-visible + .scissors { opacity: 1; }
+  .node { cursor: pointer; }
+  .node .base { fill: var(--sheet); stroke: var(--graphite); stroke-width: 2.5; }
+  .node .house { fill: none; stroke: var(--graphite); stroke-width: 2.5; stroke-linejoin: round; }
+  .node.from .base { fill: var(--graphite); }
+  .node.from .house { stroke: var(--on-graphite); }
+  .node.to .base { stroke: var(--active); stroke-width: 6; }
+  .node text { font-family: var(--font-text); font-weight: 700; font-size: 19px; fill: var(--graphite); paint-order: stroke; stroke: var(--sheet); stroke-width: 6px; stroke-linejoin: round; }
+  .node .tag { font-size: 14px; font-weight: 400; fill: var(--pencil); }
+  .node:focus-visible { outline: none; }
+  .node:focus-visible .base, .node:hover .base { stroke-width: 4.5; }
+  .node.to:hover .base { stroke-width: 7; }
+  .pkt rect { fill: var(--active); }
+  .pkt text { font-family: var(--font-num); font-weight: 600; font-size: 17px; fill: var(--sheet); }
+  .pkt.lost rect { fill: var(--pencil); }
+
+  #msg { height: 48px; width: 10ch; border-radius: 6px; border: 1px solid var(--graphite); background: var(--sheet); padding: 0 12px; font-family: var(--font-num); font-size: 18px; text-transform: uppercase; }
+  .inbox { display: flex; gap: 6px; align-items: center; min-height: 50px; flex-wrap: wrap; }
+  .inbox .slot { width: 40px; height: 46px; border-radius: 6px; border: 1px dashed var(--line); display: grid; place-items: center; font-family: var(--font-num); font-size: 20px; font-weight: 600; transition: border-color var(--calm), background var(--calm); }
+  .inbox .slot.in { border: 1px solid var(--graphite); background: color-mix(in srgb, var(--active) 14%, var(--sheet)); }
+  .inbox .slot.lost { border: 1px solid var(--pencil); color: var(--pencil); }
+</style>
+</head>
+<body data-domain="net">
+<header class="topbar" data-title-sv="Paketresan" data-title-en="Packet tour"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="scene">
+      <svg id="net" viewBox="0 0 800 470" role="img" aria-label="Sju hus som är sammankopplade med kablar" data-aria-en="Seven houses connected by cables">
+        <g id="links"></g><g id="nodes"></g><g id="pkts"></g>
+      </svg>
+    </div>
+    <div class="row">
+      <label for="msg" class="small" data-en="Message">Meddelande</label>
+      <input id="msg" maxlength="6" value="HEJ" autocomplete="off" spellcheck="false">
+      <button class="btn" id="send" type="button" data-en="Send">Skicka</button>
+      <button class="btn ghost" id="fix" type="button" data-en="Repair all cables">Laga alla kablar</button>
+    </div>
+    <div class="row">
+      <span class="small" id="inbox-lbl"></span>
+      <div class="inbox" id="inbox"></div>
+    </div>
+
+    <div class="readouts">
+      <div class="readout"><span class="v" id="r-hops">–</span><span class="k" data-en="hops">hopp</span></div>
+      <div class="readout"><span class="v" id="r-cables">10</span><span class="k" data-en="cables left">kablar kvar</span></div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Networks · 2–4 people · 20 min">Nätverk · 2–4 personer · 20 min</p>
+      <h2 data-en="A network that holds">Ett nät som håller</h2>
+    </div>
+
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="A message is split into packets. The houses are <b>routers</b> that pass each packet one step closer, along whatever way is still open.">Ett meddelande delas upp i paket. Husen är <b>routrar</b> som skickar varje paket ett steg närmare, den väg som fortfarande är öppen.</p>
+      </div>
+    </details>
+
+    <div id="box"></div>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const N = [
+    { id: "A", name: "Ali",  x: 90,  y: 120 }, { id: "B", name: "Bea",  x: 270, y: 70 },
+    { id: "C", name: "Cleo", x: 230, y: 300 }, { id: "D", name: "Dani", x: 430, y: 190 },
+    { id: "E", name: "Eli",  x: 420, y: 400 }, { id: "F", name: "Fia",  x: 600, y: 110 },
+    { id: "G", name: "Gus",  x: 710, y: 330 }
+  ];
+  const E = [["A","B"],["A","C"],["B","D"],["C","D"],["C","E"],["D","F"],["D","E"],["E","G"],["F","G"],["B","F"]].map(([a, b]) => ({ a, b, cut: false }));
+  const s = { from: "A", to: "G", pickNext: "from", pkts: [] };
+  const node = id => N.find(n => n.id === id);
+
+  const tasks = K.tasks($("mission"), "packets", [
+    { id: "isolate", text: { sv: "Skär av Gus från alla andra med så få klipp som möjligt.", en: "Cut Gus off from everyone else with as few cuts as possible." } },
+    { id: "lean",    text: { sv: "Klipp 4 kablar så att alla fortfarande når alla.", en: "Cut 4 cables so that everyone can still reach everyone." } },
+    { id: "real",    text: { sv: "Dra ur 4 kablar på lådan och skicka ändå ett meddelande från Ali till Gus.", en: "Unplug 4 cables on the box and still send a message from Ali to Gus." } }
+  ]);
+
+  // graph
+  const neighbours = id => E.filter(e => !e.cut && (e.a === id || e.b === id)).map(e => e.a === id ? e.b : e.a);
+  function route(from, to) {
+    const prev = { [from]: null }, q = [from];
+    while (q.length) {
+      const c = q.shift(); if (c === to) break;
+      neighbours(c).forEach(n => { if (!(n in prev)) { prev[n] = c; q.push(n); } });
+    }
+    if (!(to in prev)) return null;
+    const path = []; for (let c = to; c; c = prev[c]) path.unshift(c);
+    return path;
+  }
+  const edgeOf = (a, b) => E.find(e => (e.a === a && e.b === b) || (e.a === b && e.b === a));
+  const flying = () => s.pkts.some(p => !p.done);
+  const cuts = () => E.filter(e => e.cut).length;
+  const reachable = from => { const seen = new Set([from]), q = [from]; while (q.length) neighbours(q.shift()).forEach(n => { if (!seen.has(n)) { seen.add(n); q.push(n); } }); return seen; };
+  function checkCuts() {
+    if (reachable("G").size === 1 && cuts() === 2) tasks.complete("isolate");
+    if (cuts() === 4 && reachable("A").size === N.length) tasks.complete("lean");
+  }
+
+  // node-05: seven small houses joined by LED strips that can be unplugged
+  const hx = x => 22 + x * 0.32, hy = y => 16 + y * 0.25;
+  const box = K.box($("box"), {
+    node: "node-05",
+    onConnect: () => paintBox(),
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Sju små hus med ljusslingor som kablar" data-aria-en="Seven small houses with LED strips as cables">
+      <rect class="hw-board" x="8" y="6" width="284" height="138" rx="6"/>
+      ${E.map((e, i) => {
+        const A = node(e.a), B = node(e.b), mx = (hx(A.x) + hx(B.x)) / 2, my = (hy(A.y) + hy(B.y)) / 2;
+        const leds = [0.27, 0.73].map(t => `<circle class="hw-led" r="3" cx="${hx(A.x) + (hx(B.x) - hx(A.x)) * t}" cy="${hy(A.y) + (hy(B.y) - hy(A.y)) * t}"/>`).join("");
+        return `<g id="hw-e${i}"><line x1="${hx(A.x)}" y1="${hy(A.y)}" x2="${hx(B.x)}" y2="${hy(B.y)}" stroke="var(--line)" stroke-width="4" stroke-linecap="round"/>${leds}
+          <rect class="hw-plug" x="${mx - 4}" y="${my - 3}" width="8" height="6" rx="1" fill="var(--graphite)"/></g>`;
+      }).join("")}
+      ${N.map(n => `<rect x="${hx(n.x) - 7}" y="${hy(n.y) - 7}" width="14" height="14" rx="2" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2"/>`).join("")}
+    </svg>`
+  });
+  function paintBox() {
+    E.forEach((e, i) => {
+      const g = $("hw-e" + i); if (!g) return;
+      const busy = s.pkts.some(p => !p.done && p.next && edgeOf(p.from, p.next) === e && !e.cut);
+      g.querySelectorAll(".hw-led").forEach(l => l.classList.toggle("on", box.connected() && busy));
+      const plug = g.querySelector(".hw-plug");
+      plug.setAttribute("transform", e.cut ? "translate(0 -9)" : "");
+      plug.setAttribute("fill", e.cut ? "var(--pencil)" : "var(--graphite)");
+    });
+  }
+
+  // drawing
+  function drawLinks() {
+    const g = $("links"); g.innerHTML = "";
+    const r = route(s.from, s.to) || [];
+    const onRoute = new Set(r.slice(1).map((n, i) => edgeOf(r[i], n)));
+    E.forEach(e => {
+      const A = node(e.a), B = node(e.b), mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+      const l = document.createElementNS(NS, "line");
+      l.setAttribute("x1", A.x); l.setAttribute("y1", A.y); l.setAttribute("x2", B.x); l.setAttribute("y2", B.y);
+      l.setAttribute("class", "link" + (e.cut ? " cut" : onRoute.has(e) ? " route" : ""));
+      const hit = l.cloneNode(); hit.setAttribute("class", "link-hit");
+      hit.setAttribute("tabindex", "0"); hit.setAttribute("role", "button");
+      hit.setAttribute("aria-label", (e.cut ? K.t("Laga kabeln ", "Repair the cable ") : K.t("Klipp kabeln ", "Cut the cable ")) + A.name + "–" + B.name);
+      // scissors that show on hover
+      const scissors = document.createElementNS(NS, "g"); scissors.setAttribute("class", "scissors");
+      scissors.innerHTML = `<circle cx="${mx}" cy="${my}" r="15" fill="var(--sheet)" stroke="var(--graphite)" stroke-width="2"/>
+        <circle cx="${mx - 5}" cy="${my + 5}" r="3.5" fill="none" stroke="var(--graphite)" stroke-width="2"/><circle cx="${mx + 5}" cy="${my + 5}" r="3.5" fill="none" stroke="var(--graphite)" stroke-width="2"/>
+        <path d="M${mx - 3} ${my + 2} L${mx + 5} ${my - 8} M${mx + 3} ${my + 2} L${mx - 5} ${my - 8}" stroke="var(--graphite)" stroke-width="2" stroke-linecap="round"/>`;
+      const toggle = () => {
+        e.cut = !e.cut;
+        drawLinks(); readouts(); paintBox(); checkCuts();
+      };
+      hit.addEventListener("click", toggle);
+      hit.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggle(); } });
+      g.append(l, hit, scissors);
+    });
+  }
+  function drawNodes() {
+    const g = $("nodes"); g.innerHTML = "";
+    N.forEach(n => {
+      const el = document.createElementNS(NS, "g");
+      const role = n.id === s.from ? "from" : n.id === s.to ? "to" : "";
+      el.setAttribute("class", "node " + role);
+      el.setAttribute("tabindex", "0"); el.setAttribute("role", "button");
+      el.setAttribute("aria-label", n.name + (role === "from" ? K.t(", skickar", ", sends") : role === "to" ? K.t(", tar emot", ", receives") : ""));
+      el.innerHTML = `<circle class="base" cx="${n.x}" cy="${n.y}" r="30"/>
+        <path class="house" d="M${n.x - 12} ${n.y + 11} V${n.y - 2} L${n.x} ${n.y - 13} L${n.x + 12} ${n.y - 2} V${n.y + 11} Z M${n.x - 4} ${n.y + 11} V${n.y + 3} H${n.x + 4} V${n.y + 11}"/>
+        <text x="${n.x}" y="${n.y + 56}" text-anchor="middle">${n.name}</text>
+        ${role ? `<text class="tag" x="${n.x}" y="${n.y - 42}" text-anchor="middle">${role === "from" ? K.t("skickar", "sends") : K.t("tar emot", "receives")}</text>` : ""}`;
+      const pick = () => {
+        if (flying()) return;
+        if (s.pickNext === "from") { if (n.id === s.to) s.to = s.from; s.from = n.id; s.pickNext = "to"; }
+        else { if (n.id === s.from) return; s.to = n.id; s.pickNext = "from"; }
+        drawNodes(); drawLinks(); readouts();
+      };
+      el.addEventListener("click", pick);
+      el.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); pick(); } });
+      g.append(el);
+    });
+  }
+  function readouts() {
+    const r = route(s.from, s.to);
+    $("r-hops").textContent = r ? r.length - 1 : K.t("ingen väg", "no way");
+    $("r-cables").textContent = E.length - cuts();
+    $("inbox-lbl").textContent = K.t(`Hos ${node(s.to).name}:`, `At ${node(s.to).name}:`);
+  }
+  // packets
+  function inbox(text) {
+    const el = $("inbox"); el.innerHTML = "";
+    [...text].forEach(() => { const d = document.createElement("div"); d.className = "slot"; el.append(d); });
+  }
+  function send() {
+    if (flying()) return;
+    const text = ($("msg").value.trim() || "HEJ").toUpperCase().slice(0, 6);
+    inbox(text);
+    s.pkts = [...text].map((ch, i) => ({ ch, i, at: s.from, next: null, t: 0, wait: i * 0.45, done: false, arrived: false, stuck: 0, el: null }));
+    const g = $("pkts"); g.innerHTML = "";
+    s.pkts.forEach(p => {
+      p.el = document.createElementNS(NS, "g"); p.el.setAttribute("class", "pkt");
+      p.el.innerHTML = `<rect x="-16" y="-14" width="32" height="28" rx="4"/><text text-anchor="middle" y="6">${p.ch.replace(/[<>&]/g, "")}</text>`;
+      g.append(p.el);
+    });
+    readouts();
+  }
+
+  let last = performance.now();
+  function step(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    let changed = false;
+    s.pkts.forEach(p => {
+      if (p.done) return;
+      if (p.wait > 0) { p.wait -= dt; place(p); return; }
+      if (!p.next) {
+        if (p.at === s.to) { arrive(p); changed = true; return; }
+        const r = route(p.at, s.to);
+        if (!r) { p.stuck += dt; if (p.stuck > 1.6) { lose(p); changed = true; } place(p); return; }
+        p.stuck = 0; p.from = p.at; p.next = r[1]; p.t = 0; p.back = false; changed = true;
+      }
+      const e = edgeOf(p.from, p.next);
+      if (e.cut && !p.back) p.back = true;            // the cable was cut: the packet turns back
+      p.t += dt * (p.back ? -1.6 : 1.1);
+      if (p.back && p.t <= 0) { p.t = 0; p.next = null; p.at = p.from; changed = true; }
+      else if (!p.back && p.t >= 1) { p.at = p.next; p.next = null; p.t = 0; changed = true; }
+      place(p);
+    });
+    if (changed) { readouts(); paintBox(); checkDone(); }
+    requestAnimationFrame(step);
+  }
+  function place(p) {
+    let x, y;
+    if (p.next) { const A = node(p.from), B = node(p.next); x = A.x + (B.x - A.x) * p.t; y = A.y + (B.y - A.y) * p.t; }
+    else { const A = node(p.at); x = A.x + (p.i - 2) * 6; y = A.y - 40; }
+    p.el.setAttribute("transform", `translate(${x},${y})`);
+    p.el.style.opacity = p.wait > 0 ? 0 : 1;
+  }
+  function arrive(p) {
+    p.done = p.arrived = true; p.el.style.display = "none";
+    const slot = $("inbox").children[p.i]; slot.textContent = p.ch; slot.classList.add("in");
+  }
+  function lose(p) {
+    p.done = true; p.el.classList.add("lost");
+    setTimeout(() => { p.el.style.display = "none"; }, 600);
+    const slot = $("inbox").children[p.i]; slot.textContent = "?"; slot.classList.add("lost");
+  }
+  function checkDone() {
+    if (!s.pkts.length || flying()) return;
+    const all = s.pkts.every(p => p.arrived);
+    if (all && box.connected() && s.from === "A" && s.to === "G" && cuts() === 4) tasks.complete("real");
+  }
+
+  $("send").addEventListener("click", send);
+  $("msg").addEventListener("keydown", e => { if (e.key === "Enter") send(); });
+  $("fix").addEventListener("click", () => { E.forEach(e => e.cut = false); drawLinks(); readouts(); paintBox(); });
+  K.onLang(() => { drawNodes(); drawLinks(); readouts(); });
+
+  drawLinks(); drawNodes(); inbox("HEJ"); readouts(); paintBox();
+  requestAnimationFrame(step);
+})();
+</script>
+</body>
+</html>

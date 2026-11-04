@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sortera – Verkstan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+  .table { display: flex; align-items: flex-end; gap: 4px; height: 260px; padding: 16px 12px 12px; }
+  .card { flex: 1 1 0; min-width: 0; border: 2px solid var(--graphite); border-radius: 4px; background: var(--sheet); display: flex; align-items: flex-start; justify-content: center; padding-top: 4px; font-family: var(--font-num); font-size: 15px; cursor: pointer; transition: height var(--fast), background var(--fast); }
+  .card.picked { background: var(--active); color: var(--sheet); }
+  .card.compared { background: color-mix(in srgb, var(--active) 30%, var(--sheet)); }
+  .card.sorted { border-color: var(--active); }
+  .table.many .card { font-size: 0; border-width: 1px; }
+  .table.many { gap: 2px; }
+</style>
+</head>
+<body data-domain="code">
+<header class="topbar" data-title-sv="Sortera" data-title-en="Sorting"></header>
+
+<main class="module">
+  <section class="stage">
+    <div class="scene table" id="table"></div>
+    <div class="row">
+      <span class="small" data-en="Cards">Kort</span>
+      <button class="chip" type="button" data-n="8">8</button>
+      <button class="chip" type="button" data-n="16">16</button>
+      <button class="chip" type="button" data-n="64">64</button>
+      <button class="btn ghost" id="shuffle" type="button" data-en="Shuffle">Blanda</button>
+    </div>
+    <div class="row">
+      <button class="btn" type="button" data-alg="bubble" data-en="Bubble sort">Bubbelsortering</button>
+      <button class="btn" type="button" data-alg="merge" data-en="Merge sort">Samsortering</button>
+    </div>
+    <span class="small" data-en="Comparisons">Jämförelser</span>
+    <div class="readouts">
+      <div class="readout"><span class="v" id="r-hand">–</span><span class="k" data-en="you">ni</span></div>
+      <div class="readout"><span class="v" id="r-bubble">–</span><span class="k" data-en="bubble">bubbel</span></div>
+      <div class="readout"><span class="v" id="r-merge">–</span><span class="k" data-en="merge">sam</span></div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="mission" id="mission">
+      <p class="meta" data-en="Software · 2–4 people · 20 min">Mjukvara · 2–4 personer · 20 min</p>
+      <h2 data-en="Sort like a computer">Sortera som en dator</h2>
+    </div>
+    <details class="why">
+      <summary data-en="What happened?">Vad hände?</summary>
+      <div class="body">
+        <p data-en="Bubble sort compares neighbours, so twice the cards means four times the work. Merge sort sorts small piles and merges them, and with a million names it is about 25 000 times faster.">Bubbelsortering jämför grannar, så dubbelt så många kort ger fyra gånger så mycket arbete. Samsortering sorterar små högar och slår ihop dem, och med en miljon namn går det ungefär 25 000 gånger fortare.</p>
+      </div>
+    </details>
+    <div id="box"></div>
+  </aside>
+</main>
+
+<script src="../shared/kit.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const s = { n: 8, cards: [], picked: null, hand: 0, run: null, res: {}, done: { 8: {}, 64: {} } };
+
+  const tasks = K.tasks($("mission"), "sorting", [
+    { id: "hand",  text: { sv: "Sortera 8 kort för hand med högst 20 jämförelser.", en: "Sort 8 cards by hand with 20 comparisons at most." } },
+    { id: "scale", text: { sv: "Visa att samsortering vinner mer ju fler kort det är.", en: "Show that merge sort wins by more the more cards there are." } },
+    { id: "real",  text: { sv: "Kör den snabbaste metoden på lådans lampor.", en: "Run the fastest method on the box lamps." } }
+  ]);
+
+  // node-09, the same 8 × 8 matrix as in Pixels, shows eight cards as eight bars
+  const box = K.box($("box"), {
+    node: "node-09",
+    svg: `<svg viewBox="0 0 300 150" role="img" aria-label="Lysdiodsmatris med 8 × 8 punkter" data-aria-en="LED matrix with 8 × 8 dots">
+      <rect class="hw-board" x="8" y="8" width="284" height="134" rx="6"/>
+      <rect x="92" y="14" width="122" height="122" rx="4" fill="var(--graphite)"/>
+      <g id="hw-matrix">${Array.from({ length: 64 }, (_, i) => `<rect x="${98 + (i % 8) * 14.4}" y="${20 + Math.floor(i / 8) * 14.4}" width="10" height="10" rx="2"/>`).join("")}</g>
+    </svg>`,
+    onConnect: () => paint()
+  });
+
+  function shuffle() {
+    if (s.run) clearTimeout(s.run.t);
+    s.run = null; s.picked = null; s.hand = 0; s.res = {};
+    s.cards = Array.from({ length: s.n }, (_, i) => i + 1).sort(() => Math.random() - .5);
+    s.start = [...s.cards];
+    paint();
+  }
+  const sorted = a => a.every((v, i) => !i || a[i - 1] <= v);
+
+  // each algorithm returns frames: the cards, the two being compared and the count so far
+  function bubble(a) {
+    a = [...a]; const f = []; let c = 0;
+    for (let k = a.length - 1; k > 0; k--) {
+      let swapped = false;
+      for (let i = 0; i < k; i++) {
+        c++;
+        if (a[i] > a[i + 1]) { [a[i], a[i + 1]] = [a[i + 1], a[i]]; swapped = true; }
+        f.push({ a: [...a], j: [i, i + 1], c });
+      }
+      if (!swapped) break;
+    }
+    return f;
+  }
+  function merge(a) {
+    a = [...a]; const f = []; let c = 0;
+    for (let w = 1; w < a.length; w *= 2) for (let lo = 0; lo < a.length - w; lo += 2 * w) {
+      const mid = lo + w, hi = Math.min(lo + 2 * w, a.length);
+      const l = a.slice(lo, mid), r = a.slice(mid, hi), out = [];
+      while (l.length && r.length) { c++; out.push(l[0] <= r[0] ? l.shift() : r.shift()); f.push({ a: [...a.slice(0, lo), ...out, ...l, ...r, ...a.slice(hi)], j: [lo + out.length - 1], c }); }
+      a.splice(lo, hi - lo, ...out, ...l, ...r);
+    }
+    f.push({ a: [...a], j: [], c });
+    return f;
+  }
+
+  function run(alg) {
+    if (s.run) return;
+    s.cards = [...s.start]; s.picked = null;
+    // the same time per comparison for both, so the difference shows
+    const f = (alg === "bubble" ? bubble : merge)(s.cards), ms = { 8: 120, 16: 45, 64: 5 }[s.n], per = Math.max(1, Math.round(16 / ms));
+    const onBox = box.connected() && s.n === 8;
+    s.run = { alg, i: 0 };
+    const step = () => {
+      s.run.i = Math.min(f.length, s.run.i + per);
+      const b = f[s.run.i - 1];
+      s.cards = b.a; s.res[alg] = b.c; paint(b.j);
+      if (s.run.i < f.length) { s.run.t = setTimeout(step, ms * per); return; }
+      s.run = null; paint();
+      if (s.done[s.n]) s.done[s.n][alg] = b.c;
+      const d8 = s.done[8], d64 = s.done[64];
+      if (d8.bubble && d8.merge && d64.bubble && d64.merge) tasks.complete("scale");
+      if (onBox && alg === "merge" && s.res.bubble && s.res.merge < s.res.bubble) tasks.complete("real");
+    };
+    step();
+  }
+
+  function paint(compared = []) {
+    const t = $("table");
+    t.classList.toggle("many", s.n > 16);
+    t.innerHTML = s.cards.map((v, i) => `<button class="card${i === s.picked ? " picked" : ""}${compared.includes(i) ? " compared" : ""}${!s.run && sorted(s.cards) ? " sorted" : ""}" type="button" data-i="${i}" style="height:${12 + 88 * v / s.n}%" aria-label="${v}">${v}</button>`).join("");
+    t.querySelectorAll(".card").forEach(k => k.addEventListener("click", () => tap(+k.dataset.i)));
+    document.querySelectorAll("[data-n]").forEach(c => c.setAttribute("aria-pressed", +c.dataset.n === s.n));
+    document.querySelectorAll("[data-alg], [data-n], #shuffle").forEach(c => c.disabled = !!s.run);
+    $("r-hand").textContent = s.hand || "–";
+    $("r-bubble").textContent = s.res.bubble ?? "–";
+    $("r-merge").textContent = s.res.merge ?? "–";
+    const on = box.connected() && s.n === 8;
+    [...$("hw-matrix").children].forEach((r, i) => {
+      const col = i % 8, row = 7 - Math.floor(i / 8);
+      r.setAttribute("fill", on && row < s.cards[col] ? (compared.includes(col) ? "var(--tape)" : "var(--code)") : "var(--pencil)");
+      r.setAttribute("opacity", on && row < s.cards[col] ? 1 : .25);
+    });
+  }
+
+  function tap(i) {
+    if (s.run || sorted(s.cards)) return;
+    if (s.picked === null || s.picked === i) { s.picked = s.picked === i ? null : i; paint(); return; }
+    const [a, b] = [Math.min(s.picked, i), Math.max(s.picked, i)];
+    s.hand++;
+    if (s.cards[a] > s.cards[b]) [s.cards[a], s.cards[b]] = [s.cards[b], s.cards[a]];
+    s.picked = null; paint();
+    if (sorted(s.cards) && s.n === 8 && s.hand <= 20) tasks.complete("hand");
+  }
+
+  document.querySelectorAll("[data-n]").forEach(c => c.addEventListener("click", () => { s.n = +c.dataset.n; shuffle(); }));
+  document.querySelectorAll("[data-alg]").forEach(c => c.addEventListener("click", () => run(c.dataset.alg)));
+  $("shuffle").addEventListener("click", shuffle);
+  K.onLang(() => paint());
+  shuffle();
+})();
+</script>
+</body>
+</html>
