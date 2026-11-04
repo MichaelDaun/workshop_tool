@@ -1,86 +1,91 @@
-# 3. Samarbete och arkitektur
+# 3. Architecture
 
-Ramverk och teknik är inte valda.
+No framework has been chosen.
 
-## Två lager
+## Two layers
 
 ```text
-Webbappen (statiska filer)  ⇄ WebSocket ⇄  Rumsservern (valfri)
-moduler, språk, solo                       rumskoder, synk, storskärm, lådor
+Web app (static files)  ⇄ WebSocket ⇄  Room server (optional)  ⇄ MQTT ⇄  Boxes
+modules, languages, solo               room codes, sync, big screen      Pico W nodes
 ```
 
-Solo fungerar alltid och sparar framsteg i webbläsaren. Rumsläget läggs ovanpå. Nås inte servern
-faller appen tillbaka till solo.
+Solo always works and stores progress in the browser. Room mode sits on top. If the server cannot
+be reached, the app falls back to solo. The box task needs the room server.
 
-## Vad rummet behöver
+## What the room needs
 
-Gå med, framsteg till ledaren, röstning, gemensam data, ledaren byter läge, lagindelning, tillstånd
-per deltagare. Allt är små händelser, så ett tillstånd per rum i minnet räcker. Ingen CRDT.
+Joining, progress to the leader, teams, polls, shared data, the leader switching modes, and
+pairing boxes with workshops. These are all small events, so one in-memory state per room is
+enough. No CRDT.
 
-## Egen server eller GitHub Pages
+## Own server or GitHub Pages
 
-| | GitHub Pages | Egen server |
+| | GitHub Pages | Own server |
 |---|---|---|
-| Statiska filer | Ja | Ja |
-| WebSocket | Nej | Ja |
-| Offline på plats | Nej | Ja |
-| Underhåll | Inget | Certifikat, uppdateringar |
+| Static files | Yes | Yes |
+| WebSocket | No | Yes |
+| Offline on site | No | Yes |
+| Maintenance | None | Certificates, updates |
 
-Egen server för produktion, statiska filer och rumsserver i en container. GitHub Pages för
-förhandsvisning.
+Own server for production, with the static files and the room server in one container. GitHub
+Pages for previews.
 
-## Verkstan i en låda
+## Verkstan in a box
 
-Samma container kan köras på en Raspberry Pi med egen router i rummet. Deltagarna ansluter till
-det lokala nätet och skannar en QR-kod. Inget internet behövs. Lådorna (dokument 5) ansluter
-till samma Pi.
+The same container runs on a Raspberry Pi with its own router in the room. Participants join the
+local network and scan a QR code. No internet is needed. The boxes connect to the same Pi.
 
-Det kräver:
+This needs:
 
-- Typsnitt och bibliotek lokalt. Mockuparna hämtar Google Fonts, produktion ska inte göra det.
-- En lösning för HTTPS lokalt, som mikrofonen behöver. Öppen fråga.
-- Återanslutning till samma smeknamn med en anonym token.
+- Fonts and libraries served locally. The mockups load Google Fonts; production must not.
+- Local HTTPS, which the microphone needs. Open question.
+- Reconnecting to the same nickname with an anonymous token.
 
-## Integritet
+## Privacy
 
-Bara smeknamn och framsteg. Rum raderas efter 12 timmar. Ingen spårning. Statistik bara
-aggregerad. Smeknamn behandlas som personuppgifter.
+Only nicknames and progress. Rooms are deleted after 12 hours. No tracking. Statistics only in
+aggregate. Nicknames are treated as personal data.
 
-## Moderering
+## Moderation
 
-Ingen fritext i rumsövningar. Föreslagna smeknamn som standard. Ledaren kan byta namn, ta bort
-och frysa rummet.
+No free text in room activities. Suggested nicknames by default. The leader can rename, remove
+and freeze.
 
-## Protokoll
+## Protocol
 
 ```jsonc
-// deltagare → server
+// participant → server
 { "t": "join",     "room": "VERK-42", "nick": "Snabba Uttern", "token": "…" }
-{ "t": "progress", "module": "el-krets", "task": "lagom" }
-{ "t": "submit",   "activity": "klassens-ai", "data": { "x": 0.12, "y": 0.7, "c": "apple" } }
-{ "t": "vote",     "activity": "snabbfraga-1", "choice": "B" }
+{ "t": "progress", "module": "circuit", "task": "one-amp" }
+{ "t": "submit",   "activity": "class-ai", "data": { "x": 0.12, "y": 0.7, "c": "apple" } }
+{ "t": "vote",     "activity": "poll-1", "choice": "B" }
+{ "t": "box",      "node": "node-01", "topic": "out/…", "data": { … } }
 
-// ledare → server
-{ "t": "mode",   "activity": "klassens-ai" }
+// leader → server
+{ "t": "mode",   "activity": "class-ai" }
 { "t": "teams",  "size": 4 }
-{ "t": "reveal", "activity": "snabbfraga-1" }
+{ "t": "pair",   "node": "node-01", "module": "circuit" }
+{ "t": "reveal", "activity": "poll-1" }
 
-// server → alla
-{ "t": "state", "mode": "klassens-ai", "people": 23, "activity": { … } }
+// server → everyone
+{ "t": "state", "mode": "class-ai", "people": 23, "activity": { … } }
 { "t": "event", "kind": "submit", "by": "Snabba Uttern", "data": { … } }
+{ "t": "box",   "node": "node-01", "topic": "in/current", "data": { "mA": 19.6 } }
 ```
 
-## Kandidater
+The server only forwards `out/` messages from a team to the box paired with its workshop.
 
-| Lager | Alternativ |
+## Candidates
+
+| Layer | Options |
 |---|---|
-| Moduler | Ren JS, Svelte, Lit |
-| Rumsserver | Node med `ws`, Bun, Python |
-| Drift | Docker och Caddy |
+| Modules | Plain JS, Svelte, Lit |
+| Room server | Node with `ws` and `mqtt`, Bun, Python |
+| Hosting | Docker and Caddy |
 
-## Öppna frågor
+## Open questions
 
-1. Var står produktionsservern?
-2. Behövs Verkstan i en låda från start?
-3. Ska resultat kunna sparas efter workshopen?
-4. Räcker en hemlig ledarlänk per rum?
+1. Where does the production server run?
+2. Is Verkstan in a box needed from the start?
+3. Should results be kept after the session?
+4. Is one secret leader link per room enough?

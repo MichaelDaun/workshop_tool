@@ -1,6 +1,6 @@
-# Publicerar mockuparna på GitHub Pages som förhandsvisning.
-# Aktivera en gång i repot: Settings → Pages → Source: "GitHub Actions".
-name: Förhandsvisning på GitHub Pages
+# Publishes the mockups to GitHub Pages as a preview.
+# Enable once in the repository: Settings → Pages → Source: "GitHub Actions".
+name: Preview on GitHub Pages
 
 on:
   push:

@@ -1,7 +1,6 @@
-# Startar noden och lådans beteende. Samma fil i alla lådor.
+# Starts the node with the box named in config.py. The same file on every box.
 import config
-from nod import Nod
+from node import Node
 
-lada = __import__("lador." + config.LADA, None, None, ["starta", "varv"])
-nod = Nod(config)
-nod.kor(lada)
+box = __import__("boxes." + config.BOX, None, None, ["setup", "loop"])
+Node(config).run(box)

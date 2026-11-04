@@ -1,44 +1,47 @@
 # Verkstan
 
-Workshopövningar om teknik för en publik utan teknisk bakgrund. Femton verkstäder i sju ämnen:
-ellära, digital logik, signalteknik, AI, nätverk, mjukvara och matematik. Ensam eller i ett rum.
+Technology workshops for people with no technical background. Fifteen workshops in seven areas:
+electricity, digital logic, signals, AI, networks, software and mathematics. Teams of 2–4 solve one
+problem per workshop, first on screen and then on a physical box.
 
-Status: klickbara mockupar och firmware-utkast.
+Status: clickable mockups and draft firmware. The UI is Swedish with English as a second language.
+Everything else in the repository is English.
 
-## Prova
+## Try it
 
-Öppna `mockups/index.html`, eller:
+Open `mockups/index.html`, or:
 
 ```bash
 cd mockups && python3 -m http.server 8000
 ```
 
-| Ämne | Verkstäder |
+| Area | Workshops |
 |---|---|
-| Ellära | [Strömkretsen](mockups/moduler/el-krets.html), [Ficklampan](mockups/moduler/el-ficklampa.html), [Vad drar mest?](mockups/moduler/el-energi.html) |
-| Digital logik | [Logikgrindar](mockups/moduler/logik-grindar.html), [Åtta lampor](mockups/moduler/logik-binart.html) |
-| Signalteknik | [Ljudvågor](mockups/moduler/signal-vagor.html), [Pixlar](mockups/moduler/signal-pixlar.html) |
-| AI | [Fruktsorteraren](mockups/moduler/ai-sortera.html), [Nästa ord](mockups/moduler/ai-sprakmodell.html) |
-| Nätverk | [Paketresan](mockups/moduler/natverk-paket.html), [Hemliga färger](mockups/moduler/nat-hemligt.html) |
-| Mjukvara | [Robotens väg](mockups/moduler/robot-kod.html), [Sortera](mockups/moduler/kod-sortera.html) |
-| Matematik | [Funktionsmaskinen](mockups/moduler/matte-maskin.html), [Tärningar](mockups/moduler/matte-tarning.html) |
+| Electricity | [The circuit](mockups/modules/circuit.html), [The torch](mockups/modules/torch.html), [What uses most?](mockups/modules/energy.html) |
+| Digital logic | [Logic gates](mockups/modules/gates.html), [Eight lamps](mockups/modules/binary.html) |
+| Signals | [Sound waves](mockups/modules/waves.html), [Pixels](mockups/modules/pixels.html) |
+| AI | [The fruit sorter](mockups/modules/fruit.html), [Next word](mockups/modules/nextword.html) |
+| Networks | [Packet tour](mockups/modules/packets.html), [Secret colours](mockups/modules/secret.html) |
+| Software | [The robot's path](mockups/modules/robot.html), [Sorting](mockups/modules/sorting.html) |
+| Mathematics | [The function machine](mockups/modules/function.html), [Dice](mockups/modules/dice.html) |
 
-Dessutom [rumsvyn](mockups/rum.html) för ledaren och [designmanualen](mockups/designmanual.html).
-Ren HTML, CSS och JS utan byggsteg. Lådorna är simulerade, firmware finns i [`firmware/`](firmware/).
+Also the [room view](mockups/room.html) for the workshop leader and the
+[design manual](mockups/design.html). Plain HTML, CSS and JS with no build step. The boxes are
+simulated in the mockups; their firmware is in [`firmware/`](firmware/).
 
-## Dokument
+## Documents
 
-1. [Vision och pedagogik](docs/01-vision-och-pedagogik.md)
-2. [Övningsbank](docs/02-ovningsbank.md)
-3. [Samarbete och arkitektur](docs/03-samarbete-och-arkitektur.md)
-4. [Moduler skrivna av AI](docs/04-ai-forfattade-moduler.md)
-5. [Fysiska enheter](docs/05-fysiska-enheter.md)
-6. [Designmanual](docs/06-designmanual.md)
-7. [Modulplaner](docs/07-modulplaner.md): steg, delar, stift och meddelanden per verkstad
+1. [Vision](docs/01-vision.md)
+2. [Exercise bank](docs/02-exercise-bank.md)
+3. [Architecture](docs/03-architecture.md)
+4. [AI-authored modules](docs/04-ai-authored-modules.md)
+5. [Hardware](docs/05-hardware.md)
+6. [Design manual](docs/06-design-manual.md)
+7. [Module plans](docs/07-module-plans.md): tasks, parts, pins and messages per workshop
 
-En AI som skriver moduler läser [AGENTS.md](AGENTS.md).
+An AI writing modules reads [AGENTS.md](AGENTS.md) first.
 
 ## GitHub Pages
 
-`.github/workflows/pages.yml` publicerar `mockups/` vid push till `main`. Slå på under
+`.github/workflows/pages.yml` publishes `mockups/` on every push to `main`. Turn it on under
 Settings → Pages → Source: GitHub Actions.

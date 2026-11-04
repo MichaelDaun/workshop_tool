@@ -1,2 +1,3 @@
-firmware/verkstan_nod/config.py
-firmware/nod03_ljud/config.h
+firmware/node/config.py
+firmware/node03_sound/config.h
+__pycache__/

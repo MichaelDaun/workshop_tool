@@ -1,1 +1,1 @@
-Se [AGENTS.md](AGENTS.md). Samma instruktioner gäller för alla AI-verktyg i projektet.
+See [AGENTS.md](AGENTS.md). The same instructions apply to every AI tool in this project.

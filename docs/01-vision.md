@@ -1,44 +1,43 @@
-# 1. Vision och pedagogik
+# 1. Vision
 
-Verkstan låter människor utan teknisk bakgrund göra saker med teknik och förstå den genom det de
-ser hända, ensamma eller tillsammans i ett rum.
+Verkstan lets people with no technical background make technology do something and understand it
+from what they see happen. They work in small teams and talk about what is going on.
 
-## Målgrupp
+## Audience
 
 | | |
 |---|---|
-| Vilka | Allmänhet, nyanställda, beslutsfattare, elever |
-| Förkunskap | Ingen |
-| Format | Workshops på plats, 5–75 personer |
-| Tempo | Egen takt, med några gemensamma moment |
-| Enheter | Mobil för de flesta verkstäder |
-| Språk | Svenska och engelska |
-| Identitet | Smeknamn, inga konton |
+| Who | The public, new employees, decision makers, school pupils |
+| Prior knowledge | None |
+| Format | On-site workshops, 5–75 people in teams of 2–4 |
+| Devices | One phone or laptop per team member, one box per team or station |
+| Languages | Swedish and English |
+| Identity | Nicknames, no accounts |
 
-## Principer
+## Principles
 
-1. **Gör, se, förstå.** Först något att trycka på, sedan en synlig reaktion, sist en kort
-   förklaring under ”Vad hände?”.
-2. **Låg tröskel, högt tak.** Första steget klarar alla på 30 sekunder, det sista kräver
-   eftertanke. Det går också att leka fritt.
-3. **Metaforer som går att slå av.** El som vatten, nätverk som hus och vägar. Växla och se att
-   det är samma sak.
-4. **Fel är ett steg.** Att spräcka lampan eller lura maskinen är uppgifter.
-5. **Vardagen.** Varje förklaring slutar i något man känner igen.
-6. **Allt hänger ihop.** Kartan på startsidan visar ström → 1 och 0 → program → AI.
+1. **A problem, not a tour.** Each workshop is one problem with a concrete goal: exactly 1 A, a
+   torch that lasts the night, a chest that opens.
+2. **Talk before you click.** Tasks need a prediction, a limit or information that only one team
+   member has, so the team has to discuss.
+3. **The box ends it.** The last task makes real hardware do something: an LED as bright as it can
+   safely be, a robot on the star, a chest that unlocks.
+4. **Show, don't tell.** The scene carries the meaning. Text is the task and a short ”Vad hände?”.
+5. **Mistakes are steps.** Breaking the bulb or fooling the machine is part of the work.
+6. **It all connects.** The map on the start page links current → bits → programs → AI.
 
-## Riktlinjer
+## Guidelines
 
-Högst två korta meningar innan man får göra något. En scen per verkstad. Tryckytor på minst
-44 px. Riktiga enheter. Ljust och mörkt läge. `prefers-reduced-motion` respekteras. Färg bär aldrig
-information ensam. Detaljerna står i [designmanualen](06-designmanual.md).
+Touch targets of at least 44 px. Real units. Light and dark mode. `prefers-reduced-motion` is
+respected. Colour never carries information alone. Details are in the
+[design manual](06-design-manual.md).
 
-## En workshop på 60 minuter
+## A 60-minute session
 
-| Tid | Moment |
+| Time | Part |
 |---|---|
-| 0–5 | Alla går med via rumskoden |
-| 5–10 | Snabbfråga på storskärmen |
-| 10–40 | Egen takt, ledaren följer översikten |
-| 40–50 | Klassens AI, alla lägger till frukt |
-| 50–60 | Ledaren knyter ihop med kartan |
+| 0–5 | Everyone joins with the room code; the leader forms teams |
+| 5–10 | A quick poll on the big screen |
+| 10–45 | Teams work through a workshop and finish on the box |
+| 45–55 | The class AI: everyone adds fruit |
+| 55–60 | The leader ties it together with the map |

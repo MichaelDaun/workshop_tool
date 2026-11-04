@@ -1,81 +1,72 @@
-# 2. Övningsbank
+# 2. Exercise bank
 
-Idéer per område. Byggda verkstäder är markerade med ✓.
+Ideas by area. Built workshops are marked ✓.
 
-## Samarbetsmönster
+## Collaboration patterns
 
-| Mönster | Så går det till | Exempel |
+| Pattern | How it works | Example |
 |---|---|---|
-| Förutsäg, testa, förklara | Alla röstar innan experimentet körs | Snabbfrågan |
-| Gemensam data | Var och en lägger till en punkt, helheten växer | Klassens AI, Tärningar |
-| Rummet är systemet | Varje person är en del: en bit, en grind, en router | Åtta lampor |
-| Delad kontrollpanel | Varje lagmedlem styr ett reglage | Strömkretsen i lag |
-| Informationsglapp | En ser målet, en annan har kontrollerna | Robotens väg i par |
-| Pussel | Var och en lär sig en bit och lär ut den | Från ström till app |
-| Bygg och knäck | Ett lag gömmer, ett annat letar | Funktionsmaskinen |
-| Galleri | Alla lösningar på en vägg | Kortaste robotprogrammet |
+| Predict, test, explain | The team commits to an answer before running it | The circuit, task 3 |
+| Shared data | Each person adds a point and the whole grows | The class AI, Dice |
+| The room is the system | Each person is a part: a bit, a gate, a router | Eight lamps |
+| Information gap | One person sees the goal, the others have the controls | The robot's path, level 4 |
+| Build and crack | One team hides a rule, another finds it | The function machine |
+| Constraint | A budget forces a trade-off | Pixels, 200 numbers |
 
-## Ellära
+## Electricity
 
-- ✓ Strömkretsen: batterier, motstånd och lampa, med vattenvy.
-- ✓ Ficklampan: i rad eller bredvid.
-- ✓ Vad drar mest?: watt gånger timmar.
-- Vad leder ström?: gem, sudd, saltvatten.
-- Kortslutningen: rummet gissar vad som händer.
-- Från kraftverk till uttag.
+- ✓ The circuit: exactly 1 A, then an LED at its limit on the box.
+- ✓ The torch: series or parallel for a torch that lasts 8 hours.
+- ✓ What uses most?: what a cup of tea costs per year.
+- What conducts? Paper clips, rubbers, salt water.
+- From power station to socket.
 
-## Digital logik
+## Digital logic
 
-- ✓ Logikgrindar: sanningstabell och två gåtor.
-- ✓ Åtta lampor: rummet räknar binärt.
-- Bygg en adderare av grindar.
-- Mänsklig adderare: varje person är en grind.
+- ✓ Logic gates: a safe, a stair light and an alarm.
+- ✓ Eight lamps: the room counts in binary and writes initials.
+- Build an adder from gate boxes.
 
-## Signalteknik
+## Signals
 
-- ✓ Ljudvågor: tonhöjd, styrka och motvåg.
-- ✓ Pixlar: zooma tills bilden blir tal.
-- Ackordbyggarna: varje lagmedlem styr en våg.
-- Från ljud till siffror: sampling och dålig mp3.
-- Radiovågor: AM och FM.
+- ✓ Sound waves: copy a sound, cancel it, copy a whistle.
+- ✓ Pixels: a picture is numbers, within a budget.
+- Sampling and a bad MP3.
+- AM and FM.
 
 ## AI
 
-- ✓ Fruktsorteraren och Klassens AI: maskinen vet bara det den har sett.
-- ✓ Nästa ord: en språkmodell gissar sannolika ord.
-- Rita så att maskinen gissar.
-- Rekommendationsbubblan.
-- En neuron som våg.
+- ✓ The fruit sorter and the class AI: the machine knows only what it has seen.
+- ✓ Next word: teach a tiny language model a sentence.
+- Draw so the machine guesses.
+- A gesture wand with an accelerometer.
 
-## Nätverk
+## Networks
 
-- ✓ Paketresan: paket tar omvägar.
-- ✓ Hemliga färger: dela en hemlighet öppet.
-- Människonätverket: varje mobil är en router.
-- Adressboken (DNS).
-- Trafikstockningen: alla skickar samtidigt.
+- ✓ Packet tour: a network that survives cut cables.
+- ✓ Secret colours: share a secret in the open.
+- The human network: every phone is a router.
+- The address book (DNS).
 
-## Mjukvara
+## Software
 
-- ✓ Robotens väg: block, buggar och upprepning.
-- ✓ Sortera: du mot två algoritmer.
-- Mackmaskinen: ledaren följer instruktionerna bokstavligt.
-- Om–så-regler i ett smart hem.
+- ✓ The robot's path: short programs and a hidden level.
+- ✓ Sorting: you against two algorithms.
+- If-then rules for a smart home.
 
-## Matematik
+## Mathematics
 
-- ✓ Funktionsmaskinen: hitta regeln.
-- ✓ Tärningar: slumpen blir en kurva.
-- Exponentiellt: vik ett papper, dubbla riskorn.
-- Kartor och skala.
+- ✓ The function machine: crack a rule, then set one.
+- ✓ Dice: chance becomes a curve.
+- Exponential growth: fold paper, double rice.
 
-## Röd tråd
+## Threads
 
-1. Från ström till app: ström → bitar → grindar → program → app.
-2. Vad händer när du skickar en bild? Pixlar, komprimering, paket, filter.
-3. Bygg en smart lampa: krets, sensor, regel, vana.
+1. From current to app: current → bits → gates → programs → app.
+2. What happens when you send a photo? Pixels, compression, packets, filters.
+3. Build a smart lamp: circuit, sensor, rule, habit.
 
-## Välja nästa
+## Choosing the next one
 
-Poängsätt 1–3: tydligt aha, går att visa utan text, naturlig lagversion, låg byggkostnad, fungerar
-på mobil.
+Score 1–3 on each: a clear moment of insight, works without text, a natural team problem, a box
+task that does something concrete, low build cost.

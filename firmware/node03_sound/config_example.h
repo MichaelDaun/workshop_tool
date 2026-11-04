@@ -1,6 +1,6 @@
-// Kopiera till config.h och fyll i. config.h checkas inte in.
-#define WIFI_NAMN  "verkstan"
-#define WIFI_LOSEN "byt-mig"
-#define SERVER     "192.168.8.10"
-#define RUM        "VERK-42"
-#define NOD        "nod-03"
+// Copy to config.h and fill in. config.h is not checked in.
+#define WIFI_SSID     "verkstan"
+#define WIFI_PASSWORD "change-me"
+#define SERVER        "192.168.8.10"
+#define ROOM          "VERK-42"
+#define NODE          "node-03"

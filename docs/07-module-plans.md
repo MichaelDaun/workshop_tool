@@ -1,351 +1,357 @@
-# 7. Modulplaner
+# 7. Module plans
 
-Mål, steg och låda för varje verkstad. Mockuparna ligger i `mockups/moduler/`, firmware i
-`firmware/`. Priserna är ungefärliga styckpriser hösten 2026.
+Problem, tasks and box for each workshop. Mockups are in `mockups/modules/`, firmware in
+`firmware/`. Task texts are quoted in English; the Swedish originals are in the mockups. Prices are
+rough unit prices, autumn 2026.
 
-## Gemensamt
+## Common
 
-**Standardnoden** (ca 200 kr): Raspberry Pi Pico W, powerbank 5 V, låda med numret på locket,
-statuslampa med 220 Ω. Alla lådor kör `firmware/verkstan_nod/` och skiljer sig bara i filen under
-`lador/`. Ljudlådan är undantaget och kör C++.
+**Standard node** (about 200 kr): Raspberry Pi Pico W, 5 V power bank, an enclosure with the node
+id on the lid, the Pico's own LED as the status light. Every box runs `firmware/node/` and differs
+only in its file under `boxes/`. The sound box is the exception and runs C++.
 
-**Nät:** en egen reserouter med 2,4 GHz. Rumsservern kör Mosquitto och översätter till
-WebSocket för webbläsarna, så att ingen deltagare kan styra en låda direkt.
+**Network:** a 2.4 GHz travel router. The room server runs Mosquitto and bridges to WebSocket for
+the browsers, so no participant can drive a box directly.
 
 ```text
-verkstan/<rum>/<nod>/hej       {"har": [...], "fw": "0.2"}   (retain)
-verkstan/<rum>/<nod>/status    "uppe" / "borta"              (LWT)
-verkstan/<rum>/<nod>/in/<sak>  från lådan
-verkstan/<rum>/<nod>/ut/<sak>  till lådan, ut/hitta blinkar statuslampan
+verkstan/<room>/<node>/hello      {"parts": [...], "fw": "0.3"}   retained
+verkstan/<room>/<node>/status     "up" / "gone"                   retained, last will
+verkstan/<room>/<node>/in/<x>     from the box
+verkstan/<room>/<node>/out/<x>    to the box; out/find blinks the status light for 3 s
 ```
 
-**Regler:** högst 5 V. Varje verkstad fungerar utan låda. Det som går sönder på skärmen går inte
-sönder på riktigt. Lådan ska tåla 75 personer.
+**Rules:** 5 V at most. Every on-screen task works without a box. What breaks on screen does not
+break for real. A box must survive 75 people.
+
+**Task shape:** three tasks. Tasks 1 and 2 are on screen and need the team to decide something.
+Task 3 runs on the box.
 
 ---
 
-## Ellära
+## Electricity
 
-### Strömkretsen (`nod-01`, `lador/el.py`)
+### The circuit, ”Exakt en ampere” (`node-01`, `boxes/circuit.py`)
 
-Mål: ström behöver en hel slinga, fler batterier trycker på mer, motstånd bromsar.
-
-| Steg | Klart när |
+| Task | Done when |
 |---|---|
-| Tänd lampan | Brytaren sluten och ström över noll |
-| Gör lampan stark | Visaren i det markerade fältet |
-| Lagom ljus med 4 batterier | Fyra batterier och visaren i fältet |
-| Se kretsen som vatten | Vattenvyn på |
-| Ge lampan för mycket ström | Lampan går sönder på skärmen |
+| Get exactly 1 A through the bulb. | Switch closed, 0.95–1.05 A |
+| Do the same with 6 batteries. | 6 batteries, 0.95–1.05 A |
+| With 4 batteries: work out the resistance for 1 A before you flip the switch. | 1 A at the moment the switch closes |
+| The LED on the box takes 20 mA. Make it as bright as it can be. | Box reads 19–20 mA |
 
-Lådan (ca 100 kr): lysdiod 10 mm, potentiometer 10 kΩ, INA219.
+The bulb has 3 Ω and breaks above 8 W. The team has to calculate in task 3, since trying values
+with the switch closed does not count.
 
-| Koppling | Stift |
+Box (about 75 kr): 5 V from VBUS through the INA219, a 100 Ω resistor, a 500 Ω potentiometer wired
+as a variable resistor and a red LED. The Pico only measures: I = (5 V − 2 V) ÷ (100 Ω + R), so the
+knob covers 5–30 mA. Over 20 mA the display blinks.
+
+| Part | Pins |
 |---|---|
-| Lysdiod via INA219 och 100 Ω | GP15 |
-| Potentiometer | GP26 |
 | INA219 SDA / SCL | GP4 / GP5 |
+| TM1637 CLK / DIO | GP2 / GP3 |
 
-`ut/led {"pwm": 0.61}`, `ut/poff {}`, `in/pot {"v": 0.42}`, `in/strom {"mA": 12.3}`.
-INA219 mäter ett hoppande medel med PWM, så firmware tar medel av 20 mätningar.
+`in/current {"mA": 19.6}`
 
-### Ficklampan (ingen låda)
+### The torch, ”En ficklampa för natten” (`node-11`, `boxes/torch.py`)
 
-Mål: batterier i rad ger mer spänning, bredvid varandra räcker de längre. Lampor i rad delar på
-spänningen.
-
-| Steg | Klart när |
+| Task | Done when |
 |---|---|
-| Tänd båda lamporna | Båda lyser |
-| Gör dem så starka det går | Båda får 3 W |
-| Skruva ur en så att den andra slocknar | Lampor i rad, en skruvas ur |
-| Minst 8 timmar | Båda lyser och batterierna räcker 8 h |
+| Make both bulbs shine as brightly as they can. | Batteries in series, bulbs in parallel |
+| Build a torch that lasts at least 8 hours with both bulbs. | Both lit and at least 8 h |
+| Wire the same torch on the box. | The box wiring matches the screen and lasts at least 8 h |
 
-Riktiga batterihållare och lamphållare på bordet fungerar lika bra som en låda.
+Box (about 155 kr): a build board with two AA holders, two 2.5 V bulbs in holders, leads with
+crocodile clips and an INA219 in the supply line. The firmware reads volts and current, works out
+series or parallel from the voltage and shows hours on the display.
 
-### Vad drar mest? (ingen låda)
-
-Mål: watt är hur mycket just nu, räkningen är watt gånger timmar.
-
-| Steg | Klart när |
+| Part | Pins |
 |---|---|
-| Mät vattenkokaren | Vattenkokaren inkopplad |
-| Hitta det som drar minst | Mobilladdaren inkopplad |
-| Jämför lamporna | Båda lamporna mätta |
-| Något som drar lite men kostar mer än vattenkokaren | Till exempel kylskåpet |
+| INA219 SDA / SCL | GP4 / GP5 |
+| TM1637 CLK / DIO | GP2 / GP3 |
 
-En färdig energimätare för vägguttag (ca 150 kr) och några apparater. Inget eget bygge på 230 V.
+`in/power {"V": 1.48, "mA": 310, "h": 12.9}`
 
-## Digital logik
+### What uses most?, ”Vad kostar en kopp te?” (`plug-01`, no firmware)
 
-### Logikgrindar (`nod-02`, `lador/logik.py`)
-
-Mål: en dator fattar beslut med OCH, ELLER och INTE.
-
-| Steg | Klart när |
+| Task | Done when |
 |---|---|
-| Tänd lampan | Utgången har varit 1 |
-| Fyll sanningstabellen | Fyra lägen med samma grind |
-| Gåtan om kassaskåpet | OCH |
-| Gåtan om trappljuset | XOR |
+| Find something that draws little but costs more per year than the kettle. | The fridge, the router or the TV on standby |
+| Boil half a litre of water on the box using less than 60 Wh. | A boil under 60 Wh (lid on) |
+| What does a cup of tea a day cost over a year? A cup is 250 ml. | Answer within 25 % of the measured cost |
 
-Lådan (ca 70 kr): två arkadknappar, tre lysdioder.
+Box (about 500 kr): a Shelly Plus Plug S and a kettle. No home-built 230 V. Set the plug's MQTT
+prefix to `verkstan/<room>/plug-01`; it publishes `status/switch:0` with `apower` (W) and
+`aenergy.total` (Wh). The room server translates these to `in/power {"W": …, "Wh": …}`.
 
-| Koppling | Stift |
+## Digital logic
+
+### Logic gates, ”Tre lampor, tre regler” (`node-02`, `boxes/gates.py`)
+
+| Task | Done when |
 |---|---|
-| Knapp A, B | GP14, GP13 |
-| Lampa ut, A, B | GP16, GP17, GP18 |
+| The safe should open only when both guards turn their key. | AND, all four combinations tried |
+| The stair light should switch on and off from either switch. | XOR, all four combinations tried |
+| The lamp on the box should stay on until someone presses a button. | NOR on the box, all four combinations tried |
 
-`in/knapp {"a": true, "b": false}`, `ut/grind {"typ": "xor"}`. Lådan räknar själv ut lampan.
+Gates to choose from: AND, OR, XOR, NOR, NOT. The box applies the gate itself, so it keeps working
+if the network drops.
 
-### Åtta lampor (`nod-08`, `lador/binart.py`)
+Box (about 70 kr): two arcade buttons and one LED.
 
-Mål: åtta bitar räcker till 0–255, och bokstäver är tal.
-
-| Steg | Klart när |
+| Part | Pins |
 |---|---|
-| Visa 5 | 00000101 |
-| Visa 100 | 01100100 |
-| Visa det största talet | 255 |
-| Skriv H | 72 |
+| Button A / B | GP14 / GP13 |
+| LED with 220 Ω | GP16 |
 
-I rummet håller åtta personer upp mobilen som var sin bit. Lådan (ca 60 kr): åtta lysdioder och
-åtta tryckknappar.
+`out/gate {"type": "nor"}`, `in/buttons {"a": true, "b": false}`
 
-| Koppling | Stift |
+### Eight lamps, ”Rummet räknar binärt” (`node-08`, `boxes/binary.py`)
+
+| Task | Done when |
 |---|---|
-| Lysdioder 128 … 1 | GP2–GP9 |
-| Knappar 128 … 1 | GP10–GP17 |
+| Show 100. | 64 + 32 + 4 |
+| Count from 0 to 15 without skipping a number. | Each number from 0 to 15 in order |
+| Write the team's initials on the box screen. | At least two different letters sent |
 
-`in/bitar {"v": 72}`, `ut/bitar {"v": 72}`.
+In a room, eight people each hold up a phone as one bit. The team splits the bits between them.
 
-## Signalteknik
+Box (about 110 kr): eight LEDs, eight buttons, a send button and a 128 × 64 OLED. Send shows the
+byte as a letter (65 = A).
 
-### Ljudvågor (`nod-03`, `firmware/nod03_ljud/`)
-
-Mål: tonhöjd är hur ofta, styrka är hur långt. Två vågor läggs ihop, en motvåg släcker.
-
-| Steg | Klart när |
+| Part | Pins |
 |---|---|
-| Spela ett ljud | Ljudet på |
-| Gör tonen ljus | Över 600 Hz |
-| Lägg linjen på målvågen | Summan nära målet |
-| Släck ljudet med en motvåg | Samma ton och styrka, ett halvt varv förskjuten |
+| LEDs, 128 to 1 | GP2–GP9 |
+| Buttons, 128 to 1 | GP10–GP17 |
+| Send | GP18 |
+| SSD1306 SDA / SCL | GP20 / GP21 |
 
-Bäst på dator. Lådan (ca 210 kr): PAM8302, högtalare 8 Ω, MAX9814, stapel med 8 WS2812.
+`out/bits {"v": 72}`, `in/bits {"v": 72}`, `in/sent {"v": 65, "text": "MA"}`
 
-| Koppling | Stift |
+## Signals
+
+### Sound waves, ”Härma ett ljud” (`node-03`, `firmware/node03_sound/`)
+
+| Task | Done when |
 |---|---|
-| Ljud ut till förstärkaren | GP18 |
-| Mikrofon | GP26 |
-| Stapel | GP22 |
+| Lay wave A exactly on the grey wave. | 330 Hz and amplitude 0.6 |
+| Make it completely silent without turning off wave A. | Wave B equal and 180° out of phase |
+| Whistle into the box microphone. Play the same note back through the box. | Within 3 % of the whistle |
 
-`ut/vagor {"fa": 220, "aa": 0.7, "fb": 330, "ab": 0.5, "fas": 180, "spelar": true}`,
-`in/mik {"hz": 8000, "prov": [256 värden]}` fem gånger per sekund. Skriven i C++ för Arduino-Pico
-eftersom MicroPython inte hinner räkna fram ljud.
+Best on a computer. Box (about 210 kr): PAM8302 amplifier, 8 Ω speaker, MAX9814 microphone, a bar of
+8 WS2812. The app finds the pitch from the samples.
 
-### Pixlar (`nod-09`, `lador/pixlar.py`)
-
-Mål: en bild är ett rutnät av tal.
-
-| Steg | Klart när |
+| Part | Pins |
 |---|---|
-| Zooma tills du ser rutorna | Rutnätet syns |
-| Zooma tills du ser siffrorna | RGB-talen syns |
-| Gör en pixel helt vit | 255, 255, 255 |
-| Visa bilden med 8 × 8 pixlar | Upplösning 8 |
+| Speaker (PWM audio) | GP18 |
+| Microphone | GP26 |
+| LED bar | GP22 |
 
-Lådan (ca 80 kr): matris med 8 × 8 WS2812 på GP22, som alltid visar bilden i 8 × 8.
-`ut/bild {"px": "rrggbb…"}` med 64 färger. Styrkan begränsas till 15 %.
+`out/waves {"fa": 330, "aa": 0.6, "fb": 330, "ab": 0.6, "phase": 180, "playing": true}`,
+`in/mic {"hz": 8000, "samples": [...]}`
+
+### Pixels, ”En bild är tal” (`node-09`, `boxes/pixels.py`)
+
+| Task | Done when |
+|---|---|
+| Turn the sun green by changing the numbers. | Every sun pixel green |
+| The box accepts 200 numbers at most. Make the picture as sharp as you can. | 8 × 8 (192 numbers) |
+| Draw the team's symbol on the box lamps. | At least 8 pixels changed at 8 × 8 |
+
+Box (about 80 kr): an 8 × 8 WS2812 matrix. The same box serves Sorting.
+
+| Part | Pins |
+|---|---|
+| Matrix | GP22 |
+
+`out/image {"px": "rrggbb" × 64}`
 
 ## AI
 
-### Fruktsorteraren (`nod-04`, `lador/ai.py`)
+### The fruit sorter, ”Lär en maskin att sortera” (`node-04`, `boxes/fruit.py`)
 
-Mål: en maskin lär sig av exempel, och skeva exempel ger skeva svar.
-
-| Steg | Klart när |
+| Task | Done when |
 |---|---|
-| Lägg till fyra exempel | Fyra nya märken |
-| Visa tre mystiska frukter | Tre gissningar |
-| Känn igen ett grönt äpple | Grönt äpple gissas rätt |
-| Lura maskinen | Ett äpple där den var säker på citron |
+| Get the machine to guess right five times in a row. | Five right in a row |
+| Fool it into calling a red apple a lemon. | Examples placed so a red apple is classed as lemon |
+| Sort real fruit with the box, five right in a row. | Five right in a row on the scale |
 
-Lådan (ca 230 kr): TCS34725, lastcell 1 kg med HX711, servo SG90, knapp.
+The mystery fruit is a third each green apples, lemons and red apples, so colour alone does not
+work.
 
-| Koppling | Stift |
+Box (about 230 kr): TCS34725 colour sensor, 1 kg load cell with an HX711, SG90 servo flap, a button
+that marks a fruit as a teaching example.
+
+| Part | Pins |
 |---|---|
-| TCS34725 SDA / SCL | GP4 / GP5 |
 | HX711 DT / SCK | GP16 / GP17 |
+| TCS34725 SDA / SCL | GP4 / GP5 |
 | Servo | GP15 |
-| Knapp | GP14 |
+| Button | GP14 |
 
-`in/frukt {"farg": 0.82, "storlek": 0.64}` när vågen stått still en halv sekund, med
-`"exempel": true` när knappen trycks. `ut/lucka {"mot": "apple"}`. Färgsensorn behöver en kåpa.
+`in/fruit {"x": 0.82, "y": 0.4, "example": true}`, `out/flap {"to": "apple"}`
 
-### Nästa ord (ingen låda)
+### Next word, ”Gissa nästa ord” (`node-12`, `boxes/nextword.py`)
 
-Mål: en språkmodell räknar ut vilket ord som brukar komma härnäst.
-
-| Steg | Klart när |
+| Task | Done when |
 |---|---|
-| Bygg en mening med fem ord | Fem ord |
-| Välj ett ord maskinen tror lite på | Under 20 % |
-| Låt maskinen skriva en mening | Fram till punkt |
-| Lär den en ny mening | En egen mening inläst |
+| Build a sentence that is not in the machine's text. | A finished sentence of at least 3 words not in the text |
+| Teach the machine so that Most likely writes ”katten sover i solen”. | Most likely produces the sentence with no ties |
+| Show that sentence on the box. | Sent after task 2 |
 
-I rummet kan alla rösta på nästa ord från mobilen, och storskärmen visar rösterna som staplar.
+Box (about 70 kr): four MAX7219 8 × 8 matrices in a row. The built-in font is ASCII, so å, ä and ö
+show as a, a and o.
 
-## Nätverk
-
-### Paketresan (`nod-05`, `lador/natverk.py`)
-
-Mål: meddelanden delas i paket som hittar nya vägar när en kabel går sönder.
-
-| Steg | Klart när |
+| Part | Pins |
 |---|---|
-| Skicka ett meddelande | Alla paket framme |
-| Klipp en kabel och skicka igen | Framme via längre väg |
-| Klipp medan paketen reser | Framme ändå |
-| Gör så att inget kommer fram | Mottagaren avskuren |
+| SPI0 SCK / MOSI / CS | GP18 / GP19 / GP17 |
 
-Lådan (ca 250 kr): sju hus på en skiva, tio bitar LED-slinga med sex lysdioder var, en bygel på
-varje kabel, nätagg 5 V 2 A.
+`out/text {"text": "katten sover i solen"}`, `in/shown {"text": …}`
 
-| Koppling | Stift |
+## Networks
+
+### Packet tour, ”Ett nät som håller” (`node-05`, `boxes/packets.py`)
+
+| Task | Done when |
 |---|---|
-| LED-slinga | GP22 |
-| Byglar | GP2–GP11 |
+| Cut Gus off from everyone else with as few cuts as possible. | G unreachable after exactly 2 cuts |
+| Cut 4 cables so that everyone can still reach everyone. | 4 cuts and the network still connected |
+| Unplug 4 cables on the box and still send a message from Ali to Gus. | 4 jumpers out and every packet arrives |
 
-`in/kablar {"klippta": [9]}`, `ut/paket {"kabel": 3, "fran": "D", "till": "F", "t": 0.4}`.
-Styrkan begränsas till 20 %.
+Box (about 250 kr): seven houses on a board, ten cables of LED strip with six LEDs each, a jumper on
+each cable. At 20 % brightness, since 60 LEDs at full draw more than 3 A.
 
-### Hemliga färger (ingen låda)
-
-Mål: två kan dela en hemlighet över en öppen linje, eftersom blandning inte går att ta isär.
-
-| Steg | Klart när |
+| Part | Pins |
 |---|---|
-| Blanda och skicka | Blandningen syns på nätet |
-| Få samma färg som vännen | Båda har blandat i sin hemlighet |
-| Låt tjuvlyssnaren försöka | Tjuvlyssnarens blandning blir fel |
-| Gör det igen med en annan färg | Ny hemlighet |
+| LED strip | GP22 |
+| Jumpers, cable 0–9 | GP2–GP11 |
 
-Fungerar också med riktig färg i muggar: alla ser de blandade muggarna men ingen kan ta isär dem.
+`in/cables {"cut": [3, 7]}`, `out/packet {"cable": 3, "from": "D", "t": 0.4}`
 
-## Mjukvara
+### Secret colours, ”En hemlighet i det öppna” (`node-13`, `boxes/secret.py`)
 
-### Robotens väg (`nod-06`, `lador/robot.py`)
-
-Mål: ett program är instruktioner i ordning, och en bugg är när det gör något annat än man menade.
-
-| Steg | Klart när |
+| Task | Done when |
 |---|---|
-| Nivå 1 | Framme |
-| Kör in i ett träd | En krock |
-| Nivå 2 | Framme |
-| Nivå 3 med högst fem block | Framme |
+| Agree on a colour with your friend without the eavesdropper working it out. | Both mixed, the eavesdropper fails |
+| Pick a secret colour that lets the eavesdropper succeed. | A secret equal to the public colour |
+| Open the chest on the box with your shared colour. | The chest opens |
 
-Lådan (ca 230 kr): två 28BYJ-48 med ULN2003, hjul 60 mm, golvmatta 7 × 5 rutor à 15 cm.
+Colours mix as paint: the geometric mean per channel. The chest is the friend. It picks the public
+colour and its own secret, sends its mix, and computes the shared colour from the team's mix:
+shared = (team mix² · secret)^⅓.
 
-| Koppling | Stift |
+Box (about 135 kr): a small chest with an SG90 servo lock and a common-cathode RGB LED.
+
+| Part | Pins |
 |---|---|
-| Vänster motor IN1–IN4 | GP2–GP5 |
-| Höger motor IN1–IN4 | GP6–GP9 |
-| Stötfångare | GP14 |
+| Servo | GP15 |
+| RGB LED R / G / B, 220 Ω each | GP10 / GP11 / GP12 |
 
-`ut/program {"steg": ["F", "F", "V", "H"]}`, `in/steg {"i": 2, "klar": true}`, `in/krock {}`.
-`RUTA` och `SVANG` i firmware justeras på mattan.
+`in/public {"colour": "blue", "mix": [99, 150, 224]}`, `out/mix {"rgb": [...]}`,
+`out/open {"rgb": [...]}`, `in/chest {"open": true}`, `out/start {}`
 
-### Sortera (ingen låda)
+## Software
 
-Mål: olika metoder tar olika lång tid, och skillnaden växer med antalet.
+### The robot's path, ”Programmera roboten” (`node-06`, `boxes/robot.py`)
 
-| Steg | Klart när |
+| Task | Done when |
 |---|---|
-| Sortera 8 kort för hand | Sorterat |
-| Kör bubbelsortering | Klar |
-| Kör samsortering på samma kort | Klar |
-| Jämför båda med 64 kort | Båda körda på 64 |
+| Reach the star on level 3 with five blocks at most. | Star reached with ≤ 5 blocks |
+| Level 4: one person sees the course and describes it. The others build the program without looking. | Star reached with the course hidden |
+| Run level 3 on the real robot so that it stops on the star. | Star reached on the box |
 
-I rummet sorterar lag riktiga kort med olika metoder och tar tid.
+Box (about 230 kr): two 28BYJ-48 steppers with ULN2003 drivers, 60 mm wheels, a bumper, a floor mat
+of 7 × 5 squares of 15 cm printed with level 3.
 
-## Matematik
-
-### Funktionsmaskinen (`nod-07`, `lador/matte.py`)
-
-Mål: en funktion är en regel, och ”gånger något plus något” blir en rak linje.
-
-| Steg | Klart när |
+| Part | Pins |
 |---|---|
-| Mata maskinen med tre tal | Tre tal |
-| Maskin 1 | in + 3 |
-| Maskin 2 | in × 2 |
-| Alla fyra | även in × 2 + 1 och in × 3 − 2 |
+| Left motor | GP2–GP5 |
+| Right motor | GP6–GP9 |
+| Bumper | GP14 |
 
-Lådan (ca 160 kr): vred KY-040, två TM1637, servo med lock.
+`out/program {"steps": ["fwd", "fwd", "left", …]}`, `in/step {"i": 3}`, `in/bump {"i": 4}`
 
-| Koppling | Stift |
+### Sorting, ”Sortera som en dator” (`node-09`, `boxes/pixels.py`)
+
+| Task | Done when |
 |---|---|
-| Vred CLK / DT / knapp | GP10 / GP11 / GP12 |
+| Sort 8 cards by hand with 20 comparisons at most. | Sorted with ≤ 20 comparisons |
+| Show that merge sort wins by more the more cards there are. | Both methods run at 8 and 64 cards |
+| Run the fastest method on the box lamps. | Bubble then merge on the box, merge faster |
+
+The same matrix as Pixels, drawn as eight bars.
+
+`out/bars {"v": [3, 1, 8, 2, 7, 5, 4, 6], "compare": [2, 3]}`
+
+## Mathematics
+
+### The function machine, ”Vad gör maskinen?” (`node-07`, `boxes/function.py`)
+
+| Task | Done when |
+|---|---|
+| Crack machines 1 and 2 with three tests each at most. | Both cracked within three tests |
+| Crack machine 4. | a = 3, b = −2 |
+| Set a secret rule in the box for another team. | Any rule other than x |
+
+Box (about 160 kr): KY-040 knob for x, two TM1637 displays for in and out, a lid on a servo. With a
+rule set, the box computes a·x + b itself and works as a machine for the next team.
+
+| Part | Pins |
+|---|---|
+| Knob CLK / DT / SW | GP10 / GP11 / GP12 |
 | Display in CLK / DIO | GP2 / GP3 |
-| Display ut CLK / DIO | GP4 / GP5 |
+| Display out CLK / DIO | GP4 / GP5 |
 | Servo | GP15 |
 
-`in/tal {"x": 4}`, `ut/visa {"in": 4, "ut": 11}`, `ut/lock {"oppen": true}`. Regeln finns bara
-i rumsservern.
+`out/rule {"a": 3, "b": -2}`, `out/lid {"open": true}`, `in/test {"x": 4, "y": 10}`
 
-### Tärningar (`nod-10`, `lador/tarning.py`)
+### Dice, ”Slumpen blir en kurva” (`node-10`, `boxes/dice.py`)
 
-Mål: ett kast går inte att förutsäga, många kast går.
-
-| Steg | Klart när |
+| Task | Done when |
 |---|---|
-| Kasta en tärning 10 gånger | 10 kast |
-| Kasta tills staplarna är jämna | Minst 60 kast, lägsta stapeln över 75 % av den högsta |
-| Vanligaste summan med två tärningar | 7, efter minst 100 kast |
-| Klockan med tre tärningar | 300 kast |
+| Guess which total comes up most with two dice. Then roll 100 times. | Guess made before rolling, 100 rolls |
+| Roll one die until the bars are nearly level. | At least 60 rolls, lowest bar over 75 % of the highest |
+| Shake the box die 20 times. | 20 shakes on the box |
 
-”Hela rummet kastar” lägger till 75 kast. Lådan (ca 80 kr): en burk med MPU6050 och en TM1637.
+”The whole room rolls” adds 75 rolls. Box (about 80 kr): a shaker with an MPU6050 and a TM1637.
 
-| Koppling | Stift |
+| Part | Pins |
 |---|---|
 | MPU6050 SDA / SCL | GP4 / GP5 |
-| Display CLK / DIO | GP2 / GP3 |
+| TM1637 CLK / DIO | GP2 / GP3 |
 
-`in/kast {"v": [3, 5], "sum": 8}` när burken slutat skaka. `ut/tarningar {"antal": 2}`.
-
----
+`out/dice {"n": 2}`, `in/roll {"v": [3, 4], "sum": 7}`
 
 ## Budget
 
-| Låda | Med nod |
+| Box | Cost |
 |---|---|
-| nod-01 Strömkretsen | 300 kr |
-| nod-02 Logikgrindar | 270 kr |
-| nod-03 Ljudvågor | 410 kr |
-| nod-04 Fruktsorteraren | 430 kr |
-| nod-05 Paketresan | 450 kr |
-| nod-06 Robotens väg | 430 kr |
-| nod-07 Funktionsmaskinen | 360 kr |
-| nod-08 Åtta lampor | 260 kr |
-| nod-09 Pixlar | 280 kr |
-| nod-10 Tärningar | 280 kr |
-| Energimätare och router | 550 kr |
-| **Ett set** | **ca 4 200 kr** |
+| node-01 The circuit | 275 kr |
+| node-11 The torch | 355 kr |
+| plug-01 What uses most? | 500 kr |
+| node-02 Logic gates | 270 kr |
+| node-08 Eight lamps | 310 kr |
+| node-03 Sound waves | 410 kr |
+| node-09 Pixels and Sorting | 280 kr |
+| node-04 The fruit sorter | 430 kr |
+| node-12 Next word | 270 kr |
+| node-05 Packet tour | 450 kr |
+| node-13 Secret colours | 335 kr |
+| node-06 The robot's path | 430 kr |
+| node-07 The function machine | 360 kr |
+| node-10 Dice | 280 kr |
+| Travel router | 400 kr |
+| One set | about 5 400 kr |
 
-## Byggordning
+## Build order
 
-1. Logikgrindar. Visar hela kedjan från knapp till skärm.
-2. Åtta lampor och Tärningar. Samma enkla delar.
-3. Strömkretsen. Första sensorn.
-4. Paketresan och Pixlar. Adresserbara lysdioder.
-5. Funktionsmaskinen och Fruktsorteraren. Servo och fler sensorer.
-6. Robotens väg. Mest mekanik.
-7. Ljudvågor. Ljud i realtid.
+1. node-02 and node-01: the simplest, and they test the node, MQTT and the room server.
+2. node-09: one box for two workshops.
+3. node-05 and node-06: the most visible in a room.
+4. The rest.
 
-## Öppna frågor
+## Open questions
 
-- Vilka delar finns redan?
-- Var står rumsservern: ledarens dator eller en Raspberry Pi i lådan?
-- Hur uppdateras firmware i tjugo lådor?
+1. Who builds the boxes, and how are they repaired on site?
+2. Over-the-air updates: `mpremote` over wifi or a home-built loader?
+3. Can the room server run on the travel router itself?

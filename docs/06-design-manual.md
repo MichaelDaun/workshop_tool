@@ -1,150 +1,168 @@
-# 6. Designmanual
+# 6. Design manual
 
-Gäller skärmar, texter och lådor. Visuell version i
-[`mockups/designmanual.html`](../mockups/designmanual.html). Del C är checklistan.
+Covers screens, copy and boxes. The visual version is
+[`mockups/design.html`](../mockups/design.html). Part C is the checklist.
 
-## A. Det vi tog bort
+## A. What we removed
 
-De första mockuparna bar typiska drag från AI-genererad design:
+The first mockups carried the usual marks of AI-generated design:
 
-- versala etiketter i mono med spärrning
-- kort i kort med skugga, pillerformade knappar
-- dekorativa pastellcirklar och konfetti
-- alla sju ämnesfärger samtidigt
-- grönt som betyder både mjukvara och rätt
-- ett extra rubriktypsnitt
-- fetstilta inledningar, utropstecken, beröm och maskiner i jag-form
-- triader och slogans, som ”Prova. Se. Förstå.”
-- för mycket text och metakommentarer
+- capitalised mono labels with letter spacing
+- cards in cards with shadows, pill buttons
+- decorative pastel circles and confetti
+- all seven area colours at once
+- green meaning both software and right
+- bold lead-ins, exclamation marks, praise and machines speaking in the first person
+- triads and slogans
+- hints under every task, legends next to pictures that already say it, leads and commentary
+- tasks so small that one person could click through them alone
 
-Det som behölls: scenen först, en färg per ämne, riktiga enheter, metaforer som går att slå av
-och båda språken.
+## B. The manual
 
-## B. Manualen
+### The workbench
 
-### Arbetsbänken
+Verkstan looks like a tidy workbench: a cutting mat with a grid, circuit diagrams, meters and
+warning tape. The scene is the bench. Colour shows what is active, everything else is graphite and
+paper.
 
-Verkstan ser ut som en välordnad arbetsbänk: skärmatta med rutnät, kopplingsscheman,
-mätinstrument och varningstejp. Scenen är bänken. Kontroller ser ut som instrument. Färg visar
-det som är aktivt, resten är grafit och papper.
+### Workshops and tasks
 
-### Färg
+A workshop is one problem, stated as the h2: ”Exakt en ampere”, ”En ficklampa för natten”. It has
+three tasks for a team of 2–4.
 
-| Token | Ljust | Mörkt | Till |
+1. The core idea on screen.
+2. The same idea under a constraint, with a prediction first, or with information only one person
+   has.
+3. The box does something concrete.
+
+”Vad hände?” is two or three sentences and at most one formula, folded away.
+
+### Colour
+
+| Token | Light | Dark | Use |
 |---|---|---|---|
-| `--papper` | `#f3f4f1` | `#121514` | Bakgrund |
-| `--ark` | `#ffffff` | `#1a1e1d` | Scen, paneler |
-| `--rutnat` | `#e4e7e3` | `#242a28` | Rutnät, avdelare |
-| `--linje` | `#cdd2cd` | `#343b38` | Kanter |
-| `--blyerts` | `#5b6360` | `#9aa39f` | Sekundär text |
-| `--grafit` | `#1c2120` | `#e8ece9` | Text, linjer, primärknapp |
+| `--paper` | `#f3f4f1` | `#121514` | Background |
+| `--sheet` | `#ffffff` | `#1a1e1d` | Scene, panels |
+| `--grid` | `#e4e7e3` | `#242a28` | Grid, dividers |
+| `--line` | `#cdd2cd` | `#343b38` | Borders |
+| `--pencil` | `#5b6360` | `#9aa39f` | Secondary text |
+| `--graphite` | `#1c2120` | `#e8ece9` | Text, lines, primary button |
 
-| Område | Token | Ljust | Mörkt |
+| Area | Token | Light | Dark |
 |---|---|---|---|
-| Ellära | `--el` | `#d99a00` | `#f2b630` |
-| Digital logik | `--logik` | `#16899b` | `#3cc0d0` |
-| Signalteknik | `--signal` | `#6a4fd8` | `#9b86ff` |
+| Electricity | `--power` | `#d99a00` | `#f2b630` |
+| Digital logic | `--logic` | `#16899b` | `#3cc0d0` |
+| Signals | `--signal` | `#6a4fd8` | `#9b86ff` |
 | AI | `--ai` | `#c8417a` | `#f06aa2` |
-| Nätverk | `--nat` | `#2d6bd2` | `#6a9cff` |
-| Mjukvara | `--kod` | `#3f8a3a` | `#6cc466` |
-| Matematik | `--matte` | `#d9631c` | `#ff8f4a` |
+| Networks | `--net` | `#2d6bd2` | `#6a9cff` |
+| Software | `--code` | `#3f8a3a` | `#6cc466` |
+| Mathematics | `--math` | `#d9631c` | `#ff8f4a` |
 
-- I en modul bara modulens färg plus neutraler, på högst en tiondel av ytan.
-- Färg bär aldrig information ensam.
-- Klart är en ritad bock. Fara är varningstejp i grafit och `#f2c200`. Inget rött och grönt.
+- Inside a module, only its area colour (`--active`) and the neutrals, on at most a tenth of the area.
+- Colour never carries information alone.
+- Done is a drawn tick. Danger is warning tape in graphite and `#f2c200`. No red and green.
 
-### Typografi
+### Type
 
-Atkinson Hyperlegible Next för text, Atkinson Hyperlegible Mono för värden och kod.
+Atkinson Hyperlegible Next for text, Atkinson Hyperlegible Mono for values and code.
 
-| Steg | Storlek | Vikt |
+| Token | Size | Weight |
 |---|---|---|
-| Rubrik 1 | 40–48 px | 800 |
-| Rubrik 2 | 28 px | 800 |
-| Rubrik 3 | 20 px | 700 |
-| Brödtext | 17 px | 400 |
-| Liten | 14 px | 400 |
-| Värde | 22–32 px | Mono 600 |
+| `--fs-h1` | 32–44 px | 800 |
+| `--fs-h2` | 28 px | 800 |
+| `--fs-h3` | 20 px | 700 |
+| `--fs-body` | 17 px | 400 |
+| `--fs-small` | 14 px | 400 |
+| `--font-num` | 22–32 px | 600 |
 
-Rubriker i meningsform. Inga versaler. Mono bara för siffror med enhet och kod. Högst 60 tecken
-per rad.
+Sentence case headings. No capitals. Mono only for numbers with units and code.
 
-### Form
+### Shape
 
-Scenen 10 px rundning och 1 px kant. Knappar och fält 6 px. Inga skuggor utom på det som svävar.
-Inga kort i kort. Knappar är rektanglar.
+The stage has a 10 px radius and a 1 px border. Buttons and fields 6 px. No shadows. No cards in
+cards. Buttons are rectangles.
 
-### Komponenter
+### Components
 
-| Komponent | Utseende |
+| Component | Class |
 |---|---|
-| Primärknapp | Grafit, 48 px hög, en per vy |
-| Sekundärknapp | 1 px grafitkant |
-| Fader | Spår med värde och enhet till höger |
-| Vippbrytare | Ritad vippa med 0 och 1 |
-| Stegare | − och + med värdet mellan |
-| Mätare | Mono-siffra med namn under |
-| Protokoll | Numrerade steg, nästa markerat i kanten, bock ritas när klart |
-| Vad hände? | Två korta stycken |
+| Primary button, one per view | `.btn` |
+| Secondary button | `.btn.ghost` |
+| Choice | `.chip[aria-pressed]` |
+| Slider with value | `.control` |
+| Stepper | `.stepper` |
+| Readout, only for numbers the scene cannot show | `.readout` |
+| Tasks | `.tasks`, made by `K.tasks()` |
+| Status line | `.status`, `.status.danger` |
+| Vad hände? | `details.why` |
+| Box | `.box`, made by `K.box()` |
 
-### Ikoner, bilder och rörelse
+### Show, don't tell
 
-24 px rutnät, 2 px linjer med runda ändar. Scener ritas som kopplingsscheman. Inga gradienter
-utom ljus som lyser. Inga emoji. Rörelse visar orsak och verkan, gränssnittet rör sig 150–220 ms.
-Belöningen sker i scenen. `prefers-reduced-motion` stänger av det dekorativa.
+- Values sit in the scene next to the part they belong to: 6 V on the battery, 0,46 A at the bulb.
+- No legend where the picture carries it. A glow shows brightness; no ”mörkt, lagom, för mycket”.
+- No hints or sub-lines under tasks.
+- No status message that repeats what the scene already shows.
+
+### Icons, images and motion
+
+24 px grid, 2 px strokes with round caps. Scenes are drawn as circuit diagrams. No gradients except
+light that glows. No emoji. Motion shows cause and effect; the interface moves in 150–220 ms. The
+reward happens in the scene. `prefers-reduced-motion` turns off the decorative.
 
 ### Layout
 
-Scenen tar minst 60 % av bredden, protokollet ligger bredvid. På mobil hamnar protokollet under.
+The scene takes at least 60 % of the width with the panel beside it. On a phone the panel goes
+below.
 
-### Språk
+### Language
 
-Kort, konkret och vänligt. Vuxna behandlas som vuxna. Mindre text är oftast tydligare.
+The UI is Swedish, with English in `data-en`. Short and concrete. Assume capable adults.
 
-1. Beskriv världen, inte personen: ”Lampan lyser.”
-2. Verb först i instruktioner.
-3. Vardagsord först, fackord en gång.
-4. Inga utropstecken utom ljudord i scenen.
-5. Maskiner talar inte i jag-form.
-6. Inga slogans, triader, inskjutna tankstreck eller ”inte X, utan Y”.
-7. Fetstil bara på ett nytt begrepp.
-8. Fel är information: ”Roboten körde in i ett träd vid steg 3.”
-9. Inga metakommentarer om vad sidan ska göra eller vad man ska lära sig.
+1. Describe the world, not the person: ”Lampan gick sönder.”
+2. Verb first in a task. One sentence, two at most.
+3. Everyday words first, the technical term once.
+4. No exclamation marks.
+5. Machines do not speak in the first person.
+6. No slogans, triads, em-dash asides or ”inte X, utan Y”.
+7. ”Workshop” in Swedish too. No ”verkstad” or ”verkstäder”. No ”på bordet”; the box is its node id.
 
-| Text | Högst |
+| Text | At most |
 |---|---|
-| Namn | 3 ord |
-| Lead | 1 mening |
-| Steg | 8 ord |
-| Vad hände? | 2 stycken à 2 meningar |
+| Workshop name | 3 words |
+| Problem | 6 words |
+| Task | 2 sentences |
+| Vad hände? | 3 sentences and a formula |
 
-Undvik: magisk, resa, utforska, dyk ner, kraftfull, sömlös, superenkelt, hemligheten bakom, värt
-att notera, fantastiskt. På engelska: magic, journey, explore, dive in, powerful, seamless,
-unlock, amazing.
+Avoid: magisk, resa, utforska, upptäck, dyk ner, låt oss, kraftfull, sömlös, superenkelt. In
+English: magic, journey, explore, dive in, powerful, seamless, unlock, amazing.
 
-Svensk typografi: ”citat”, decimalkomma, 3,0 V, 10–15 min, − för minus, 75 000. Engelska med
-brittisk stavning och egen formulering.
+Swedish typography: ”citat”, decimal comma, 3,0 V, 10–15 min, − for minus, 75 000. English copy is
+British and written on its own terms, not translated word for word.
 
-| Före | Efter |
+| Not this | This |
 |---|---|
-| Jag tror: Citron (67 %) | Maskinens gissning: citron, 67 % |
-| Rätt! Det var ett äpple. | Det var ett äpple. Gissningen stämde. |
-| Aj! Där var en bugg. | Roboten körde in i ett träd. |
-| Du tänker redan som en datorkonstruktör. | Alla gåtor lösta. |
+| Gör lampan stark. Till det markerade fältet. | Få exakt 1 A genom lampan. |
+| Ge lampan för mycket ström. Bara på skärmen. | Nothing. The bulb breaks when it gets too much. |
+| Jag tror: citron (67 %) | Citron, 67 % |
+| Rätt! Det var ett äpple. | Uppgift 1 av 3 klar. |
+| Verkstäder | Workshops |
 
-### Lådorna
+### The boxes
 
-Lådan har modulens färg och numret på locket. Lampor: modulens färg är aktivt, kort vitt blink
-är klart, gul och svart växling är fara. Etiketter använder samma ord som appen.
+Each box has its area colour and the node id on the lid. Lights: the area colour means active, a
+fast white blink means found, alternating yellow and black means danger. Labels on the box use the
+same words as the app.
 
-## C. Checklista
+## C. Checklist
 
-- [ ] Bara modulens färg och neutraler.
-- [ ] Inga versaler, piller eller skuggade kort.
-- [ ] Primärknappen är grafit.
-- [ ] Varje steg ger en reaktion i scenen.
-- [ ] Lead är en mening som börjar med ett verb.
-- [ ] Inga utropstecken, ingen jag-form, inget beröm.
-- [ ] ”Citat”, decimalkomma, mellanslag före enhet.
-- [ ] Egen engelsk formulering.
-- [ ] 400 px, ljust och mörkt, tangentbord, reducerad rörelse.
+- [ ] One problem and three tasks; the last one runs on the box.
+- [ ] Tasks 1 and 2 need the team to decide something together.
+- [ ] Only the area colour and neutrals.
+- [ ] No capitals, pills or shadowed cards.
+- [ ] The primary button is graphite.
+- [ ] No hints, sub-lines, leads or legends the scene could carry.
+- [ ] No exclamation marks, no first person, no praise.
+- [ ] ”Citat”, decimal comma, a space before units.
+- [ ] English written on its own terms.
+- [ ] 400 px, light and dark, keyboard, reduced motion.

@@ -1,58 +1,53 @@
-# 5. Fysiska enheter
+# 5. Hardware
 
-En lampa på skärmen är en bild. En lampa på bordet som tänds när man drar i ett reglage i mobilen
-visar att kod styr saker. Folk samlas också runt en sak och provar.
+A lamp on a screen is a picture. An LED on the box that the team drives to exactly its limit shows
+that the numbers are real. A team also gathers around an object and argues about it.
 
-| Riktning | Exempel |
+| Direction | Example |
 |---|---|
-| Skärm → sak | Reglaget i appen tänder en riktig lampa |
-| Sak → skärm | En sensor mäter ström och appen ritar den |
-| Tvilling | Sak och skärm visar samma läge |
+| Screen → box | The team's program drives the robot |
+| Box → screen | The box measures the current and the app shows it |
+| Twin | Box and screen show the same state |
 
-Tvillingen är starkast: man kan peka på skärmen och säga ”det här händer i lådan”.
+## The Verkstan node
 
-## Fler idéer
+One standard node per box: a Raspberry Pi Pico W with the workshop's parts, a power bank and the
+node id on the lid. At start it announces its parts, for example `{"parts": ["ina219", "display"]}`.
+The leader pairs a node with a workshop under Lådor in the room view.
 
-- Ledare eller isolator: två kontaktspetsar, håll dit gem, sudd eller en citron.
-- Grindlådor som kopplas ihop med sladdar till en adderare.
-- Handtermin: en avståndssensor styr tonhöjden.
-- Trollstav med accelerometer som lär sig känna igen rörelser.
-- Programkort med NFC-tagg som läggs i rad framför en läsare.
-- Rumslampa som visar röster eller blinkar när någon blir klar.
+## How the node talks to the app
 
-## Verkstan-noden
-
-En standardnod per låda: Raspberry Pi Pico W med modulens delar, powerbank och numret på locket.
-Den berättar vid start vad den har, till exempel `{"har": ["led", "pot", "ina219"]}`. Ledaren
-kopplar noden till en verkstad under Lådor i rumsvyn.
-
-## Hur noden pratar med appen
-
-| Väg | Fungerar med | Nackdel |
+| Route | Works with | Drawback |
 |---|---|---|
-| Wifi och MQTT till rumsservern | Alla, även iPhone | Kräver server och eget nät |
-| Web Serial | Chrome och Edge på dator | Inte iPhone eller Firefox |
-| Web Bluetooth | Chrome på dator och Android | Inte iPhone |
+| Wifi and MQTT to the room server | Everything, iPhone too | Needs a server and its own network |
+| Web Serial | Chrome and Edge on a computer | Not iPhone or Firefox |
+| Web Bluetooth | Chrome on a computer and Android | Not iPhone |
 
-Valt: wifi och MQTT (Mosquitto) på rumsservern, som översätter till WebSocket. Webbläsarna når
-aldrig en nod direkt. Ämnen och meddelanden står i [dokument 7](07-modulplaner.md).
+Chosen: wifi and MQTT (Mosquitto) on the room server, which bridges to WebSocket. Browsers never
+reach a node directly. Topics and messages are in [document 7](07-module-plans.md).
 
-Firmware är MicroPython, så att koden går att visa för deltagarna. Ljudlådan kör C++.
-En knapp ”Visa koden i lådan” i varje verkstad vore ett bra tillägg.
+The firmware is MicroPython, so the code can be shown to participants. The sound box runs C++.
 
-## Format
+## Formats
 
-| Format | Enheter | Passar |
+| Format | Boxes | Suits |
 |---|---|---|
-| Demo | 1 per modul | Ledaren visar, deltagarna styr från mobilen |
-| Station | 1 per modul | Grupper roterar, 20–40 personer |
-| Lagkit | 1 per lag | Flest enheter |
+| Station | 1 per workshop | Teams rotate, 20–40 people |
+| Team kit | 1 per team | Most boxes, every team finishes on hardware |
 
-## Hinder
+## Constraints
 
-- iPhone saknar Web Serial och Web Bluetooth, så allt går via servern.
-- Pico W klarar bara 2,4 GHz och inte eduroam. En egen reserouter löser det.
-- Bara 5 V. Powerbanks i stället för lösa litiumbatterier.
-- 75 personer trycker hårt. Arkadknappar och skruvade kontakter.
-- Med 20 lådor behövs trådlös uppdatering.
-- Varje modul fungerar utan nod.
+- iPhone has neither Web Serial nor Web Bluetooth, so everything goes through the server.
+- The Pico W only does 2.4 GHz and not eduroam. A travel router solves it.
+- 5 V at most. Power banks, never loose lithium cells.
+- 75 people press hard. Arcade buttons and screw terminals.
+- With 20 boxes, over-the-air updates are needed.
+- Every on-screen task works without a box.
+
+## More ideas
+
+- Conductor or insulator: two probes, try paper clips, rubbers or a lemon.
+- Gate boxes wired together into an adder.
+- A theremin: a distance sensor sets the pitch.
+- A wand with an accelerometer that learns gestures.
+- Program cards with NFC tags laid out in front of a reader.

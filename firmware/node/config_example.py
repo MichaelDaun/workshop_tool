@@ -1,8 +1,8 @@
-# Kopiera till config.py och fyll i. config.py checkas inte in.
-WIFI_NAMN = "verkstan"
-WIFI_LOSEN = "byt-mig"
-SERVER = "192.168.8.10"      # rumsservern med Mosquitto
-RUM = "VERK-42"
-NOD = "nod-02"               # står på locket
-LADA = "logik"               # el, logik, ai, natverk, robot, matte, binart, pixlar, tarning
-STATUSLAMPA = 25             # eller "LED" för Picons egen
+# Copy to config.py and fill in. config.py is not checked in.
+WIFI_SSID = "verkstan"
+WIFI_PASSWORD = "change-me"
+SERVER = "192.168.8.10"      # the room server running Mosquitto
+ROOM = "VERK-42"
+NODE = "node-02"             # printed on the lid
+BOX = "gates"                # a file in boxes/, see firmware/README.md
+STATUS_LED = "LED"           # the Pico W's own LED, or a pin number
